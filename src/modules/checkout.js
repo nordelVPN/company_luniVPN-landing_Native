@@ -29,7 +29,7 @@ function initCheckout(root = document) {
     selectedNodes.forEach((node) => {
       node.textContent = plan ? plan.displayName : 'Choose a plan first';
     });
-    if (periodNode) periodNode.textContent = plan ? plan.billingPeriod : '—';
+    if (periodNode) periodNode.textContent = plan ? (plan.durationLabel || plan.billingPeriod) : '—';
     if (totalNode) totalNode.textContent = plan ? formatPrice(plan.priceMinor, plan.currency) : '—';
     if (promptNode) promptNode.hidden = Boolean(plan);
     if (button) button.disabled = !plan;

@@ -69,7 +69,7 @@ function initAccountPortal(root = document) {
   const state = {
     signedIn: readDemoSession(),
     activeTab: 'account',
-    activePlanId: 'monthly',
+    activePlanId: 'basic',
     selectedCheckoutPlanId: normalizePlanId(new URLSearchParams(window.location.search).get('plan')),
     subscriptionStatus: 'Active (Demo)'
   };
@@ -96,7 +96,7 @@ function initAccountPortal(root = document) {
   const renderSubscription = () => {
     const activePlan = findPlan(state.activePlanId);
     if (subPlanNode) subPlanNode.textContent = activePlan ? activePlan.displayName : 'None';
-    if (subPeriodNode) subPeriodNode.textContent = activePlan ? activePlan.billingPeriod : '—';
+    if (subPeriodNode) subPeriodNode.textContent = activePlan ? (activePlan.durationLabel || activePlan.billingPeriod) : '—';
     if (subStatusNode) subStatusNode.textContent = state.subscriptionStatus;
     if (subRenewalNode) subRenewalNode.textContent = state.subscriptionStatus === 'Active (Demo)' ? 'Demo preview (no billing)' : '—';
     if (subTogglePauseBtn) {
@@ -112,7 +112,7 @@ function initAccountPortal(root = document) {
     selectedNodes.forEach((node) => {
       node.textContent = plan ? plan.displayName : 'Choose a plan first';
     });
-    if (periodNode) periodNode.textContent = plan ? plan.billingPeriod : '—';
+    if (periodNode) periodNode.textContent = plan ? (plan.durationLabel || plan.billingPeriod) : '—';
     if (totalNode) totalNode.textContent = plan ? formatPrice(plan.priceMinor, plan.currency) : '—';
     if (promptNode) promptNode.hidden = Boolean(plan);
     if (checkoutBtn) checkoutBtn.disabled = !plan;

@@ -121,7 +121,7 @@ module.exports = {
   plansSection: {
     eyebrow: 'PLANS',
     title: 'Find your space online.',
-    description: 'Choose a plan that feels right for you. Prices and real purchases are not available yet.'
+    description: 'Choose Trial, Basic, Plus, or Complete. Currency and real purchases will be confirmed before launch.'
   },
   plans,
   checkout: {

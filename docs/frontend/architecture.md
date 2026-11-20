@@ -16,19 +16,19 @@ Webpack + Handlebars + SCSS + vanilla JS сохраняются. Целевой 
 
 ## Навигация и состояние
 
-The app → #the-app; Why Luni → #why-luni; Support → #support; Get Luni/Discover Luni → #plans; See how it works/Explore the app → #the-app. Choose Monthly/Yearly обновляет общий выбор и summary, затем ведёт к #checkout. Для прямой ссылки допустим `?plan=monthly#checkout`; проверять значение по каталогу. Неверный/отсутствующий plan показывает предложение выбора, без фиктивной цены. Навигация не перезагружает HTML.
+The app → `#the-app`; Why Luni → `#why-luni`; Support → `#support`; Get Luni/Discover Luni → `#plans`; See how it works/Explore the app → `#the-app`. Выбор любого из четырёх тарифов (`trial`, `basic`, `plus`, `complete`) обновляет общий выбор и summary (название и цену из каталога), затем ведёт к `#checkout`. Для прямой ссылки допустим `?plan=trial|basic|plus|complete#checkout`; проверять значение по каталогу. Неверный/отсутствующий `plan` показывает предложение выбора и Total = «—», без фиктивной цены. Навигация не перезагружает HTML.
 
 Активный пункт соответствует видимой секции; начальный hash обрабатывается браузером. У шапки учесть scroll-margin-top. Плавную прокрутку отключать при reduced motion. Меню закрывается после выбора, управление фокусом сохраняется.
 
 ## Компоненты и модули
 
-Общие: BrandLogo, Header, MobileNav, Button/Link, Icon, Field, RibbonArt. Секционные: HomeHero, AppHero, WhyLuni, Support, PlanChoice, CheckoutSummary, DemoAccount. WishlistDialog открывается отдельной CTA и использует публичную ссылку бота.
+Общие: BrandLogo, Header, MobileNav, Button/Link, Icon, Field, RibbonArt, DeviceArt. Секционные: HomeHero, AppHero, WhyLuni, Support, PlanChoice, CheckoutSummary, DemoAccount. WishlistDialog открывается отдельной CTA и использует публичную ссылку бота.
 
-Модули инициализируются по root/data-атрибутам; отсутствие root безопасно. Повторная инициализация не дублирует listeners. Каталог планов общий для карточек и сводки. Меню, поиск и диалог имеют локальное состояние. Платёжные данные не сохраняются в storage. Demo-профиль — fixture. Backend wishlist независим от будущего Account/Billing.
+Модули инициализируются по root/data-атрибутам; отсутствие root безопасно. Повторная инициализация не дублирует listeners. Каталог планов (`trial`, `basic`, `plus`, `complete`) общий для карточек и сводки. Меню, поиск и диалог имеют локальное состояние. Платёжные данные не сохраняются в storage. Demo-профиль — fixture. Backend wishlist независим от будущего Account/Billing.
 
 ## Доступность и адаптация
 
-Текст и управление — HTML, волны и декор — отдельные ресурсы. Контент доступен без JS, поля связаны с label/error. Фокус видим, диалог удерживает фокус, закрывается по Escape и возвращает фокус. На узком экране сохраняются все семь секций; текст перед иллюстрацией, планы вертикально, сводка после формы. PNG телефона не задаёт оболочку сайта.
+Текст и управление — HTML, волны и декор — отдельные ресурсы. Контент доступен без JS, поля связаны с label/error. Фокус видим, диалог удерживает фокус, закрывается по Escape и возвращает фокус. На узком экране сохраняются все семь секций; текст перед иллюстрацией, четыре карточки планов вертикально, сводка после формы. PNG телефона не задаёт оболочку сайта.
 
 Один набор metadata для документа. Демонстрационные секции помечаются в UI; noindex нельзя задать только якорю. Публичный релизный SEO-режим определяется для всего документа.
 

@@ -1,11 +1,14 @@
-<article class="plan-card {{#if (eq planId 'yearly')}}plan-featured{{/if}}" data-plan-card="{{planId}}">
+<article class="plan-card {{#if featured}}plan-featured{{/if}}" data-plan-card="{{planId}}">
   <picture class="plan-art" aria-hidden="true">
     <source srcset="{{@root.assets.cardWaveWebp}}" type="image/webp">
     <img src="{{@root.assets.cardWavePng}}" alt="" width="530" height="314" loading="lazy" decoding="async">
   </picture>
-  {{#if (eq planId 'yearly')}}<span class="plan-badge">Best value</span>{{/if}}
+  {{#if featured}}<span class="plan-badge">Best value</span>{{/if}}
   <h3>{{displayName}}</h3>
-  <p>More room for what matters.</p>
+  <p class="plan-price-row">
+    <span class="plan-price">{{priceDisplay}}</span>
+    <span class="plan-duration">/ {{durationLabel}}</span>
+  </p>
   <ul>
     {{#each features}}<li>{{this}}</li>{{/each}}
   </ul>

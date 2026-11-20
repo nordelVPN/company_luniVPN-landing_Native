@@ -81,6 +81,12 @@
   gap: 24px;
 }
 .account-tab-panel[hidden] { display: none; }
+.account-tab-panel .plans-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.account-tab-panel .plan-featured {
+  transform: none;
+}
 .account-form h3,
 .panel-intro h2 { margin-top: 0; }
 .subscription-actions {
@@ -107,5 +113,6 @@
 
 @media (max-width: 700px) {
   .field-grid,
-  .help-cards { grid-template-columns: 1fr; }
+  .help-cards,
+  .account-tab-panel .plans-grid { grid-template-columns: 1fr; }
 }

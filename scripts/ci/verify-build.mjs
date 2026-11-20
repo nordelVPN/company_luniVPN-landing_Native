@@ -6,6 +6,7 @@ const forbidden = /^(?:\.env(?:\..*)?|\.git|node_modules|docs|fixtures)$/i;
 const expectedHtml = ['account.html', 'index.html'];
 const landingSections = ['home', 'the-app', 'why-luni', 'support', 'plans', 'checkout'];
 const accountPanels = ['account', 'subscription', 'plans', 'checkout', 'help'];
+const expectedPlans = ['trial', 'basic', 'plus', 'complete'];
 
 async function walk(dir, htmlFiles) {
   for (const name of await readdir(dir)) {
@@ -75,6 +76,11 @@ try {
     if (match.index <= lastIndex) throw new Error('Landing section out of order: #' + id);
     lastIndex = match.index;
   }
+  for (const planId of expectedPlans) {
+    if (!indexHtml.includes(`data-plan-card=${planId}`) && !indexHtml.includes(`data-plan-card="${planId}"`)) {
+      throw new Error('Missing plan card in index.html: ' + planId);
+    }
+  }
   if (!indexHtml.includes(`${basePath}account.html`)) {
     throw new Error('Missing header link to account.html in index.html');
   }
@@ -103,8 +109,13 @@ try {
       throw new Error('Missing account portal panel: ' + panel);
     }
   }
+  for (const planId of expectedPlans) {
+    if (!accountHtml.includes(`data-plan-card=${planId}`) && !accountHtml.includes(`data-plan-card="${planId}"`)) {
+      throw new Error('Missing plan card in account.html: ' + planId);
+    }
+  }
 
-  console.log('Production artifact validated: index.html (6 landing sections + full-bleed wave backgrounds) + account.html (demo auth + 5 portal panels) and local resources.');
+  console.log('Production artifact validated: index.html (6 landing sections + 4 plans + full-bleed wave backgrounds) + account.html (demo auth + 5 portal panels + 4 plans) and local resources.');
 } catch (error) {
   console.error('Build validation failed:', error.message);
   process.exitCode = 1;

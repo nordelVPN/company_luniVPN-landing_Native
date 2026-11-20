@@ -93,8 +93,8 @@
           <p class="eyebrow">SUBSCRIPTION</p>
           <h2>Manage subscription</h2>
           <dl>
-            <div><dt>Current plan</dt><dd data-sub-plan>Monthly Plan</dd></div>
-            <div><dt>Billing period</dt><dd data-sub-period>month</dd></div>
+            <div><dt>Current plan</dt><dd data-sub-plan>Basic</dd></div>
+            <div><dt>Billing period</dt><dd data-sub-period>1 month</dd></div>
             <div><dt>Status</dt><dd data-sub-status>{{subscription.status}}</dd></div>
             <div><dt>Renewal</dt><dd data-sub-renewal>{{subscription.renewalDate}}</dd></div>
             <div><dt>Payment method</dt><dd>{{subscription.paymentMethod}}</dd></div>
@@ -119,18 +119,21 @@
         <div class="panel-intro">
           <p class="eyebrow">PLANS</p>
           <h2>Choose a plan</h2>
-          <p class="muted">Select Monthly or Yearly to preview it in Checkout. Prices are not available yet.</p>
+          <p class="muted">Select Trial, Basic, Plus, or Complete to preview it in Checkout. Currency will be confirmed before launch.</p>
         </div>
-        <div class="plans-grid" data-plans-root>
+        <div class="plans-grid account-plans-grid" data-plans-root>
           {{#each plans}}
-            <article class="plan-card {{#if (eq planId 'yearly')}}plan-featured{{/if}}" data-plan-card="{{planId}}">
+            <article class="plan-card {{#if featured}}plan-featured{{/if}}" data-plan-card="{{planId}}">
               <picture class="plan-art" aria-hidden="true">
                 <source srcset="{{@root.assets.cardWaveWebp}}" type="image/webp">
                 <img src="{{@root.assets.cardWavePng}}" alt="" width="530" height="314" loading="lazy" decoding="async">
               </picture>
-              {{#if (eq planId 'yearly')}}<span class="plan-badge">Best value</span>{{/if}}
+              {{#if featured}}<span class="plan-badge">Best value</span>{{/if}}
               <h3>{{displayName}}</h3>
-              <p>More room for what matters.</p>
+              <p class="plan-price-row">
+                <span class="plan-price">{{priceDisplay}}</span>
+                <span class="plan-duration">/ {{durationLabel}}</span>
+              </p>
               <ul>
                 {{#each features}}<li>{{this}}</li>{{/each}}
               </ul>
@@ -155,7 +158,7 @@
             <p class="eyebrow">DEMO CHECKOUT</p>
             <h2>Selected plan</h2>
             <p class="selected-plan-box" data-selected-plan>Choose a plan first</p>
-            <p class="muted" data-plan-prompt>Pick Monthly or Yearly in Plans to preview your checkout summary.</p>
+            <p class="muted" data-plan-prompt>Pick Trial, Basic, Plus, or Complete in Plans to preview your checkout summary.</p>
             <button class="button button-outline button-small" type="button" data-goto-tab="plans">Change plan</button>
 
             <div class="checkout-preview" aria-label="Synthetic payment preview">
