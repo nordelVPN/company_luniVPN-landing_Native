@@ -1,8 +1,9 @@
-name: CI and deploy
+name: Build and deploy website
 
 on:
-  pull_request:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -11,73 +12,48 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
         with:
-          persist-credentials: false
-      - name: Check frontend prerequisites
-        shell: bash
-        run: |
-          for file in package.json package-lock.json .nvmrc; do
-            if [[ ! -s "$file" ]]; then
-              echo "::error::Missing $file. Add frontend source, lockfile and a pinned Node version before deployment."
-              exit 1
-            fi
-          done
-          grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' .nvmrc || {
-            echo "::error::.nvmrc must contain an exact Node version (X.Y.Z)."
-            exit 1
-          }
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .nvmrc
+          node-version: '22'
           cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run build:prod
-        env:
-          APP_ENV: production
-          BASE_PATH: /
-      - name: Validate production files
-        run: node scripts/ci/verify-build.mjs
-      - name: Add release identifier and package verified build
-        shell: bash
+      - name: Install dependencies
+        run: npm ci
+      - name: Build production website
+        run: npm run build
+      - name: Check page entry points
         run: |
-          printf '%s' "$GITHUB_SHA-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > build/prod/deploy-version.txt
-          tar -czf site.tar.gz -C build/prod .
-      - uses: actions/upload-artifact@v4
+          test -s build/prod/index.html
+          test -s build/prod/about.html
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v4
         with:
-          name: production-site
-          path: site.tar.gz
-          if-no-files-found: error
-          retention-days: 14
+          path: build/prod
 
   deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    environment: production
+    permissions:
+      pages: write
+      id-token: write
     concurrency:
-      group: production-deploy
+      group: github-pages
       cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: actions/download-artifact@v4
-        with:
-          name: production-site
-      - name: Deploy via SSH
-        shell: bash
-        env:
-          SSH_HOST: ${{ vars.SSH_HOST }}
-          SSH_USER: ${{ vars.SSH_USER }}
-          SSH_PORT: ${{ vars.SSH_PORT || '22' }}
-          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
-          SITE_URL: ${{ vars.SITE_URL }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-        run: bash scripts/deploy/upload.sh
+      # Repository Settings > Pages > Build and deployment > Source: GitHub Actions.
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4
