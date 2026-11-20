@@ -1,33 +1,36 @@
 <footer class="site-footer">
   <div class="container footer-inner">
     {{> shared/logo}}
-    <nav class="footer-nav" aria-label="Footer navigation">
+    <nav class="footer-nav" aria-label="Footer navigation" data-i18n-aria-label="nav.footer">
       <div class="footer-nav-links">
         {{#each site.navigation}}
           <a
             href="{{#if (eq ../metadata.pageId 'index')}}{{hash}}{{else}}{{../basePath}}index.html{{hash}}{{/if}}"
+            data-i18n="nav.{{id}}"
           >{{label}}</a>
         {{/each}}
         <a
           href="{{basePath}}{{site.accountLink.path}}"
           {{#if (eq metadata.pageId 'account')}}aria-current="page"{{/if}}
+          data-i18n="nav.account"
         >{{site.accountLink.label}}</a>
         {{#each site.legalLinks}}
           <a
             href="{{../basePath}}{{path}}"
             {{#if (eq ../metadata.pageId id)}}aria-current="page"{{/if}}
+            data-i18n="nav.{{id}}"
           >{{label}}</a>
         {{/each}}
       </div>
       <div class="footer-nav-actions">
-        <button class="button button-outline button-small" type="button" data-wishlist-open>
+        <button class="button button-outline button-small" type="button" data-wishlist-open data-i18n="nav.wishlist">
           {{site.wishlist.label}}
         </button>
         <a
           class="button button-small"
           href="{{#if (eq metadata.pageId 'index')}}{{site.cta.hash}}{{else}}{{basePath}}index.html{{site.cta.hash}}{{/if}}"
         >
-          {{site.cta.label}} <span aria-hidden="true">↗</span>
+          <span data-i18n="nav.cta">{{site.cta.label}}</span> <span aria-hidden="true">↗</span>
         </a>
       </div>
     </nav>

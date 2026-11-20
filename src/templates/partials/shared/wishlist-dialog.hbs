@@ -14,17 +14,18 @@
     data-wishlist-panel
   >
     <div class="wishlist-dialog-head">
-      <h2 id="wishlist-dialog-title">{{site.wishlist.dialogTitle}}</h2>
+      <h2 id="wishlist-dialog-title" data-i18n="wishlist.title">{{site.wishlist.dialogTitle}}</h2>
       <button
         class="wishlist-close"
         type="button"
         aria-label="{{site.wishlist.closeLabel}}"
+        data-i18n-aria-label="wishlist.close"
         data-wishlist-close
       >
         <span aria-hidden="true">×</span>
       </button>
     </div>
-    <p id="wishlist-dialog-desc">{{site.wishlist.dialogDescription}}</p>
+    <p id="wishlist-dialog-desc" data-i18n="wishlist.description">{{site.wishlist.dialogDescription}}</p>
     <div class="wishlist-dialog-actions">
       {{#if wishlistUrl}}
         <a
@@ -34,14 +35,14 @@
           rel="noopener noreferrer"
           data-wishlist-link
         >
-          {{site.wishlist.openLabel}} <span aria-hidden="true">↗</span>
+          <span data-i18n="wishlist.open">{{site.wishlist.openLabel}}</span> <span aria-hidden="true">↗</span>
         </a>
       {{else}}
-        <p class="demo-notice" role="status" data-wishlist-unavailable>
+        <p class="demo-notice" role="status" data-wishlist-unavailable data-i18n="wishlist.unavailable">
           {{site.wishlist.unavailableMessage}}
         </p>
       {{/if}}
-      <button class="button button-outline" type="button" data-wishlist-close>
+      <button class="button button-outline" type="button" data-wishlist-close data-i18n="wishlist.close">
         {{site.wishlist.closeLabel}}
       </button>
     </div>

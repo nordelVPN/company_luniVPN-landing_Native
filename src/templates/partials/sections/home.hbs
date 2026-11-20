@@ -3,12 +3,12 @@
     <canvas class="wave-canvas home-wave-canvas" aria-hidden="true" data-wave-canvas></canvas>
     <div class="hero hero-single container">
       <div class="hero-copy">
-        <h1 id="home-title">{{home.title}}</h1>
-        <p class="hero-kicker">{{home.kicker}}</p>
-        <p class="hero-description">{{home.description}}</p>
+        <h1 id="home-title" data-i18n="home.title">{{home.title}}</h1>
+        <p class="hero-kicker" data-i18n="home.kicker">{{home.kicker}}</p>
+        <p class="hero-description" data-i18n="home.description">{{home.description}}</p>
         <div class="actions">
-          <a class="button" href="{{home.primaryCta.href}}">{{home.primaryCta.label}} <span aria-hidden="true">↗</span></a>
-          <a class="button button-outline" href="{{home.secondaryCta.href}}">{{home.secondaryCta.label}}</a>
+          <a class="button" href="{{home.primaryCta.href}}"><span data-i18n="home.primaryCta">{{home.primaryCta.label}}</span> <span aria-hidden="true">↗</span></a>
+          <a class="button button-outline" href="{{home.secondaryCta.href}}" data-i18n="home.secondaryCta">{{home.secondaryCta.label}}</a>
         </div>
       </div>
     </div>
@@ -16,15 +16,15 @@
   <div class="home-features-band">
     <div class="container">
       <div class="features-header">
-        <h2 class="features-heading">{{home.featuresTitle}}</h2>
-        <p class="features-subheading">{{home.featuresLead}}</p>
+        <h2 class="features-heading" data-i18n="home.featuresTitle">{{home.featuresTitle}}</h2>
+        <p class="features-subheading" data-i18n="home.featuresLead">{{home.featuresLead}}</p>
       </div>
       <div class="features" aria-label="Home highlights">
         {{#each home.features}}
           <article class="feature">
             <span class="feature-icon" aria-hidden="true">{{> shared/feature-icon name=icon}}</span>
-            <h3>{{title}}</h3>
-            <p>{{description}}</p>
+            <h3 data-i18n="home.features.{{@index}}.title">{{title}}</h3>
+            <p data-i18n="home.features.{{@index}}.description">{{description}}</p>
           </article>
         {{/each}}
       </div>

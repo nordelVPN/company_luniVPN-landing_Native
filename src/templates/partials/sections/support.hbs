@@ -1,11 +1,11 @@
 <section id="support" class="landing-section section-support wave-host" aria-labelledby="support-title" data-wave-root data-wave-phase="7.2">
   <canvas class="wave-canvas section-wave-canvas" aria-hidden="true" data-wave-canvas></canvas>
   <div class="section-intro container">
-    <p class="eyebrow">{{support.eyebrow}}</p>
-    <h2 id="support-title" class="section-display-title">{{support.title}}</h2>
-    <p class="section-lead">{{support.description}}</p>
+    <p class="eyebrow" data-i18n="support.eyebrow">{{support.eyebrow}}</p>
+    <h2 id="support-title" class="section-display-title" data-i18n="support.title">{{support.title}}</h2>
+    <p class="section-lead" data-i18n="support.description">{{support.description}}</p>
     <div class="support-search-wrap">
-      <label class="sr-only" for="support-search-input">{{support.searchLabel}}</label>
+      <label class="sr-only" for="support-search-input" data-i18n="support.searchLabel">{{support.searchLabel}}</label>
       <div class="search-field">
         <span class="search-icon" aria-hidden="true">{{> shared/icon name='search'}}</span>
         <input
@@ -13,6 +13,7 @@
           class="search-input"
           type="search"
           placeholder="{{support.searchPlaceholder}}"
+          data-i18n-placeholder="support.searchPlaceholder"
         >
       </div>
     </div>
@@ -21,13 +22,19 @@
     {{#each support.categories}}
       <article class="feature support-card">
         <span class="feature-icon" aria-hidden="true">{{> shared/feature-icon name=icon}}</span>
-        <h3>{{title}}</h3>
-        <p>{{description}}</p>
+        <h3 data-i18n="support.categories.{{@index}}.title">{{title}}</h3>
+        <p data-i18n="support.categories.{{@index}}.description">{{description}}</p>
         <div class="support-card-action">
-          <button class="button button-outline button-chip" type="button" disabled title="{{unavailableReason}}">
-            {{actionLabel}} {{> shared/icon name='chevron-right'}}
+          <button
+            class="button button-outline button-chip"
+            type="button"
+            disabled
+            title="{{unavailableReason}}"
+            data-i18n-title="support.categories.{{@index}}.unavailable"
+          >
+            <span data-i18n="support.categories.{{@index}}.action">{{actionLabel}}</span> {{> shared/icon name='chevron-right'}}
           </button>
-          <span class="unavailable">{{unavailableReason}}</span>
+          <span class="unavailable" data-i18n="support.categories.{{@index}}.unavailable">{{unavailableReason}}</span>
         </div>
       </article>
     {{/each}}

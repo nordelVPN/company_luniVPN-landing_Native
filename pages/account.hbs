@@ -3,32 +3,32 @@
   <div class="container">
   <div class="account-page-head">
     <div>
-      <h1>{{intro.title}}</h1>
-      <p class="section-lead">{{intro.description}}</p>
+      <h1 data-i18n="account.introTitle">{{intro.title}}</h1>
+      <p class="section-lead" data-i18n="account.introDescription">{{intro.description}}</p>
     </div>
     <div class="account-session-bar" hidden data-account-session-bar>
       <span class="session-badge" data-session-user>{{profile.displayName}}</span>
-      <button class="button button-outline button-small" type="button" data-demo-signout>Sign out</button>
+      <button class="button button-outline button-small" type="button" data-demo-signout data-i18n="account.signOut">Sign out</button>
     </div>
   </div>
 
   <section class="panel demo-auth-card" aria-labelledby="demo-auth-title" data-account-auth>
-    <h2 id="demo-auth-title">{{demoAuth.title}}</h2>
-    <p class="muted">{{demoAuth.description}}</p>
+    <h2 id="demo-auth-title" data-i18n="account.authTitle">{{demoAuth.title}}</h2>
+    <p class="muted" data-i18n="account.authDescription">{{demoAuth.description}}</p>
     <form class="demo-auth-form" data-demo-signin-form>
       <div class="field-group">
-        <label for="demo-auth-email">{{demoAuth.emailLabel}}</label>
+        <label for="demo-auth-email" data-i18n="account.authEmailLabel">{{demoAuth.emailLabel}}</label>
         <input id="demo-auth-email" class="text-input" type="email" value="{{profile.email}}" readonly>
       </div>
       <div class="actions">
-        <button class="button" type="submit" data-demo-signin>{{demoAuth.submitLabel}} <span aria-hidden="true">↗</span></button>
-        <a class="button button-outline" href="{{basePath}}index.html">Back to home</a>
+        <button class="button" type="submit" data-demo-signin><span data-i18n="account.authSubmit">{{demoAuth.submitLabel}}</span> <span aria-hidden="true">↗</span></button>
+        <a class="button button-outline" href="{{basePath}}index.html" data-i18n="account.backHome">Back to home</a>
       </div>
     </form>
   </section>
 
   <div class="account-grid" data-account-portal>
-    <nav class="account-nav" aria-label="Account sections" role="tablist">
+    <nav class="account-nav" aria-label="Account sections" data-i18n-aria-label="account.sectionsLabel" role="tablist">
       {{#each tabs}}
         <button
           id="tab-{{id}}"
@@ -40,7 +40,7 @@
           data-account-tab="{{id}}"
         >
           <span class="account-tab-icon" aria-hidden="true">{{> shared/icon name=icon}}</span>
-          <span>{{label}}</span>
+          <span data-i18n="account.tabs.{{id}}">{{label}}</span>
         </button>
       {{/each}}
     </nav>
@@ -56,26 +56,26 @@
         <div class="panel profile-card">
           <div class="avatar" aria-hidden="true">{{> shared/icon name='user'}}</div>
           <div>
-            <p class="eyebrow">PROFILE</p>
+            <p class="eyebrow" data-i18n="account.profile.eyebrow">PROFILE</p>
             <h2 data-profile-name>{{profile.displayName}}</h2>
             <p data-profile-email>{{profile.email}}</p>
           </div>
         </div>
 
         <form class="panel account-form" data-profile-form>
-          <h3>Profile settings</h3>
+          <h3 data-i18n="account.profile.settings">Profile settings</h3>
           <div class="field-grid">
             <div class="field-group">
-              <label for="profile-name-input">Display name</label>
+              <label for="profile-name-input" data-i18n="account.profile.displayName">Display name</label>
               <input id="profile-name-input" class="text-input" type="text" name="displayName" value="{{profile.displayName}}" required>
             </div>
             <div class="field-group">
-              <label for="profile-email-input">Email</label>
+              <label for="profile-email-input" data-i18n="account.profile.email">Email</label>
               <input id="profile-email-input" class="text-input" type="email" name="email" value="{{profile.email}}" required>
             </div>
           </div>
           <div class="actions">
-            <button class="button button-small" type="submit">Save profile</button>
+            <button class="button button-small" type="submit" data-i18n="account.profile.save">Save profile</button>
           </div>
           <p class="muted" role="status" aria-live="polite" data-profile-status></p>
         </form>
@@ -89,20 +89,20 @@
         data-account-panel="subscription"
       >
         <div class="panel">
-          <p class="eyebrow">SUBSCRIPTION</p>
-          <h2>Manage subscription</h2>
+          <p class="eyebrow" data-i18n="account.sub.eyebrow">SUBSCRIPTION</p>
+          <h2 data-i18n="account.sub.heading">Manage subscription</h2>
           <dl>
-            <div><dt>Current plan</dt><dd data-sub-plan>Basic</dd></div>
-            <div><dt>Billing period</dt><dd data-sub-period>1 month</dd></div>
-            <div><dt>Status</dt><dd data-sub-status>{{subscription.status}}</dd></div>
-            <div><dt>Renewal</dt><dd data-sub-renewal>{{subscription.renewalDate}}</dd></div>
-            <div><dt>Payment method</dt><dd>{{subscription.paymentMethod}}</dd></div>
+            <div><dt data-i18n="account.sub.currentPlan">Current plan</dt><dd data-sub-plan>Basic</dd></div>
+            <div><dt data-i18n="account.sub.billingPeriod">Billing period</dt><dd data-sub-period>1 month</dd></div>
+            <div><dt data-i18n="account.sub.status">Status</dt><dd data-sub-status>{{subscription.status}}</dd></div>
+            <div><dt data-i18n="account.sub.renewal">Renewal</dt><dd data-sub-renewal>{{subscription.renewalDate}}</dd></div>
+            <div><dt data-i18n="account.sub.paymentMethod">Payment method</dt><dd data-i18n="account.sub.notConnected">{{subscription.paymentMethod}}</dd></div>
           </dl>
           <div class="actions subscription-actions">
-            <button class="button button-small" type="button" data-goto-tab="plans">Change plan</button>
-            <button class="button button-outline button-small" type="button" data-sub-toggle-pause>Pause</button>
-            <button class="button button-outline button-small" type="button" data-sub-cancel>Cancel</button>
-            <button class="button button-outline button-small" type="button" data-goto-tab="checkout">Open checkout</button>
+            <button class="button button-small" type="button" data-goto-tab="plans" data-i18n="account.sub.changePlan">Change plan</button>
+            <button class="button button-outline button-small" type="button" data-sub-toggle-pause data-i18n="account.sub.pause">Pause</button>
+            <button class="button button-outline button-small" type="button" data-sub-cancel data-i18n="account.sub.cancel">Cancel</button>
+            <button class="button button-outline button-small" type="button" data-goto-tab="checkout" data-i18n="account.sub.openCheckout">Open checkout</button>
           </div>
           <p class="muted" role="status" aria-live="polite" data-sub-message></p>
         </div>
@@ -116,8 +116,8 @@
         data-account-panel="plans"
       >
         <div class="panel-intro">
-          <h2>Choose a plan</h2>
-          <p class="muted">Select Trial, Basic, Plus, or Complete to continue to checkout.</p>
+          <h2 data-i18n="account.plans.heading">Choose a plan</h2>
+          <p class="muted" data-i18n="account.plans.description">Select Trial, Basic, Plus, or Complete to continue to checkout.</p>
         </div>
         <div class="plans-grid account-plans-grid" data-plans-root>
           {{#each plans}}
@@ -127,24 +127,24 @@
                 <img src="{{@root.assets.cardWavePng}}" alt="" width="530" height="325" loading="lazy" decoding="async">
               </picture>
               {{#if featured}}
-                <span class="plan-badge">{{> shared/icon name='leaf'}} Best value</span>
+                <span class="plan-badge">{{> shared/icon name='leaf'}} <span data-i18n="plans.bestValue">Best value</span></span>
               {{/if}}
-              <h3>{{displayName}}</h3>
-              <p class="plan-subtitle">{{subtitle}}</p>
+              <h3 data-i18n="plans.{{planId}}.name">{{displayName}}</h3>
+              <p class="plan-subtitle" data-i18n="plans.{{planId}}.subtitle">{{subtitle}}</p>
               <p class="plan-price-row">
                 <span class="plan-price">{{priceDisplay}}</span>
-                <span class="plan-duration">/ {{durationLabel}}</span>
+                <span class="plan-duration" data-i18n="plans.{{planId}}.durationSlash">/ {{durationLabel}}</span>
               </p>
               <ul>
                 {{#each featureItems}}
                   <li>
                     <span class="plan-feature-icon" aria-hidden="true">{{> shared/icon name=icon}}</span>
-                    <span>{{text}}</span>
+                    <span data-i18n="plans.{{../planId}}.features.{{@index}}">{{text}}</span>
                   </li>
                 {{/each}}
               </ul>
               <button class="button" type="button" data-account-select-plan="{{planId}}">
-                Choose {{displayName}} <span aria-hidden="true">↗</span>
+                <span data-i18n="plans.{{planId}}.cta">Choose {{displayName}}</span> <span aria-hidden="true">↗</span>
               </button>
             </article>
           {{/each}}
@@ -161,31 +161,31 @@
       >
         <div class="checkout-grid">
           <div class="panel checkout-form">
-            <h2>Selected plan</h2>
+            <h2 data-i18n="checkout.selectedPlanHeading">Selected plan</h2>
             <div class="checkout-plan-card">
               <span class="checkout-plan-mark" aria-hidden="true"></span>
               <div class="checkout-plan-info">
-                <p class="checkout-plan-name" data-selected-plan>Choose a plan first</p>
-                <p class="checkout-plan-sub" data-plan-prompt>Pick Trial, Basic, Plus, or Complete in Plans to review your order summary.</p>
+                <p class="checkout-plan-name" data-selected-plan data-i18n="checkout.chooseFirst">Choose a plan first</p>
+                <p class="checkout-plan-sub" data-plan-prompt data-i18n="account.checkout.prompt">Pick Trial, Basic, Plus, or Complete in Plans to review your order summary.</p>
               </div>
             </div>
-            <button class="change-plan-link" type="button" data-goto-tab="plans">Change plan</button>
+            <button class="change-plan-link" type="button" data-goto-tab="plans" data-i18n="checkout.changePlan">Change plan</button>
 
-            <div class="checkout-preview" aria-label="Payment details">
+            <div class="checkout-preview" aria-label="Payment details" data-i18n-aria-label="checkout.paymentDetailsLabel">
               <div class="demo-field-group">
-                <span class="demo-field-label">Email</span>
+                <span class="demo-field-label" data-i18n="checkout.emailLabel">Email</span>
                 <div class="demo-field" aria-hidden="true"><span>{{profile.email}}</span></div>
               </div>
               <div class="demo-field-group">
-                <span class="demo-field-label">Card details</span>
+                <span class="demo-field-label" data-i18n="checkout.cardDetailsLabel">Card details</span>
                 <div class="demo-fields" aria-hidden="true">
                   <div class="demo-field demo-field-card">
                     <span class="demo-card-icon">{{> shared/icon name='card'}}</span>
                     <span>•••• •••• •••• 0000</span>
                   </div>
                   <div class="demo-field-row">
-                    <div class="demo-field"><span>MM / YY</span><span>— / —</span></div>
-                    <div class="demo-field"><span>CVC</span><span>•••</span></div>
+                    <div class="demo-field"><span data-i18n="checkout.mmYy">MM / YY</span><span>— / —</span></div>
+                    <div class="demo-field"><span data-i18n="checkout.cvc">CVC</span><span>•••</span></div>
                   </div>
                 </div>
               </div>
@@ -193,22 +193,22 @@
           </div>
 
           <aside class="summary-card" aria-labelledby="account-order-summary-title">
-            <h3 id="account-order-summary-title">Order summary</h3>
+            <h3 id="account-order-summary-title" data-i18n="checkout.orderSummary">Order summary</h3>
             <div class="checkout-plan-card checkout-plan-card-compact">
               <span class="checkout-plan-mark" aria-hidden="true"></span>
               <div class="checkout-plan-info">
-                <p class="checkout-plan-name" data-selected-plan>Choose a plan first</p>
-                <p class="checkout-plan-sub">LuniVPN subscription</p>
+                <p class="checkout-plan-name" data-selected-plan data-i18n="checkout.chooseFirst">Choose a plan first</p>
+                <p class="checkout-plan-sub" data-i18n="checkout.subscriptionSub">LuniVPN subscription</p>
               </div>
             </div>
             <dl>
-              <div><dt>Plan</dt><dd data-plan-period>—</dd></div>
-              <div class="total"><dt>Total</dt><dd data-plan-total>—</dd></div>
+              <div><dt data-i18n="checkout.planLabel">Plan</dt><dd data-plan-period>—</dd></div>
+              <div class="total"><dt data-i18n="checkout.totalLabel">Total</dt><dd data-plan-total>—</dd></div>
             </dl>
             <button class="button" type="button" data-checkout-button disabled>
-              Continue to payment <span aria-hidden="true">↗</span>
+              <span data-i18n="checkout.continue">Continue to payment</span> <span aria-hidden="true">↗</span>
             </button>
-            <button class="button button-outline summary-secondary-btn" type="button" data-apply-demo-plan disabled>
+            <button class="button button-outline summary-secondary-btn" type="button" data-apply-demo-plan disabled data-i18n="account.checkout.switchPlan">
               Switch active plan
             </button>
             <p class="muted checkout-status-note" role="status" aria-live="polite" data-checkout-message></p>
@@ -224,11 +224,11 @@
         data-account-panel="help"
       >
         <div class="panel">
-          <p class="eyebrow">HELP</p>
-          <h2>How can we help?</h2>
-          <p class="muted">Find answers about your LuniVPN account, plans, and connection.</p>
+          <p class="eyebrow" data-i18n="account.help.eyebrow">HELP</p>
+          <h2 data-i18n="account.help.heading">How can we help?</h2>
+          <p class="muted" data-i18n="account.help.description">Find answers about your LuniVPN account, plans, and connection.</p>
           <div class="support-search-wrap">
-            <label class="sr-only" for="account-help-search">{{help.searchLabel}}</label>
+            <label class="sr-only" for="account-help-search" data-i18n="support.searchLabel">{{help.searchLabel}}</label>
             <div class="search-field">
               <span class="search-icon" aria-hidden="true">{{> shared/icon name='search'}}</span>
               <input
@@ -236,6 +236,7 @@
                 class="search-input"
                 type="search"
                 placeholder="{{help.searchPlaceholder}}"
+                data-i18n-placeholder="support.searchPlaceholder"
               >
             </div>
           </div>
@@ -243,14 +244,14 @@
             {{#each help.categories}}
               <article class="help-card">
                 <span class="feature-icon" aria-hidden="true">{{> shared/feature-icon name=icon}}</span>
-                <h3>{{title}}</h3>
-                <p>{{description}}</p>
-                <span class="unavailable">{{unavailableReason}}</span>
+                <h3 data-i18n="support.categories.{{@index}}.title">{{title}}</h3>
+                <p data-i18n="support.categories.{{@index}}.description">{{description}}</p>
+                <span class="unavailable" data-i18n="support.categories.{{@index}}.unavailable">{{unavailableReason}}</span>
               </article>
             {{/each}}
           </div>
           <div class="actions help-wishlist-cta">
-            <button class="button button-outline button-small" type="button" data-wishlist-open>
+            <button class="button button-outline button-small" type="button" data-wishlist-open data-i18n="nav.wishlist">
               {{site.wishlist.label}}
             </button>
           </div>

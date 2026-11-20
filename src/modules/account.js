@@ -1,5 +1,6 @@
 const { normalizePlanId, formatPrice } = require('../utils/plans');
 const { createServices } = require('../services');
+const { t } = require('./i18n');
 
 const SESSION_KEY = 'lunivpn_session_signed_in';
 const VALID_TABS = new Set(['account', 'subscription', 'plans', 'checkout', 'help']);
@@ -71,10 +72,20 @@ function initAccountPortal(root = document) {
     activeTab: 'account',
     activePlanId: 'basic',
     selectedCheckoutPlanId: normalizePlanId(new URLSearchParams(window.location.search).get('plan')),
-    subscriptionStatus: 'Active'
+    subscriptionStatus: 'Active',
+    profileUpdated: false,
+    subNotice: null,
+    checkoutNoticeKey: null
   };
 
   const findPlan = (planId) => plans.find((item) => item.planId === planId) || null;
+  const getPlanName = (plan) => (plan ? (t(`plans.${plan.planId}.name`) || plan.displayName) : (t('account.sub.none') || 'None'));
+  const getPlanDuration = (plan) => (plan ? (t(`plans.${plan.planId}.duration`) || plan.durationLabel || plan.billingPeriod) : '—');
+  const getStatusLabel = (status) => {
+    if (status === 'Paused') return t('account.sub.statusPaused') || 'Paused';
+    if (status === 'Canceled') return t('account.sub.statusCanceled') || 'Canceled';
+    return t('account.sub.statusActive') || 'Active';
+  };
 
   const renderAuth = () => {
     if (authCard) authCard.hidden = state.signedIn;
@@ -95,28 +106,49 @@ function initAccountPortal(root = document) {
 
   const renderSubscription = () => {
     const activePlan = findPlan(state.activePlanId);
-    if (subPlanNode) subPlanNode.textContent = activePlan ? activePlan.displayName : 'None';
-    if (subPeriodNode) subPeriodNode.textContent = activePlan ? (activePlan.durationLabel || activePlan.billingPeriod) : '—';
-    if (subStatusNode) subStatusNode.textContent = state.subscriptionStatus;
+    if (subPlanNode) subPlanNode.textContent = getPlanName(activePlan);
+    if (subPeriodNode) subPeriodNode.textContent = getPlanDuration(activePlan);
+    if (subStatusNode) subStatusNode.textContent = getStatusLabel(state.subscriptionStatus);
     if (subRenewalNode) subRenewalNode.textContent = '—';
     if (subTogglePauseBtn) {
-      subTogglePauseBtn.textContent = state.subscriptionStatus === 'Paused' ? 'Resume' : 'Pause';
+      subTogglePauseBtn.textContent = state.subscriptionStatus === 'Paused'
+        ? (t('account.sub.resume') || 'Resume')
+        : (t('account.sub.pause') || 'Pause');
     }
     if (subCancelBtn) {
-      subCancelBtn.textContent = state.subscriptionStatus === 'Canceled' ? 'Reactivate' : 'Cancel';
+      subCancelBtn.textContent = state.subscriptionStatus === 'Canceled'
+        ? (t('account.sub.reactivate') || 'Reactivate')
+        : (t('account.sub.cancel') || 'Cancel');
+    }
+    if (subMessage) {
+      if (state.subNotice === 'status') {
+        const statusLabel = getStatusLabel(state.subscriptionStatus);
+        subMessage.textContent = t('account.sub.statusChanged', { status: statusLabel }) || `Subscription status: ${statusLabel}.`;
+      } else if (state.subNotice === 'plan') {
+        const planName = getPlanName(activePlan);
+        subMessage.textContent = t('account.sub.planUpdated', { plan: planName }) || `Active plan updated to ${planName}.`;
+      } else {
+        subMessage.textContent = '';
+      }
     }
   };
 
   const renderCheckout = () => {
     const plan = state.selectedCheckoutPlanId ? findPlan(state.selectedCheckoutPlanId) : null;
+    const planName = plan ? getPlanName(plan) : null;
     selectedNodes.forEach((node) => {
-      node.textContent = plan ? `${plan.displayName} Plan` : 'Choose a plan first';
+      node.textContent = plan
+        ? (t('checkout.planTitle', { name: planName }) || `${planName} Plan`)
+        : (t('checkout.chooseFirst') || 'Choose a plan first');
     });
-    if (periodNode) periodNode.textContent = plan ? (plan.durationLabel || plan.billingPeriod) : '—';
+    if (periodNode) periodNode.textContent = getPlanDuration(plan);
     if (totalNode) totalNode.textContent = plan ? formatPrice(plan.priceMinor, plan.currency) : '—';
     if (promptNode) promptNode.hidden = Boolean(plan);
     if (checkoutBtn) checkoutBtn.disabled = !plan;
     if (applyPlanBtn) applyPlanBtn.disabled = !plan;
+    if (checkoutMessage) {
+      checkoutMessage.textContent = state.checkoutNoticeKey ? (t(state.checkoutNoticeKey) || '') : '';
+    }
 
     planCards.forEach((card) => {
       card.classList.toggle('is-selected', card.getAttribute('data-plan-card') === state.selectedCheckoutPlanId);
@@ -178,27 +210,28 @@ function initAccountPortal(root = document) {
     if (profileNameNode) profileNameNode.textContent = name;
     if (profileEmailNode) profileEmailNode.textContent = email;
     if (sessionUser) sessionUser.textContent = name;
-    if (profileStatus) profileStatus.textContent = 'Profile updated for this session.';
+    state.profileUpdated = true;
+    if (profileStatus) profileStatus.textContent = t('account.profile.updated') || 'Profile updated for this session.';
   };
 
   const onTogglePause = () => {
     state.subscriptionStatus = state.subscriptionStatus === 'Paused' ? 'Active' : 'Paused';
+    state.subNotice = 'status';
     renderSubscription();
-    if (subMessage) subMessage.textContent = `Subscription status: ${state.subscriptionStatus}.`;
   };
 
   const onCancelToggle = () => {
     state.subscriptionStatus = state.subscriptionStatus === 'Canceled' ? 'Active' : 'Canceled';
+    state.subNotice = 'status';
     renderSubscription();
-    if (subMessage) subMessage.textContent = `Subscription status: ${state.subscriptionStatus}.`;
   };
 
   const onPlanSelect = (event) => {
     const planId = normalizePlanId(event.currentTarget.getAttribute('data-account-select-plan'));
     if (!planId) return;
     state.selectedCheckoutPlanId = planId;
+    state.checkoutNoticeKey = null;
     renderCheckout();
-    if (checkoutMessage) checkoutMessage.textContent = '';
     setTab('checkout');
   };
 
@@ -206,9 +239,11 @@ function initAccountPortal(root = document) {
     if (!state.selectedCheckoutPlanId) return;
     try {
       const result = await services.createCheckout(state.selectedCheckoutPlanId);
-      if (checkoutMessage) checkoutMessage.textContent = result.message || 'Online payments are not open yet.';
+      state.checkoutNoticeKey = 'checkout.unavailable';
+      if (checkoutMessage) checkoutMessage.textContent = t('checkout.unavailable') || result.message || 'Online payments are not open yet.';
     } catch {
-      if (checkoutMessage) checkoutMessage.textContent = 'Checkout is unavailable. Please try again later.';
+      state.checkoutNoticeKey = 'checkout.error';
+      if (checkoutMessage) checkoutMessage.textContent = t('checkout.error') || 'Checkout is unavailable. Please try again later.';
     }
   };
 
@@ -216,12 +251,17 @@ function initAccountPortal(root = document) {
     if (!state.selectedCheckoutPlanId) return;
     state.activePlanId = state.selectedCheckoutPlanId;
     state.subscriptionStatus = 'Active';
+    state.subNotice = 'plan';
     renderSubscription();
-    if (subMessage) {
-      const plan = findPlan(state.activePlanId);
-      subMessage.textContent = `Active plan updated to ${plan?.displayName || state.activePlanId}.`;
-    }
     setTab('subscription');
+  };
+
+  const onLanguageChange = () => {
+    renderSubscription();
+    renderCheckout();
+    if (profileStatus && state.profileUpdated) {
+      profileStatus.textContent = t('account.profile.updated') || 'Profile updated for this session.';
+    }
   };
 
   syncFromHash();
@@ -240,6 +280,7 @@ function initAccountPortal(root = document) {
   checkoutBtn?.addEventListener('click', onCheckoutPay);
   applyPlanBtn?.addEventListener('click', onApplyPlan);
   window.addEventListener('hashchange', syncFromHash);
+  document.addEventListener('languagechange', onLanguageChange);
 
   const destroy = () => {
     signInForm?.removeEventListener('submit', onSignIn);
@@ -253,6 +294,7 @@ function initAccountPortal(root = document) {
     checkoutBtn?.removeEventListener('click', onCheckoutPay);
     applyPlanBtn?.removeEventListener('click', onApplyPlan);
     window.removeEventListener('hashchange', syncFromHash);
+    document.removeEventListener('languagechange', onLanguageChange);
     initialized.delete(app);
   };
 

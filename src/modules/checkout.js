@@ -1,5 +1,6 @@
 const { normalizePlanId, formatPrice } = require('../utils/plans');
 const { createServices } = require('../services');
+const { t } = require('./i18n');
 
 const initialized = new WeakMap();
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -28,10 +29,20 @@ function initCheckout(root = document) {
   let currentPlanId = null;
   let lastTrigger = null;
   let closeTimer = null;
+  let lastMessageKey = null;
 
   const prefersReducedMotion = () =>
     typeof window.matchMedia === 'function' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const getLocalizedPlan = (plan) => {
+    const id = plan.planId;
+    return {
+      name: t(`plans.${id}.name`) || plan.displayName,
+      subtitle: t(`plans.${id}.subtitle`) || plan.subtitle,
+      duration: t(`plans.${id}.duration`) || plan.durationLabel
+    };
+  };
 
   const setOpenState = (open, { immediate = false } = {}) => {
     if (closeTimer) {
@@ -74,23 +85,43 @@ function initCheckout(root = document) {
     }
   };
 
-  const applyPlan = (rawPlanId) => {
+  const applyPlan = (rawPlanId, { preserveMessage = false } = {}) => {
     const id = normalizePlanId(rawPlanId);
     const plan = id ? plans.find((item) => item.planId === id) || null : null;
     currentPlanId = plan ? plan.planId : null;
 
-    selectedNodes.forEach((node) => {
-      node.textContent = plan ? `${plan.displayName} Plan` : 'Choose a plan first';
-    });
-    if (subtitleNode) {
-      subtitleNode.textContent = plan
-        ? `${plan.subtitle} (${plan.durationLabel} · up to ${plan.deviceLimit} devices)`
-        : 'Select Trial, Basic, Plus, or Complete in Plans.';
+    if (plan) {
+      const loc = getLocalizedPlan(plan);
+      selectedNodes.forEach((node) => {
+        node.textContent = t('checkout.planTitle', { name: loc.name }) || `${loc.name} Plan`;
+      });
+      if (subtitleNode) {
+        subtitleNode.textContent = t('checkout.planMeta', {
+          subtitle: loc.subtitle,
+          duration: loc.duration,
+          devices: plan.deviceLimit
+        }) || `${loc.subtitle} (${loc.duration} · up to ${plan.deviceLimit} devices)`;
+      }
+      if (periodNode) periodNode.textContent = `${loc.name} · ${loc.duration}`;
+      if (totalNode) totalNode.textContent = formatPrice(plan.priceMinor, plan.currency);
+    } else {
+      selectedNodes.forEach((node) => {
+        node.textContent = t('checkout.chooseFirst') || 'Choose a plan first';
+      });
+      if (subtitleNode) {
+        subtitleNode.textContent = t('checkout.chooseHint') || 'Select Trial, Basic, Plus, or Complete in Plans.';
+      }
+      if (periodNode) periodNode.textContent = '—';
+      if (totalNode) totalNode.textContent = '—';
     }
-    if (periodNode) periodNode.textContent = plan ? `${plan.displayName} · ${plan.durationLabel}` : '—';
-    if (totalNode) totalNode.textContent = plan ? formatPrice(plan.priceMinor, plan.currency) : '—';
+
     if (button) button.disabled = !plan;
-    if (message) message.textContent = '';
+    if (!preserveMessage) {
+      lastMessageKey = null;
+      if (message) message.textContent = '';
+    } else if (message && lastMessageKey) {
+      message.textContent = t(lastMessageKey) || '';
+    }
 
     planCards.forEach((card) => {
       card.classList.toggle('is-selected', card.getAttribute('data-plan-card') === currentPlanId);
@@ -156,9 +187,11 @@ function initCheckout(root = document) {
     if (!currentPlanId) return;
     try {
       const result = await services.createCheckout(currentPlanId);
-      if (message) message.textContent = result.message || 'Online payments are not open yet.';
+      lastMessageKey = 'checkout.unavailable';
+      if (message) message.textContent = t('checkout.unavailable') || result.message || 'Online payments are not open yet.';
     } catch {
-      if (message) message.textContent = 'Checkout is unavailable. Please try again later.';
+      lastMessageKey = 'checkout.error';
+      if (message) message.textContent = t('checkout.error') || 'Checkout is unavailable. Please try again later.';
     }
   };
 
@@ -188,6 +221,7 @@ function initCheckout(root = document) {
   };
 
   const onChangePlan = () => closeModal({ scrollToPlans: true });
+  const onLanguageChange = () => applyPlan(currentPlanId, { preserveMessage: true });
 
   syncFromUrl();
 
@@ -197,6 +231,7 @@ function initCheckout(root = document) {
   button?.addEventListener('click', onCheckoutClick);
   backdrop.addEventListener('click', onBackdropClick);
   document.addEventListener('keydown', onKeydown);
+  document.addEventListener('languagechange', onLanguageChange);
   window.addEventListener('popstate', syncFromUrl);
 
   const destroy = () => {
@@ -206,6 +241,7 @@ function initCheckout(root = document) {
     button?.removeEventListener('click', onCheckoutClick);
     backdrop.removeEventListener('click', onBackdropClick);
     document.removeEventListener('keydown', onKeydown);
+    document.removeEventListener('languagechange', onLanguageChange);
     window.removeEventListener('popstate', syncFromUrl);
     setOpenState(false, { immediate: true });
     initialized.delete(backdrop);

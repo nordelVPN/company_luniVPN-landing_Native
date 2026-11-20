@@ -1,19 +1,19 @@
 <section class="landing-section legal-page" aria-labelledby="legal-title">
   <div class="container legal-container">
-    <p class="eyebrow">{{legal.eyebrow}}</p>
-    <h1 id="legal-title">{{legal.title}}</h1>
-    <p class="section-lead">{{legal.lead}}</p>
-    <p class="demo-notice" role="note">{{legal.notice}}</p>
+    <p class="eyebrow" data-i18n="privacy.eyebrow">{{legal.eyebrow}}</p>
+    <h1 id="legal-title" data-i18n="privacy.heading">{{legal.title}}</h1>
+    <p class="section-lead" data-i18n="privacy.lead">{{legal.lead}}</p>
+    <p class="demo-notice" role="note" data-i18n="privacy.notice">{{legal.notice}}</p>
     <div class="legal-sections">
       {{#each legal.sections}}
         <article class="panel legal-card">
-          <h2>{{heading}}</h2>
-          <p>{{body}}</p>
+          <h2 data-i18n="privacy.sections.{{@index}}.heading">{{heading}}</h2>
+          <p data-i18n="privacy.sections.{{@index}}.body">{{body}}</p>
         </article>
       {{/each}}
     </div>
     <p class="legal-back">
-      <a class="change-plan-link" href="{{basePath}}index.html">← Back to LuniVPN home</a>
+      <a class="change-plan-link" href="{{basePath}}index.html" data-i18n="legal.backHome">← Back to LuniVPN home</a>
     </p>
   </div>
 </section>

@@ -5,6 +5,8 @@ const require = createRequire(import.meta.url);
 const { normalizePlanId, formatPrice } = require('../../src/utils/plans');
 const { publicConfig } = require('../../src/config/public');
 const { createServices } = require('../../src/services');
+const i18n = require('../../src/modules/i18n');
+const locales = require('../../src/data/locales.json');
 const pages = require('../../webpack/pages');
 
 // 1. Landing + Account + Legal pages manifest
@@ -76,5 +78,23 @@ assert.deepEqual(
 );
 const checkoutRes = await services.createCheckout('complete');
 assert.equal(checkoutRes.status, 'unavailable');
+
+// 5. i18n (en default + ru)
+assert.deepEqual(Object.keys(locales), ['en', 'ru']);
+const enKeys = Object.keys(locales.en).sort();
+const ruKeys = Object.keys(locales.ru).sort();
+assert.deepEqual(ruKeys, enKeys, 'en and ru locale dictionaries must have identical keys');
+
+assert.equal(i18n.getLanguage(), 'en');
+assert.equal(i18n.t('nav.cta'), 'Get Luni');
+assert.equal(i18n.t('checkout.planTitle', { name: 'Trial' }), 'Trial Plan');
+
+i18n.setLanguage('ru');
+assert.equal(i18n.getLanguage(), 'ru');
+assert.equal(i18n.t('nav.cta'), 'Выбрать Luni');
+assert.equal(i18n.t('checkout.planTitle', { name: 'Пробный' }), 'Тариф Пробный');
+
+i18n.setLanguage('de');
+assert.equal(i18n.getLanguage(), 'en');
 
 console.log('Frontend unit tests passed.');

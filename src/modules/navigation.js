@@ -1,3 +1,5 @@
+const { t } = require('./i18n');
+
 const initialized = new WeakMap();
 
 function initNavigation(root = document) {
@@ -11,9 +13,14 @@ function initNavigation(root = document) {
 
   const navLinks = [...panel.querySelectorAll('[data-nav-link]')];
 
+  const syncToggleLabel = () => {
+    const open = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-label', open ? (t('nav.close') || 'Close menu') : (t('nav.open') || 'Open menu'));
+  };
+
   const close = (restoreFocus = false) => {
     button.setAttribute('aria-expanded', 'false');
-    button.setAttribute('aria-label', 'Open menu');
+    syncToggleLabel();
     panel.classList.remove('is-open');
     if (restoreFocus) button.focus();
   };
@@ -21,7 +28,7 @@ function initNavigation(root = document) {
   const onToggleClick = () => {
     const open = button.getAttribute('aria-expanded') !== 'true';
     button.setAttribute('aria-expanded', String(open));
-    button.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    syncToggleLabel();
     panel.classList.toggle('is-open', open);
   };
 
@@ -72,11 +79,13 @@ function initNavigation(root = document) {
   button.addEventListener('click', onToggleClick);
   panel.addEventListener('click', onPanelClick);
   host.addEventListener('keydown', onKey);
+  document.addEventListener('languagechange', syncToggleLabel);
 
   const destroy = () => {
     button.removeEventListener('click', onToggleClick);
     panel.removeEventListener('click', onPanelClick);
     host.removeEventListener('keydown', onKey);
+    document.removeEventListener('languagechange', syncToggleLabel);
     observer?.disconnect();
     initialized.delete(host);
   };

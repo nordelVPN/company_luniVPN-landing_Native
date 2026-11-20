@@ -19,13 +19,14 @@
     <div class="checkout-dialog-inner">
     <div class="checkout-dialog-head">
       <div>
-        <h2 id="checkout-title">{{checkout.title}}</h2>
-        <p class="checkout-subtitle">{{checkout.description}}</p>
+        <h2 id="checkout-title" data-i18n="checkout.title">{{checkout.title}}</h2>
+        <p class="checkout-subtitle" data-i18n="checkout.description">{{checkout.description}}</p>
       </div>
       <button
         class="wishlist-close"
         type="button"
         aria-label="Close checkout"
+        data-i18n-aria-label="checkout.closeLabel"
         data-checkout-close
       >
         <span aria-hidden="true">×</span>
@@ -33,7 +34,7 @@
     </div>
     <div class="checkout-grid">
       <div class="checkout-form">
-        <h3>Selected plan</h3>
+        <h3 data-i18n="checkout.selectedPlanHeading">Selected plan</h3>
         <div class="checkout-plan-card">
           <picture class="checkout-plan-art" aria-hidden="true">
             <source srcset="{{assets.cardWaveWebp}}" type="image/webp">
@@ -41,27 +42,27 @@
           </picture>
           <span class="checkout-plan-mark" aria-hidden="true"></span>
           <div class="checkout-plan-info">
-            <p class="checkout-plan-name" data-selected-plan>Choose a plan first</p>
-            <p class="checkout-plan-sub" data-selected-plan-subtitle>Select Trial, Basic, Plus, or Complete in Plans.</p>
+            <p class="checkout-plan-name" data-selected-plan data-i18n="checkout.chooseFirst">Choose a plan first</p>
+            <p class="checkout-plan-sub" data-selected-plan-subtitle data-i18n="checkout.chooseHint">Select Trial, Basic, Plus, or Complete in Plans.</p>
           </div>
         </div>
-        <button class="change-plan-link" type="button" data-checkout-change-plan>Change plan</button>
+        <button class="change-plan-link" type="button" data-checkout-change-plan data-i18n="checkout.changePlan">Change plan</button>
 
-        <div class="checkout-preview" aria-label="Payment details">
+        <div class="checkout-preview" aria-label="Payment details" data-i18n-aria-label="checkout.paymentDetailsLabel">
           <div class="demo-field-group">
-            <span class="demo-field-label">Email</span>
-            <div class="demo-field" aria-hidden="true"><span>Enter your email</span></div>
+            <span class="demo-field-label" data-i18n="checkout.emailLabel">Email</span>
+            <div class="demo-field" aria-hidden="true"><span data-i18n="checkout.emailPlaceholder">Enter your email</span></div>
           </div>
           <div class="demo-field-group">
-            <span class="demo-field-label">Card details</span>
+            <span class="demo-field-label" data-i18n="checkout.cardDetailsLabel">Card details</span>
             <div class="demo-fields" aria-hidden="true">
               <div class="demo-field demo-field-card">
                 <span class="demo-card-icon">{{> shared/icon name='card'}}</span>
                 <span>•••• •••• •••• 0000</span>
               </div>
               <div class="demo-field-row">
-                <div class="demo-field"><span>MM / YY</span><span>— / —</span></div>
-                <div class="demo-field"><span>CVC</span><span>•••</span></div>
+                <div class="demo-field"><span data-i18n="checkout.mmYy">MM / YY</span><span>— / —</span></div>
+                <div class="demo-field"><span data-i18n="checkout.cvc">CVC</span><span>•••</span></div>
               </div>
             </div>
           </div>

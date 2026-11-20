@@ -2,12 +2,12 @@
   <canvas class="wave-canvas section-wave-canvas" aria-hidden="true" data-wave-canvas></canvas>
   <div class="hero container app-hero">
     <div class="hero-copy">
-      <h2 id="the-app-title" class="section-display-title">{{theApp.title}}</h2>
-      <p class="hero-kicker">{{theApp.kicker}}</p>
-      <p class="hero-description">{{theApp.description}}</p>
+      <h2 id="the-app-title" class="section-display-title" data-i18n="theApp.title">{{theApp.title}}</h2>
+      <p class="hero-kicker" data-i18n="theApp.kicker">{{theApp.kicker}}</p>
+      <p class="hero-description" data-i18n="theApp.description">{{theApp.description}}</p>
       <div class="actions">
-        <a class="button" href="{{theApp.primaryCta.href}}">{{theApp.primaryCta.label}} <span aria-hidden="true">↗</span></a>
-        <a class="button button-outline" href="{{theApp.secondaryCta.href}}">{{theApp.secondaryCta.label}}</a>
+        <a class="button" href="{{theApp.primaryCta.href}}"><span data-i18n="theApp.primaryCta">{{theApp.primaryCta.label}}</span> <span aria-hidden="true">↗</span></a>
+        <a class="button button-outline" href="{{theApp.secondaryCta.href}}" data-i18n="theApp.secondaryCta">{{theApp.secondaryCta.label}}</a>
       </div>
     </div>
     <div class="device-art">
@@ -28,8 +28,8 @@
     {{#each theApp.highlights}}
       <article class="feature">
         <span class="feature-icon" aria-hidden="true">{{> shared/feature-icon name=icon}}</span>
-        <h3>{{title}}</h3>
-        <p>{{description}}</p>
+        <h3 data-i18n="theApp.highlights.{{@index}}.title">{{title}}</h3>
+        <p data-i18n="theApp.highlights.{{@index}}.description">{{description}}</p>
       </article>
     {{/each}}
   </div>

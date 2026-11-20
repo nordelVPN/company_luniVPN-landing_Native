@@ -1,12 +1,12 @@
 <section id="why-luni" class="landing-section section-why-luni wave-host" aria-labelledby="why-luni-title" data-wave-root data-wave-phase="4.8">
   <canvas class="wave-canvas section-wave-canvas" aria-hidden="true" data-wave-canvas></canvas>
   <div class="section-intro container">
-    <p class="eyebrow">{{whyLuni.eyebrow}}</p>
-    <h2 id="why-luni-title" class="section-display-title">{{whyLuni.title}}</h2>
-    <p class="section-lead">{{whyLuni.description}}</p>
+    <p class="eyebrow" data-i18n="whyLuni.eyebrow">{{whyLuni.eyebrow}}</p>
+    <h2 id="why-luni-title" class="section-display-title" data-i18n="whyLuni.title">{{whyLuni.title}}</h2>
+    <p class="section-lead" data-i18n="whyLuni.description">{{whyLuni.description}}</p>
     <div class="actions">
-      <a class="button" href="{{whyLuni.primaryCta.href}}">{{whyLuni.primaryCta.label}} <span aria-hidden="true">↗</span></a>
-      <a class="button button-outline" href="{{whyLuni.secondaryCta.href}}">{{whyLuni.secondaryCta.label}}</a>
+      <a class="button" href="{{whyLuni.primaryCta.href}}"><span data-i18n="whyLuni.primaryCta">{{whyLuni.primaryCta.label}}</span> <span aria-hidden="true">↗</span></a>
+      <a class="button button-outline" href="{{whyLuni.secondaryCta.href}}" data-i18n="whyLuni.secondaryCta">{{whyLuni.secondaryCta.label}}</a>
     </div>
   </div>
   <div class="luni-way container">
@@ -17,10 +17,10 @@
       </picture>
     </div>
     <div class="luni-way-copy">
-      <p class="eyebrow">{{whyLuni.luniWay.eyebrow}}</p>
-      <h3>{{whyLuni.luniWay.title}}</h3>
+      <p class="eyebrow" data-i18n="whyLuni.luniWay.eyebrow">{{whyLuni.luniWay.eyebrow}}</p>
+      <h3 data-i18n="whyLuni.luniWay.title">{{whyLuni.luniWay.title}}</h3>
       {{#each whyLuni.luniWay.paragraphs}}
-        <p>{{this}}</p>
+        <p data-i18n="whyLuni.luniWay.paragraphs.{{@index}}">{{this}}</p>
       {{/each}}
     </div>
   </div>

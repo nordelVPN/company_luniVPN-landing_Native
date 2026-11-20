@@ -18,9 +18,9 @@ body {
   overflow-x: clip;
 }
 body.has-modal-open { overflow: hidden; }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 a { color: inherit; }
-a:focus-visible, button:focus-visible, input:focus-visible, [tabindex="-1"]:focus-visible {
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex="-1"]:focus-visible {
   outline: 3px solid $olive;
   outline-offset: 4px;
 }

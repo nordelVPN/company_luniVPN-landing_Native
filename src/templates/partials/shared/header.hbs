@@ -7,25 +7,40 @@
       aria-expanded="false"
       aria-controls="site-nav"
       aria-label="Open menu"
+      data-i18n-aria-label="nav.open"
       data-nav-toggle
     >
       <span aria-hidden="true">☰</span>
     </button>
-    <nav id="site-nav" class="site-nav" aria-label="Main navigation" data-nav-panel>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation" data-i18n-aria-label="nav.main" data-nav-panel>
       <div class="site-nav-links">
         {{#each site.navigation}}
           <a
             href="{{#if (eq ../metadata.pageId 'index')}}{{hash}}{{else}}{{../basePath}}index.html{{hash}}{{/if}}"
             data-nav-link="{{id}}"
+            data-i18n="nav.{{id}}"
           >{{label}}</a>
         {{/each}}
         <a
           href="{{basePath}}{{site.accountLink.path}}"
           {{#if (eq metadata.pageId 'account')}}aria-current="page"{{/if}}
+          data-i18n="nav.account"
         >{{site.accountLink.label}}</a>
       </div>
       <div class="site-nav-actions">
-        <button class="button button-outline button-small" type="button" data-wishlist-open>
+        <label class="language">
+          <span class="sr-only" data-i18n="language.label">Language</span>
+          <select
+            class="language-select"
+            data-language-select
+            aria-label="Language"
+            data-i18n-aria-label="language.label"
+          >
+            <option value="en">EN</option>
+            <option value="ru">RU</option>
+          </select>
+        </label>
+        <button class="button button-outline button-small" type="button" data-wishlist-open data-i18n="nav.wishlist">
           {{site.wishlist.label}}
         </button>
         <a
@@ -33,7 +48,7 @@
           href="{{#if (eq metadata.pageId 'index')}}{{site.cta.hash}}{{else}}{{basePath}}index.html{{site.cta.hash}}{{/if}}"
           data-nav-link="plans"
         >
-          {{site.cta.label}} <span aria-hidden="true">↗</span>
+          <span data-i18n="nav.cta">{{site.cta.label}}</span> <span aria-hidden="true">↗</span>
         </a>
       </div>
     </nav>

@@ -4,19 +4,19 @@
     <img src="{{@root.assets.cardWavePng}}" alt="" width="530" height="325" loading="lazy" decoding="async">
   </picture>
   {{#if featured}}
-    <span class="plan-badge">{{> shared/icon name='leaf'}} Best value</span>
+    <span class="plan-badge">{{> shared/icon name='leaf'}} <span data-i18n="plans.bestValue">Best value</span></span>
   {{/if}}
-  <h3>{{displayName}}</h3>
-  <p class="plan-subtitle">{{subtitle}}</p>
+  <h3 data-i18n="plans.{{planId}}.name">{{displayName}}</h3>
+  <p class="plan-subtitle" data-i18n="plans.{{planId}}.subtitle">{{subtitle}}</p>
   <p class="plan-price-row">
     <span class="plan-price">{{priceDisplay}}</span>
-    <span class="plan-duration">/ {{durationLabel}}</span>
+    <span class="plan-duration" data-i18n="plans.{{planId}}.durationSlash">/ {{durationLabel}}</span>
   </p>
   <ul>
     {{#each featureItems}}
       <li>
         <span class="plan-feature-icon" aria-hidden="true">{{> shared/icon name=icon}}</span>
-        <span>{{text}}</span>
+        <span data-i18n="plans.{{../planId}}.features.{{@index}}">{{text}}</span>
       </li>
     {{/each}}
   </ul>
@@ -25,6 +25,6 @@
     href="?plan={{planId}}#checkout"
     data-select-plan="{{planId}}"
   >
-    Choose {{displayName}} <span aria-hidden="true">↗</span>
+    <span data-i18n="plans.{{planId}}.cta">Choose {{displayName}}</span> <span aria-hidden="true">↗</span>
   </a>
 </article>
