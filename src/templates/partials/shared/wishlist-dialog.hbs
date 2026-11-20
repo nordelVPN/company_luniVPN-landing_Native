@@ -1,0 +1,49 @@
+<div
+  class="wishlist-backdrop"
+  hidden
+  data-wishlist-dialog
+  data-wishlist-url="{{wishlistUrl}}"
+>
+  <div
+    class="wishlist-dialog"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="wishlist-dialog-title"
+    aria-describedby="wishlist-dialog-desc"
+    tabindex="-1"
+    data-wishlist-panel
+  >
+    <div class="wishlist-dialog-head">
+      <h2 id="wishlist-dialog-title">{{site.wishlist.dialogTitle}}</h2>
+      <button
+        class="wishlist-close"
+        type="button"
+        aria-label="{{site.wishlist.closeLabel}}"
+        data-wishlist-close
+      >
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    <p id="wishlist-dialog-desc">{{site.wishlist.dialogDescription}}</p>
+    <div class="wishlist-dialog-actions">
+      {{#if wishlistUrl}}
+        <a
+          class="button"
+          href="{{wishlistUrl}}"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-wishlist-link
+        >
+          {{site.wishlist.openLabel}} <span aria-hidden="true">↗</span>
+        </a>
+      {{else}}
+        <p class="demo-notice" role="status" data-wishlist-unavailable>
+          {{site.wishlist.unavailableMessage}}
+        </p>
+      {{/if}}
+      <button class="button button-outline" type="button" data-wishlist-close>
+        {{site.wishlist.closeLabel}}
+      </button>
+    </div>
+  </div>
+</div>

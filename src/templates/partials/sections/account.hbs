@@ -1,0 +1,38 @@
+<section id="account" class="landing-section section-account" aria-labelledby="account-title" data-account-root>
+  <div class="section-intro container">
+    <p class="eyebrow">{{account.eyebrow}}</p>
+    <h2 id="account-title" class="section-display-title">{{account.title}}</h2>
+    <p class="section-lead">{{account.description}}</p>
+    {{> shared/demo-notice}}
+  </div>
+  <div class="account-grid container">
+    <nav class="account-nav" aria-label="Account sections">
+      {{#each account.navItems}}
+        <span {{#if (eq this 'Account')}}aria-current="page"{{/if}}>{{this}}</span>
+      {{/each}}
+    </nav>
+    <div class="account-content">
+      {{> account/profile}}
+      <div class="account-panels">
+        <section class="panel" aria-labelledby="account-subscription-title">
+          <h3 id="account-subscription-title">Subscription</h3>
+          <dl>
+            <div><dt>Plan</dt><dd>{{account.subscription.planId}}</dd></div>
+            <div><dt>Status</dt><dd>{{account.subscription.status}}</dd></div>
+            <div><dt>Renewal</dt><dd>{{account.subscription.renewalDate}}</dd></div>
+          </dl>
+        </section>
+        <section class="panel" aria-labelledby="account-billing-title">
+          <h3 id="account-billing-title">Billing</h3>
+          <p>{{account.subscription.paymentMethod}}</p>
+          <ul class="billing-list">
+            {{#each account.billingActions}}
+              <li><span>{{this}}</span><span class="unavailable">Demo only</span></li>
+            {{/each}}
+          </ul>
+          <p class="unavailable">Billing actions are unavailable in demo.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</section>

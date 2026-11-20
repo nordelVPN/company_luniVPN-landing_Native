@@ -1,0 +1,23 @@
+<section id="home" class="landing-section section-home" aria-labelledby="home-title" data-home-wave-root>
+  <canvas class="home-wave-canvas" aria-hidden="true" data-home-wave></canvas>
+  <div class="hero hero-single container">
+    <div class="hero-copy">
+      <h1 id="home-title">{{home.title}}</h1>
+      <p class="hero-kicker">{{home.kicker}}</p>
+      <p class="hero-description">{{home.description}}</p>
+      <div class="actions">
+        <a class="button" href="{{home.primaryCta.href}}">{{home.primaryCta.label}} <span aria-hidden="true">↗</span></a>
+        <a class="button button-outline" href="{{home.secondaryCta.href}}">{{home.secondaryCta.label}}</a>
+      </div>
+    </div>
+  </div>
+  <div class="features container" aria-label="Home highlights">
+    {{#each home.features}}
+      <article class="feature">
+        <span class="feature-icon" aria-hidden="true">{{icon}}</span>
+        <h3>{{title}}</h3>
+        <p>{{description}}</p>
+      </article>
+    {{/each}}
+  </div>
+</section>

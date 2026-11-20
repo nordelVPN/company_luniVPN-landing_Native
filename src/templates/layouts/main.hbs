@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="{{metadata.lang}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{metadata.description}}">
+  <meta name="robots" content="{{robots}}">
+  <title>{{metadata.title}}</title>
+  {{#if canonical}}<link rel="canonical" href="{{canonical}}">{{/if}}
+</head>
+<body class="page-{{metadata.pageId}}">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <div class="page-shell" data-page-shell>
+    {{> shared/header}}
+    <main id="main-content">{{{body}}}</main>
+    {{> shared/footer}}
+  </div>
+  {{> shared/wishlist-dialog}}
+</body>
+</html>

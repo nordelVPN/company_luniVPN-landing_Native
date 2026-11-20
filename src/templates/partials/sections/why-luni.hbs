@@ -1,0 +1,19 @@
+<section id="why-luni" class="landing-section section-why-luni" aria-labelledby="why-luni-title">
+  <div class="section-intro container">
+    <p class="eyebrow">{{whyLuni.eyebrow}}</p>
+    <h2 id="why-luni-title" class="section-display-title">{{whyLuni.title}}</h2>
+    <p class="section-lead">{{whyLuni.description}}</p>
+    <div class="actions">
+      <a class="button" href="{{whyLuni.cta.href}}">{{whyLuni.cta.label}} <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <div class="features why-grid container" aria-label="Why choose LuniVPN">
+    {{#each whyLuni.pillars}}
+      <article class="feature">
+        <span class="feature-icon" aria-hidden="true">{{icon}}</span>
+        <h3>{{title}}</h3>
+        <p>{{description}}</p>
+      </article>
+    {{/each}}
+  </div>
+</section>

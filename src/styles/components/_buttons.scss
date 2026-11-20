@@ -1,0 +1,8 @@
+@use '../tokens/colors' as *;
+.button { display: inline-flex; align-items: center; justify-content: center; gap: 24px; min-height: 50px; padding: 13px 24px; border: 1px solid $ink; border-radius: 999px; background: $ink; color: $surface; text-decoration: none; font: 700 15px Arial, sans-serif; cursor: pointer; }
+.button:hover { background: #284d30; }
+.button:disabled { opacity: .55; cursor: not-allowed; }
+.button-small { min-height: 42px; padding: 10px 19px; border-color: $olive; background: $olive; }
+.button-outline { background: transparent; color: $ink; }
+.button-outline:hover { background: $beige; }
+.actions { display: flex; flex-wrap: wrap; gap: 14px; }

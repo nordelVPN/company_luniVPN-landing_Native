@@ -1,0 +1,1 @@
+module.exports = { metadata: { lang: 'en', title: 'Demo checkout — LuniVPN', description: 'Preview the LuniVPN checkout design.', pageId: 'checkout' }, intro: { title: 'Checkout', description: 'Complete your subscription to LuniVPN.' } };

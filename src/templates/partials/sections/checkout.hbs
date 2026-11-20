@@ -1,0 +1,30 @@
+<section id="checkout" class="landing-section section-checkout" aria-labelledby="checkout-title" data-checkout>
+  <div class="section-intro container">
+    <p class="eyebrow">{{checkout.eyebrow}}</p>
+    <h2 id="checkout-title" class="section-display-title">{{checkout.title}}</h2>
+    <p class="section-lead">{{checkout.description}}</p>
+    {{> shared/demo-notice}}
+  </div>
+  <div class="checkout-grid container">
+    <div class="panel checkout-form">
+      <h3>Selected plan</h3>
+      <p class="selected-plan-box" data-selected-plan>Choose a plan first</p>
+      <p class="muted" data-plan-prompt>Select Monthly or Yearly in <a href="#plans">Plans</a> to preview your summary.</p>
+      <a class="change-plan-link" href="#plans">Change plan</a>
+
+      <div class="checkout-preview" aria-label="Synthetic payment preview">
+        <h3>Card details</h3>
+        <p>{{checkout.cardNotice}}</p>
+        <div class="demo-fields" aria-hidden="true">
+          <div class="demo-field"><span>Email</span><span>demo@example.test</span></div>
+          <div class="demo-field"><span>Card number</span><span>•••• •••• •••• 0000</span></div>
+          <div class="demo-field-row">
+            <div class="demo-field"><span>MM / YY</span><span>— / —</span></div>
+            <div class="demo-field"><span>CVC</span><span>•••</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{> checkout/summary}}
+  </div>
+</section>

@@ -1,0 +1,11 @@
+.plans-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.plan-card { position: relative; overflow: hidden; padding: 44px; border: 1px solid #cfc9b9; border-radius: 26px; background: #fef4e4; }
+.plan-featured { border-color: #6a7849; border-width: 2px; transform: translateY(-10px); }
+.plan-art { position: absolute; width: 220px; height: 160px; top: -60px; right: -30px; opacity: .35; background: url('../../assets/illustrations/hero-wave.svg') center / cover no-repeat; }
+.plan-card h2 { position: relative; margin: 20px 0; font-size: 40px; }
+.plan-card > p { color: #5e6b5e; }
+.plan-card ul { margin: 28px 0; padding: 26px 0 10px; list-style: none; border-top: 1px solid #dfd9c9; }
+.plan-card li { padding: 11px 0 11px 30px; position: relative; } .plan-card li::before { content: '✓'; position: absolute; left: 0; color: #6a7849; }
+.plan-card .button { width: 100%; }
+.plan-badge { position: relative; padding: 8px 14px; border-radius: 999px; background: #f1ebda; font-size: 13px; }
+@media (max-width: 750px) { .plans-grid { grid-template-columns: 1fr; } .plan-featured { transform: none; } .plan-card { padding: 30px; } }

@@ -1,0 +1,111 @@
+@use '../tokens/colors' as *;
+@use 'index';
+
+.account-page {
+  padding-block: 48px 56px;
+}
+.account-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+.account-session-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.account-session-bar[hidden] { display: none; }
+.session-badge {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: $beige;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.demo-auth-card {
+  max-width: 560px;
+}
+.demo-auth-card[hidden] { display: none; }
+.demo-auth-form {
+  margin-top: 24px;
+  display: grid;
+  gap: 20px;
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.field-group {
+  display: grid;
+  gap: 8px;
+}
+.field-group label {
+  font-size: 14px;
+  font-weight: 700;
+}
+.text-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1px solid $line;
+  border-radius: 12px;
+  background: $cream;
+  color: $ink;
+}
+
+.account-grid[hidden] { display: none; }
+.account-tab {
+  text-align: left;
+  padding: 14px 18px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: $ink;
+  cursor: pointer;
+}
+.account-tab:hover { background: rgba($beige, 0.7); }
+.account-tab.is-active,
+.account-tab[aria-selected="true"] {
+  background: $beige;
+  border-color: $line;
+  font-weight: 700;
+}
+.account-tab-panel {
+  display: grid;
+  gap: 24px;
+}
+.account-tab-panel[hidden] { display: none; }
+.account-form h3,
+.panel-intro h2 { margin-top: 0; }
+.subscription-actions {
+  margin-top: 24px;
+}
+.summary-secondary-btn {
+  margin-top: 12px;
+}
+.help-cards {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+.help-card {
+  padding: 20px;
+  border: 1px solid $line;
+  border-radius: 16px;
+  background: $cream;
+}
+.help-card h3 { margin: 14px 0 8px; }
+.help-card p { color: $muted; margin: 0 0 10px; }
+.help-wishlist-cta { margin-top: 24px; }
+
+@media (max-width: 700px) {
+  .field-grid,
+  .help-cards { grid-template-columns: 1fr; }
+}

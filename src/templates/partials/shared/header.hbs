@@ -1,0 +1,41 @@
+<header class="site-header" data-nav-root>
+  <div class="container header-inner">
+    {{> shared/logo}}
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      aria-label="Open menu"
+      data-nav-toggle
+    >
+      <span aria-hidden="true">☰</span>
+    </button>
+    <nav id="site-nav" class="site-nav" aria-label="Main navigation" data-nav-panel>
+      <div class="site-nav-links">
+        {{#each site.navigation}}
+          <a
+            href="{{#if (eq ../metadata.pageId 'index')}}{{hash}}{{else}}{{../basePath}}index.html{{hash}}{{/if}}"
+            data-nav-link="{{id}}"
+          >{{label}}</a>
+        {{/each}}
+        <a
+          href="{{basePath}}{{site.accountLink.path}}"
+          {{#if (eq metadata.pageId 'account')}}aria-current="page"{{/if}}
+        >{{site.accountLink.label}}</a>
+      </div>
+      <div class="site-nav-actions">
+        <button class="button button-outline button-small" type="button" data-wishlist-open>
+          {{site.wishlist.label}}
+        </button>
+        <a
+          class="button button-small"
+          href="{{#if (eq metadata.pageId 'index')}}{{site.cta.hash}}{{else}}{{basePath}}index.html{{site.cta.hash}}{{/if}}"
+          data-nav-link="plans"
+        >
+          {{site.cta.label}} <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>

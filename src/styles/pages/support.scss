@@ -1,0 +1,5 @@
+@use 'index';
+.support-categories { grid-template-columns: repeat(4, 1fr); }
+.search-placeholder { max-width: 560px; padding: 18px 24px; border: 1px solid #dfd9c9; border-radius: 999px; color: #5e6b5e; background: #fef4e4; }
+@media (max-width: 1000px) { .support-categories { grid-template-columns: repeat(2, 1fr); } .support-categories .feature:nth-child(2) { border-right: 0; } }
+@media (max-width: 650px) { .support-categories { grid-template-columns: 1fr; } }

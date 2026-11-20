@@ -1,0 +1,29 @@
+<section id="support" class="landing-section section-support" aria-labelledby="support-title">
+  <div class="section-intro container">
+    <p class="eyebrow">{{support.eyebrow}}</p>
+    <h2 id="support-title" class="section-display-title">{{support.title}}</h2>
+    <p class="section-lead">{{support.description}}</p>
+    <div class="support-search-wrap">
+      <label class="sr-only" for="support-search-input">{{support.searchLabel}}</label>
+      <input
+        id="support-search-input"
+        class="search-input"
+        type="search"
+        placeholder="{{support.searchPlaceholder}}"
+        disabled
+        aria-describedby="support-search-status"
+      >
+      <p id="support-search-status" class="unavailable" role="note">{{support.searchUnavailable}}</p>
+    </div>
+  </div>
+  <div class="features support-categories container" aria-label="Help categories">
+    {{#each support.categories}}
+      <article class="feature">
+        <span class="feature-icon" aria-hidden="true">{{icon}}</span>
+        <h3>{{title}}</h3>
+        <p>{{description}}</p>
+        <span class="unavailable">{{actionLabel}} — {{unavailableReason}}</span>
+      </article>
+    {{/each}}
+  </div>
+</section>

@@ -1,0 +1,36 @@
+<section id="the-app" class="landing-section section-the-app" aria-labelledby="the-app-title">
+  <div class="hero container app-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">{{theApp.eyebrow}}</p>
+      <h2 id="the-app-title" class="section-display-title">{{theApp.title}}</h2>
+      <p class="hero-kicker">{{theApp.kicker}}</p>
+      <p class="hero-description">{{theApp.description}}</p>
+      <div class="actions">
+        <a class="button" href="{{theApp.primaryCta.href}}">{{theApp.primaryCta.label}} <span aria-hidden="true">↗</span></a>
+        <a class="button button-outline" href="{{theApp.secondaryCta.href}}">{{theApp.secondaryCta.label}}</a>
+      </div>
+    </div>
+    <div class="device-art">
+      <picture>
+        <source srcset="{{assets.theAppDevicesWebp}}" type="image/webp">
+        <img
+          src="{{assets.theAppDevicesPng}}"
+          alt="LuniVPN app preview across laptop, smartphone and tablet"
+          width="892"
+          height="524"
+          loading="lazy"
+          decoding="async"
+        >
+      </picture>
+    </div>
+  </div>
+  <div id="the-app-highlights" class="features container" aria-label="App highlights">
+    {{#each theApp.highlights}}
+      <article class="feature">
+        <span class="feature-icon" aria-hidden="true">{{icon}}</span>
+        <h3>{{title}}</h3>
+        <p>{{description}}</p>
+      </article>
+    {{/each}}
+  </div>
+</section>

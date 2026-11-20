@@ -1,0 +1,12 @@
+.git
+.github
+.idea
+node_modules
+build
+.env
+.env.*
+!.env.example
+*.log
+tg-bot/data
+backups
+docs/images

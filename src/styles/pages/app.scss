@@ -1,0 +1,3 @@
+@use 'index';
+.device-art { min-height: 520px; align-self: stretch; background: url('../../assets/illustrations/device-preview.svg') center / contain no-repeat; }
+@media (max-width: 800px) { .device-art { min-height: 350px; } }

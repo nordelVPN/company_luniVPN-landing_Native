@@ -1,0 +1,10 @@
+.checkout-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(290px, 1fr); gap: 45px; }
+.checkout-form { min-height: 370px; }
+.checkout-form > p { padding: 24px; background: #f1ebda; border-radius: 14px; }
+.checkout-preview { margin-top: 48px; border-top: 1px solid #dfd9c9; }
+.checkout-preview p { color: #5e6b5e; }
+.summary-card { padding: 28px 0 28px 45px; border-left: 1px solid #dfd9c9; }
+.summary-plan { padding: 28px; border-radius: 16px; background: #f1ebda; }
+.summary-card .button { width: 100%; margin-top: 28px; }
+.total { font-weight: 700; }
+@media (max-width: 800px) { .checkout-grid { grid-template-columns: 1fr; } .summary-card { padding: 25px 0; border-left: 0; border-top: 1px solid #dfd9c9; } }
