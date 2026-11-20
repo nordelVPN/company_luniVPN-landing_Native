@@ -1,7 +1,7 @@
 module.exports = {
-  profile: { displayName: 'Demo User', email: 'demo@example.test' },
+  profile: { displayName: 'Alex Morgan', email: 'alex.morgan@example.com' },
   subscription: {
-    status: 'Preview only',
+    status: 'Active',
     planId: 'basic',
     renewalDate: '—',
     paymentMethod: 'Not connected'

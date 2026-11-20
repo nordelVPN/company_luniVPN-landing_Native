@@ -1,10 +1,18 @@
 const initialized = new WeakMap();
 const MAX_DELTA_SECONDS = 0.05;
 
-export function initHomeWave(root = document) {
-  const section = root.querySelector('[data-home-wave-root]');
-  const canvas = section?.querySelector('[data-home-wave]');
-  if (!section || !canvas) return () => {};
+let rendererModulePromise = null;
+
+function loadRendererModule() {
+  if (!rendererModulePromise) {
+    rendererModulePromise = import(/* webpackChunkName: "home-wave" */ './home-wave-renderer');
+  }
+  return rendererModulePromise;
+}
+
+function initWaveInstance(section) {
+  const canvas = section.querySelector('[data-wave-canvas], [data-home-wave]');
+  if (!canvas) return () => {};
   if (initialized.has(section)) return initialized.get(section);
 
   const reducedMotionQuery =
@@ -17,11 +25,11 @@ export function initHomeWave(root = document) {
   let loading = false;
   let failed = false;
   let rafId = null;
-  let isIntersecting = true;
+  let isIntersecting = false;
   let isVisible = !document.hidden;
   let hasSize = false;
   let lastTimestamp = null;
-  let elapsedSeconds = 0;
+  let elapsedSeconds = Number(section.getAttribute('data-wave-phase')) || 0;
   let firstFrameDone = false;
 
   const setWaveActive = (active) => {
@@ -46,17 +54,23 @@ export function initHomeWave(root = document) {
     }
   };
 
-  const canRun = () =>
-    !destroyed &&
-    !failed &&
-    !(reducedMotionQuery && reducedMotionQuery.matches) &&
-    isIntersecting &&
-    isVisible &&
-    hasSize;
+  const isReducedMotion = () => Boolean(reducedMotionQuery && reducedMotionQuery.matches);
+
+  const canAnimate = () =>
+    !destroyed && !failed && !isReducedMotion() && isIntersecting && isVisible && hasSize;
+
+  const renderStaticFrame = () => {
+    if (!renderer || !hasSize || destroyed || failed) return;
+    const drawn = renderer.render(elapsedSeconds, 16);
+    if (drawn && !firstFrameDone) {
+      firstFrameDone = true;
+      setWaveActive(true);
+    }
+  };
 
   const tick = (timestamp) => {
     rafId = null;
-    if (!canRun() || !renderer) return;
+    if (!canAnimate() || !renderer) return;
 
     let intervalMs = 0;
     if (lastTimestamp !== null) {
@@ -72,23 +86,22 @@ export function initHomeWave(root = document) {
       setWaveActive(true);
     }
 
-    if (canRun() && renderer) {
+    if (canAnimate() && renderer) {
       rafId = requestAnimationFrame(tick);
     }
   };
 
   const startLoop = () => {
-    if (!canRun() || !renderer || rafId !== null) return;
+    if (!canAnimate() || !renderer || rafId !== null) return;
     lastTimestamp = null;
     rafId = requestAnimationFrame(tick);
   };
 
   const ensureLoaded = async () => {
     if (renderer || loading || failed || destroyed) return;
-    if (reducedMotionQuery && reducedMotionQuery.matches) return;
     loading = true;
     try {
-      const mod = await import(/* webpackChunkName: "home-wave" */ './home-wave-renderer');
+      const mod = await loadRendererModule();
       if (destroyed || failed) return;
       renderer = await mod.createHomeWaveRenderer(canvas, {
         onContextLost: () => {
@@ -96,8 +109,10 @@ export function initHomeWave(root = document) {
           setWaveActive(false);
         },
         onContextRestored: () => {
-          if (canRun()) {
-            firstFrameDone = false;
+          firstFrameDone = false;
+          if (isReducedMotion()) {
+            renderStaticFrame();
+          } else if (canAnimate()) {
             startLoop();
           }
         },
@@ -115,7 +130,11 @@ export function initHomeWave(root = document) {
       if (hasSize) {
         renderer.resize(rect.width, rect.height);
       }
-      startLoop();
+      if (isReducedMotion()) {
+        renderStaticFrame();
+      } else {
+        startLoop();
+      }
     } catch {
       fallbackToStatic();
     } finally {
@@ -124,12 +143,16 @@ export function initHomeWave(root = document) {
   };
 
   const syncPlayback = () => {
-    if (reducedMotionQuery && reducedMotionQuery.matches) {
+    if (destroyed || failed) return;
+    if (isReducedMotion()) {
       stopLoop();
-      setWaveActive(false);
+      if (isIntersecting && hasSize) {
+        if (renderer) renderStaticFrame();
+        else ensureLoaded();
+      }
       return;
     }
-    if (canRun()) {
+    if (canAnimate()) {
       if (renderer) startLoop();
       else ensureLoaded();
     } else {
@@ -146,6 +169,7 @@ export function initHomeWave(root = document) {
       hasSize = width > 0 && height > 0;
       if (renderer && hasSize) {
         renderer.resize(width, height);
+        if (isReducedMotion()) renderStaticFrame();
       }
       syncPlayback();
     });
@@ -165,6 +189,8 @@ export function initHomeWave(root = document) {
       { threshold: 0.01 }
     );
     intersectionObserver.observe(section);
+  } else {
+    isIntersecting = true;
   }
 
   const onVisibilityChange = () => {
@@ -210,4 +236,13 @@ export function initHomeWave(root = document) {
 
   initialized.set(section, destroy);
   return destroy;
+}
+
+export function initHomeWave(root = document) {
+  const sections = [...root.querySelectorAll('[data-wave-root], [data-home-wave-root]')];
+  if (!sections.length) return () => {};
+  const cleanups = sections.map((section) => initWaveInstance(section));
+  return () => {
+    cleanups.forEach((fn) => fn());
+  };
 }

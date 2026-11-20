@@ -2,4 +2,10 @@
   class="brand"
   href="{{#if (eq metadata.pageId 'index')}}#home{{else}}{{basePath}}index.html#home{{/if}}"
   aria-label="LuniVPN home"
-><span class="brand-mark" aria-hidden="true"></span><span>Luni<span class="brand-vpn">VPN</span></span></a>
+>
+  <picture class="brand-mark-pic" aria-hidden="true">
+    <source srcset="{{@root.assets.luniMarkWebp}}" type="image/webp">
+    <img src="{{@root.assets.luniMarkPng}}" alt="" width="96" height="52" decoding="async">
+  </picture>
+  <span class="brand-wordmark">Luni<span class="brand-vpn">VPN</span></span>
+</a>

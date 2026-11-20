@@ -3,8 +3,8 @@ import path from 'node:path';
 
 const root = 'build/prod';
 const forbidden = /^(?:\.env(?:\..*)?|\.git|node_modules|docs|fixtures)$/i;
-const expectedHtml = ['account.html', 'index.html'];
-const landingSections = ['home', 'the-app', 'why-luni', 'support', 'plans', 'checkout'];
+const expectedHtml = ['account.html', 'index.html', 'privacy.html', 'terms.html'];
+const landingSections = ['home', 'the-app', 'why-luni', 'support', 'plans'];
 const accountPanels = ['account', 'subscription', 'plans', 'checkout', 'help'];
 const expectedPlans = ['trial', 'basic', 'plus', 'complete'];
 
@@ -34,6 +34,12 @@ async function checkCommonHtml(file, html, basePath) {
   }
   if (!html.includes('data-wishlist-open') || !html.includes('data-wishlist-dialog')) {
     throw new Error('Missing wishlist UI markup in ' + file);
+  }
+  if (!html.includes(`${basePath}privacy.html`) || !html.includes(`${basePath}terms.html`)) {
+    throw new Error('Missing footer legal links (privacy.html / terms.html) in ' + file);
+  }
+  if (!html.includes('luni-mark.')) {
+    throw new Error('Missing updated brand logo asset in ' + file);
   }
 
   const references = [...html.matchAll(/(?:href|src|srcset)=(?:"([^"]+)"|'([^']+)'|([^\s>]+))/g)].map(
@@ -76,6 +82,12 @@ try {
     if (match.index <= lastIndex) throw new Error('Landing section out of order: #' + id);
     lastIndex = match.index;
   }
+  if (!indexHtml.includes('data-checkout-dialog')) {
+    throw new Error('Missing modal checkout dialog in index.html');
+  }
+  if (!indexHtml.includes('data-wave-canvas')) {
+    throw new Error('Missing wave canvas markup in index.html');
+  }
   for (const planId of expectedPlans) {
     if (!indexHtml.includes(`data-plan-card=${planId}`) && !indexHtml.includes(`data-plan-card="${planId}"`)) {
       throw new Error('Missing plan card in index.html: ' + planId);
@@ -84,16 +96,21 @@ try {
   if (!indexHtml.includes(`${basePath}account.html`)) {
     throw new Error('Missing header link to account.html in index.html');
   }
-  if (!indexHtml.includes('the-app-devices.') || !indexHtml.includes('card-wave.')) {
-    throw new Error('Missing updated raster illustration assets in index.html');
+  for (const assetToken of ['the-app-devices.', 'luni-way-leaf.', 'card-wave.']) {
+    if (!indexHtml.includes(assetToken)) {
+      throw new Error('Missing required raster illustration in index.html: ' + assetToken);
+    }
   }
 
   const assetNames = await readdir(path.join(root, 'assets'));
   const indexCssName = assetNames.find((name) => /^index\.[a-f0-9]+\.css$/i.test(name));
   if (!indexCssName) throw new Error('Missing compiled index CSS bundle');
   const indexCss = await readFile(path.join(root, 'assets', indexCssName), 'utf8');
-  if (!indexCss.includes('home-wave.') || !indexCss.includes('section-wave.')) {
-    throw new Error('Missing full-bleed background wave assets in index CSS');
+  if (!indexCss.includes('home-wave.')) {
+    throw new Error('Missing home-wave fallback asset in index CSS');
+  }
+  if (indexCss.includes('section-wave.')) {
+    throw new Error('Legacy static section-wave background should be removed from index CSS (task-014)');
   }
 
   const accountHtml = await readFile(path.join(root, 'account.html'), 'utf8');
@@ -103,6 +120,9 @@ try {
   }
   if (!accountHtml.includes('data-account-auth') || !accountHtml.includes('data-demo-signin')) {
     throw new Error('Missing demo sign-in in account.html');
+  }
+  if (!accountHtml.includes('data-wave-canvas')) {
+    throw new Error('Missing wave canvas in account.html');
   }
   for (const panel of accountPanels) {
     if (!accountHtml.includes(`data-account-panel=${panel}`) && !accountHtml.includes(`data-account-panel="${panel}"`)) {
@@ -115,7 +135,12 @@ try {
     }
   }
 
-  console.log('Production artifact validated: index.html (6 landing sections + 4 plans + full-bleed wave backgrounds) + account.html (demo auth + 5 portal panels + 4 plans) and local resources.');
+  for (const legalFile of ['privacy.html', 'terms.html']) {
+    const legalHtml = await readFile(path.join(root, legalFile), 'utf8');
+    await checkCommonHtml(legalFile, legalHtml, basePath);
+  }
+
+  console.log('Production artifact validated: index.html (multi-section wave canvas + 4 plans + mirrored card-wave + clean assets), account.html, privacy.html, terms.html.');
 } catch (error) {
   console.error('Build validation failed:', error.message);
   process.exitCode = 1;

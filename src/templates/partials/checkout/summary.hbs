@@ -1,6 +1,12 @@
 <aside class="summary-card" aria-labelledby="order-summary-title">
   <h3 id="order-summary-title">Order summary</h3>
-  <p class="summary-plan" data-selected-plan>Choose a plan first</p>
+  <div class="checkout-plan-card checkout-plan-card-compact">
+    <span class="checkout-plan-mark" aria-hidden="true"></span>
+    <div class="checkout-plan-info">
+      <p class="checkout-plan-name" data-selected-plan>Choose a plan first</p>
+      <p class="checkout-plan-sub">LuniVPN subscription</p>
+    </div>
+  </div>
   <dl>
     <div><dt>Plan</dt><dd data-plan-period>—</dd></div>
     <div class="total"><dt>Total</dt><dd data-plan-total>—</dd></div>
@@ -8,7 +14,5 @@
   <button class="button" type="button" data-checkout-button disabled>
     Continue to payment <span aria-hidden="true">↗</span>
   </button>
-  <p class="muted" role="status" aria-live="polite" data-checkout-message>
-    Payment is unavailable in this demo.
-  </p>
+  <p class="muted checkout-status-note" role="status" aria-live="polite" data-checkout-message></p>
 </aside>

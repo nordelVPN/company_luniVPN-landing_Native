@@ -61,13 +61,21 @@
 
 .account-grid[hidden] { display: none; }
 .account-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   text-align: left;
-  padding: 14px 18px;
+  padding: 13px 18px;
   border: 1px solid transparent;
   border-radius: 999px;
   background: transparent;
   color: $ink;
   cursor: pointer;
+}
+.account-tab-icon {
+  color: $olive;
+  font-size: 18px;
+  line-height: 1;
 }
 .account-tab:hover { background: rgba($beige, 0.7); }
 .account-tab.is-active,

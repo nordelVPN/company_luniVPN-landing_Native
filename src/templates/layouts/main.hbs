@@ -7,6 +7,9 @@
   <meta name="robots" content="{{robots}}">
   <title>{{metadata.title}}</title>
   {{#if canonical}}<link rel="canonical" href="{{canonical}}">{{/if}}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="page-{{metadata.pageId}}">
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -16,5 +19,8 @@
     {{> shared/footer}}
   </div>
   {{> shared/wishlist-dialog}}
+  {{#if (eq metadata.pageId 'index')}}
+    {{> sections/checkout}}
+  {{/if}}
 </body>
 </html>

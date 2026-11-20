@@ -5,135 +5,124 @@ module.exports = {
   metadata: {
     lang: 'en',
     title: 'LuniVPN — a little more room to breathe',
-    description: 'Explore more and connect freely with LuniVPN across your devices.',
+    description: 'A VPN for online privacy and freedom — protect your connection, keep your activity private, and enjoy a more open internet.',
     pageId: 'index'
   },
   home: {
     title: 'A little more room to breathe.',
     kicker: 'Explore more. Connect freely.',
-    description: 'Enjoy a simpler way to protect your connection and keep your online world your own.',
-    primaryCta: { label: 'Discover Luni', href: '#plans' },
-    secondaryCta: { label: 'See how it works', href: '#the-app' },
+    description: 'A VPN for online privacy and freedom — protect your connection, keep your activity private, and enjoy a more open internet.',
+    primaryCta: { label: 'Get Luni', href: '#plans' },
+    secondaryCta: { label: 'Learn more', href: '#why-luni' },
+    featuresTitle: 'A VPN for a more private, open internet.',
+    featuresLead: 'LuniVPN helps you browse, work, and explore online with greater privacy, security, and freedom.',
     features: [
       {
-        icon: '✦',
+        icon: 'leaf',
         title: 'Freedom to explore.',
-        description: 'Make room for more of the content you love.'
+        description: 'Access your favorite sites, apps, and content without unnecessary limits.'
       },
       {
-        icon: '◈',
+        icon: 'shield',
         title: 'Privacy by design.',
-        description: 'A more private connection, made simple.'
+        description: 'Keep your activity private with a VPN built around your privacy.'
       },
       {
-        icon: 'ϟ',
+        icon: 'bolt',
         title: 'Simple and seamless.',
-        description: 'Feel at home across your devices.'
+        description: 'A clean, intuitive app that just works, across your devices.'
       }
     ]
   },
   theApp: {
-    eyebrow: 'THE APP',
     title: 'A little more ease, on every device.',
-    kicker: 'Simple by design.',
-    description: 'Stay connected to the things you love with an experience that feels effortless.',
+    kicker: 'The LuniVPN app for a simpler, more open online experience.',
+    description: 'A clean, thoughtful app that helps you explore, stay private, and enjoy the internet — across all the devices you use.',
     primaryCta: { label: 'Get Luni', href: '#plans' },
     secondaryCta: { label: 'Explore the app', href: '#the-app-highlights' },
     highlights: [
       {
-        icon: '✦',
+        icon: 'leaf',
         title: 'Ease, by design.',
-        description: 'A clear, calm experience from the first tap.'
+        description: "A clean, intuitive app that's simple to set up and a pleasure to use every day."
       },
       {
-        icon: '◎',
+        icon: 'pin',
         title: 'Locations that fit you.',
-        description: 'Choose the location that works for you.'
+        description: 'A growing selection of countries so you can explore more of the internet, your way.'
       },
       {
-        icon: '▣',
+        icon: 'devices',
         title: 'Across your devices.',
-        description: 'A familiar feel wherever you connect.'
+        description: 'One app that works beautifully across your phone, tablet, and computer.'
       }
     ]
   },
   whyLuni: {
-    eyebrow: 'WHY LUNI',
-    title: 'Calm protection, built around your day.',
-    description: 'LuniVPN removes the clutter so privacy feels natural rather than technical.',
-    cta: { label: 'See plans', href: '#plans' },
-    pillars: [
-      {
-        icon: '◈',
-        title: 'Quiet privacy first.',
-        description: 'Designed to keep your connection private without noisy pop-ups or complex toggles.'
-      },
-      {
-        icon: '✦',
-        title: 'Thoughtful simplicity.',
-        description: 'Clear controls and readable states across desktop, tablet, and phone.'
-      },
-      {
-        icon: '◎',
-        title: 'Consistent everywhere.',
-        description: 'One familiar interface whether you are at home, working remotely, or traveling.'
-      }
-    ]
+    eyebrow: 'PRIVACY · FREEDOM · SIMPLICITY',
+    title: 'A more open internet, on your terms.',
+    description: 'LuniVPN gives you a more private, more flexible, and more effortless way to go online — so you can explore, connect, and enjoy the internet with greater freedom.',
+    primaryCta: { label: 'Get Luni', href: '#plans' },
+    secondaryCta: { label: 'Learn more', href: '#the-app' },
+    luniWay: {
+      eyebrow: 'THE LUNI WAY',
+      title: 'A more thoughtful way to be online.',
+      paragraphs: [
+        'LuniVPN is designed around what matters most: your privacy, your freedom to explore, and a simple, seamless experience.',
+        'And with its calm, intuitive design, it fits effortlessly into your everyday online life.'
+      ]
+    }
   },
   support: {
     eyebrow: 'SUPPORT',
     title: 'How can we help?',
-    description: 'Find your way with LuniVPN support.',
+    description: 'Find answers, get setup guidance, and learn how to make the most of LuniVPN.',
     searchLabel: 'Search for help articles',
     searchPlaceholder: 'Search for help articles',
     searchUnavailable: 'Help article search is not available yet.',
     categories: [
       {
-        icon: '▷',
+        icon: 'play',
         title: 'Getting started',
-        description: 'The basics for a smooth beginning.',
+        description: 'Set up LuniVPN and get familiar with the basics.',
         actionLabel: 'Explore articles',
         unavailableReason: 'Articles coming soon'
       },
       {
-        icon: '⌁',
+        icon: 'wifi',
         title: 'Connection',
-        description: 'Help with your connection.',
+        description: 'Troubleshoot common issues and improve your experience.',
         actionLabel: 'Explore articles',
         unavailableReason: 'Articles coming soon'
       },
       {
-        icon: '▤',
+        icon: 'card',
         title: 'Account and billing',
-        description: 'Questions about plans and account.',
+        description: 'Manage your account, subscription, and payment details.',
         actionLabel: 'Explore articles',
         unavailableReason: 'Articles coming soon'
       },
       {
-        icon: '◉',
+        icon: 'headset',
         title: 'Contact support',
-        description: 'Get in touch when you need help.',
+        description: 'Reach our support team for further help.',
         actionLabel: 'Get in touch',
         unavailableReason: 'Support contact coming soon'
       }
     ]
   },
   plansSection: {
-    eyebrow: 'PLANS',
     title: 'Find your space online.',
-    description: 'Choose Trial, Basic, Plus, or Complete. Currency and real purchases will be confirmed before launch.'
+    description: 'Simple, private, and more open internet access. Choose the plan that fits you.'
   },
   plans,
   checkout: {
-    eyebrow: 'DEMO CHECKOUT',
     title: 'Checkout',
-    description: 'Complete your subscription to LuniVPN.',
-    cardNotice: 'Synthetic demo preview only. Do not enter real card numbers, expiration dates, or CVC codes.'
+    description: 'Complete your subscription to LuniVPN.'
   },
   account: {
-    eyebrow: 'DEMO ACCOUNT',
     title: 'Your account.',
-    description: 'Preview your profile and subscription in one place.',
+    description: 'Manage your profile, subscription, and billing.',
     navItems: ['Account', 'Subscription', 'Billing', 'Settings'],
     billingActions: ['Payment methods', 'Billing history', 'Manage subscription'],
     profile,

@@ -1,4 +1,5 @@
 @use '../tokens/colors' as *;
+@use '../tokens/typography' as *;
 
 .site-header {
   position: sticky;
@@ -12,39 +13,51 @@
   min-height: 84px;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
 }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-family: Georgia, serif;
-  font-size: 27px;
-  font-weight: 700;
+  gap: 12px;
+  font-family: $font-serif;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -.02em;
   text-decoration: none;
   white-space: nowrap;
 }
-.brand-vpn {
-  font-family: Arial, sans-serif;
-  font-size: .7em;
-  letter-spacing: -.04em;
+.brand-mark-pic {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
 }
-.brand-mark {
-  width: 44px;
-  height: 44px;
-  display: inline-block;
-  background: url('../assets/brand/luni-mark.svg') center / contain no-repeat;
+.brand-mark-pic img {
+  display: block;
+  height: 36px;
+  width: auto;
+}
+.brand-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+}
+.brand-vpn {
+  font-family: $font-sans;
+  font-size: .56em;
+  font-weight: 600;
+  letter-spacing: .01em;
 }
 .site-nav {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
 }
 .site-nav-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
 }
 .site-nav-actions {
   display: flex;
@@ -52,6 +65,8 @@
   gap: 12px;
 }
 .site-nav-links a {
+  font-size: 15px;
+  font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
 }
@@ -71,7 +86,7 @@
   cursor: pointer;
 }
 
-@media (max-width: 920px) {
+@media (max-width: 1040px) {
   .header-inner { min-height: 74px; justify-content: space-between; }
   .js .menu-toggle { display: inline-grid; place-items: center; }
   .site-nav {

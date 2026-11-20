@@ -10,6 +10,10 @@ module.exports = {
     label: 'Your account',
     path: 'account.html'
   },
+  legalLinks: [
+    { id: 'privacy', label: 'Privacy', path: 'privacy.html' },
+    { id: 'terms', label: 'Terms', path: 'terms.html' }
+  ],
   wishlist: {
     label: 'Join the wishlist',
     dialogTitle: 'Join the LuniVPN wishlist',

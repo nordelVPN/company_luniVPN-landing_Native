@@ -1,20 +1,18 @@
-<section class="landing-section account-page" data-account-app>
+<section class="landing-section account-page wave-host" data-account-app data-wave-root data-wave-phase="1.6">
+  <canvas class="wave-canvas section-wave-canvas" aria-hidden="true" data-wave-canvas></canvas>
   <div class="container">
   <div class="account-page-head">
     <div>
-      <p class="eyebrow">{{intro.eyebrow}}</p>
       <h1>{{intro.title}}</h1>
       <p class="section-lead">{{intro.description}}</p>
-      {{> shared/demo-notice}}
     </div>
     <div class="account-session-bar" hidden data-account-session-bar>
-      <span class="session-badge" data-session-user>{{profile.displayName}} · Demo session</span>
-      <button class="button button-outline button-small" type="button" data-demo-signout>Sign out (demo)</button>
+      <span class="session-badge" data-session-user>{{profile.displayName}}</span>
+      <button class="button button-outline button-small" type="button" data-demo-signout>Sign out</button>
     </div>
   </div>
 
   <section class="panel demo-auth-card" aria-labelledby="demo-auth-title" data-account-auth>
-    <p class="eyebrow">DEMO ACCESS</p>
     <h2 id="demo-auth-title">{{demoAuth.title}}</h2>
     <p class="muted">{{demoAuth.description}}</p>
     <form class="demo-auth-form" data-demo-signin-form>
@@ -24,7 +22,7 @@
       </div>
       <div class="actions">
         <button class="button" type="submit" data-demo-signin>{{demoAuth.submitLabel}} <span aria-hidden="true">↗</span></button>
-        <a class="button button-outline" href="{{basePath}}index.html">Back to landing</a>
+        <a class="button button-outline" href="{{basePath}}index.html">Back to home</a>
       </div>
     </form>
   </section>
@@ -40,7 +38,10 @@
           aria-selected="{{#if (eq id 'account')}}true{{else}}false{{/if}}"
           aria-controls="panel-{{id}}"
           data-account-tab="{{id}}"
-        >{{label}}</button>
+        >
+          <span class="account-tab-icon" aria-hidden="true">{{> shared/icon name=icon}}</span>
+          <span>{{label}}</span>
+        </button>
       {{/each}}
     </nav>
 
@@ -53,18 +54,16 @@
         data-account-panel="account"
       >
         <div class="panel profile-card">
-          <div class="avatar" aria-hidden="true">◒</div>
+          <div class="avatar" aria-hidden="true">{{> shared/icon name='user'}}</div>
           <div>
             <p class="eyebrow">PROFILE</p>
             <h2 data-profile-name>{{profile.displayName}}</h2>
             <p data-profile-email>{{profile.email}}</p>
           </div>
-          <span class="unavailable">Synthetic demo profile</span>
         </div>
 
         <form class="panel account-form" data-profile-form>
-          <h3>Demo profile settings</h3>
-          <p class="muted">Changes apply only to this demo preview and are not saved to any server.</p>
+          <h3>Profile settings</h3>
           <div class="field-grid">
             <div class="field-group">
               <label for="profile-name-input">Display name</label>
@@ -76,7 +75,7 @@
             </div>
           </div>
           <div class="actions">
-            <button class="button button-small" type="submit">Save demo profile</button>
+            <button class="button button-small" type="submit">Save profile</button>
           </div>
           <p class="muted" role="status" aria-live="polite" data-profile-status></p>
         </form>
@@ -101,11 +100,11 @@
           </dl>
           <div class="actions subscription-actions">
             <button class="button button-small" type="button" data-goto-tab="plans">Change plan</button>
-            <button class="button button-outline button-small" type="button" data-sub-toggle-pause>Pause (demo)</button>
-            <button class="button button-outline button-small" type="button" data-sub-cancel>Cancel (demo)</button>
+            <button class="button button-outline button-small" type="button" data-sub-toggle-pause>Pause</button>
+            <button class="button button-outline button-small" type="button" data-sub-cancel>Cancel</button>
             <button class="button button-outline button-small" type="button" data-goto-tab="checkout">Open checkout</button>
           </div>
-          <p class="muted" role="status" aria-live="polite" data-sub-message>Demo preview: subscription changes stay local.</p>
+          <p class="muted" role="status" aria-live="polite" data-sub-message></p>
         </div>
       </section>
 
@@ -117,25 +116,32 @@
         data-account-panel="plans"
       >
         <div class="panel-intro">
-          <p class="eyebrow">PLANS</p>
           <h2>Choose a plan</h2>
-          <p class="muted">Select Trial, Basic, Plus, or Complete to preview it in Checkout. Currency will be confirmed before launch.</p>
+          <p class="muted">Select Trial, Basic, Plus, or Complete to continue to checkout.</p>
         </div>
         <div class="plans-grid account-plans-grid" data-plans-root>
           {{#each plans}}
             <article class="plan-card {{#if featured}}plan-featured{{/if}}" data-plan-card="{{planId}}">
               <picture class="plan-art" aria-hidden="true">
                 <source srcset="{{@root.assets.cardWaveWebp}}" type="image/webp">
-                <img src="{{@root.assets.cardWavePng}}" alt="" width="530" height="314" loading="lazy" decoding="async">
+                <img src="{{@root.assets.cardWavePng}}" alt="" width="530" height="325" loading="lazy" decoding="async">
               </picture>
-              {{#if featured}}<span class="plan-badge">Best value</span>{{/if}}
+              {{#if featured}}
+                <span class="plan-badge">{{> shared/icon name='leaf'}} Best value</span>
+              {{/if}}
               <h3>{{displayName}}</h3>
+              <p class="plan-subtitle">{{subtitle}}</p>
               <p class="plan-price-row">
                 <span class="plan-price">{{priceDisplay}}</span>
                 <span class="plan-duration">/ {{durationLabel}}</span>
               </p>
               <ul>
-                {{#each features}}<li>{{this}}</li>{{/each}}
+                {{#each featureItems}}
+                  <li>
+                    <span class="plan-feature-icon" aria-hidden="true">{{> shared/icon name=icon}}</span>
+                    <span>{{text}}</span>
+                  </li>
+                {{/each}}
               </ul>
               <button class="button" type="button" data-account-select-plan="{{planId}}">
                 Choose {{displayName}} <span aria-hidden="true">↗</span>
@@ -155,21 +161,32 @@
       >
         <div class="checkout-grid">
           <div class="panel checkout-form">
-            <p class="eyebrow">DEMO CHECKOUT</p>
             <h2>Selected plan</h2>
-            <p class="selected-plan-box" data-selected-plan>Choose a plan first</p>
-            <p class="muted" data-plan-prompt>Pick Trial, Basic, Plus, or Complete in Plans to preview your checkout summary.</p>
-            <button class="button button-outline button-small" type="button" data-goto-tab="plans">Change plan</button>
+            <div class="checkout-plan-card">
+              <span class="checkout-plan-mark" aria-hidden="true"></span>
+              <div class="checkout-plan-info">
+                <p class="checkout-plan-name" data-selected-plan>Choose a plan first</p>
+                <p class="checkout-plan-sub" data-plan-prompt>Pick Trial, Basic, Plus, or Complete in Plans to review your order summary.</p>
+              </div>
+            </div>
+            <button class="change-plan-link" type="button" data-goto-tab="plans">Change plan</button>
 
-            <div class="checkout-preview" aria-label="Synthetic payment preview">
-              <h3>Card details</h3>
-              <p>{{checkout.cardNotice}}</p>
-              <div class="demo-fields" aria-hidden="true">
-                <div class="demo-field"><span>Email</span><span>{{profile.email}}</span></div>
-                <div class="demo-field"><span>Card number</span><span>•••• •••• •••• 0000</span></div>
-                <div class="demo-field-row">
-                  <div class="demo-field"><span>MM / YY</span><span>— / —</span></div>
-                  <div class="demo-field"><span>CVC</span><span>•••</span></div>
+            <div class="checkout-preview" aria-label="Payment details">
+              <div class="demo-field-group">
+                <span class="demo-field-label">Email</span>
+                <div class="demo-field" aria-hidden="true"><span>{{profile.email}}</span></div>
+              </div>
+              <div class="demo-field-group">
+                <span class="demo-field-label">Card details</span>
+                <div class="demo-fields" aria-hidden="true">
+                  <div class="demo-field demo-field-card">
+                    <span class="demo-card-icon">{{> shared/icon name='card'}}</span>
+                    <span>•••• •••• •••• 0000</span>
+                  </div>
+                  <div class="demo-field-row">
+                    <div class="demo-field"><span>MM / YY</span><span>— / —</span></div>
+                    <div class="demo-field"><span>CVC</span><span>•••</span></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -177,7 +194,13 @@
 
           <aside class="summary-card" aria-labelledby="account-order-summary-title">
             <h3 id="account-order-summary-title">Order summary</h3>
-            <p class="summary-plan" data-selected-plan>Choose a plan first</p>
+            <div class="checkout-plan-card checkout-plan-card-compact">
+              <span class="checkout-plan-mark" aria-hidden="true"></span>
+              <div class="checkout-plan-info">
+                <p class="checkout-plan-name" data-selected-plan>Choose a plan first</p>
+                <p class="checkout-plan-sub">LuniVPN subscription</p>
+              </div>
+            </div>
             <dl>
               <div><dt>Plan</dt><dd data-plan-period>—</dd></div>
               <div class="total"><dt>Total</dt><dd data-plan-total>—</dd></div>
@@ -186,11 +209,9 @@
               Continue to payment <span aria-hidden="true">↗</span>
             </button>
             <button class="button button-outline summary-secondary-btn" type="button" data-apply-demo-plan disabled>
-              Apply to demo subscription
+              Switch active plan
             </button>
-            <p class="muted" role="status" aria-live="polite" data-checkout-message>
-              Payment is unavailable in this demo.
-            </p>
+            <p class="muted checkout-status-note" role="status" aria-live="polite" data-checkout-message></p>
           </aside>
         </div>
       </section>
@@ -208,20 +229,20 @@
           <p class="muted">Find answers about your LuniVPN account, plans, and connection.</p>
           <div class="support-search-wrap">
             <label class="sr-only" for="account-help-search">{{help.searchLabel}}</label>
-            <input
-              id="account-help-search"
-              class="search-input"
-              type="search"
-              placeholder="{{help.searchPlaceholder}}"
-              disabled
-              aria-describedby="account-help-search-status"
-            >
-            <p id="account-help-search-status" class="unavailable" role="note">{{help.searchUnavailable}}</p>
+            <div class="search-field">
+              <span class="search-icon" aria-hidden="true">{{> shared/icon name='search'}}</span>
+              <input
+                id="account-help-search"
+                class="search-input"
+                type="search"
+                placeholder="{{help.searchPlaceholder}}"
+              >
+            </div>
           </div>
           <div class="help-cards">
             {{#each help.categories}}
               <article class="help-card">
-                <span class="feature-icon" aria-hidden="true">{{icon}}</span>
+                <span class="feature-icon" aria-hidden="true">{{> shared/feature-icon name=icon}}</span>
                 <h3>{{title}}</h3>
                 <p>{{description}}</p>
                 <span class="unavailable">{{unavailableReason}}</span>

@@ -1,0 +1,21 @@
+{{#if (eq name 'leaf')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconLeafWebp}}" type="image/webp"><img src="{{@root.assets.iconLeafPng}}" alt="" width="106" height="70" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'shield')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconShieldWebp}}" type="image/webp"><img src="{{@root.assets.iconShieldPng}}" alt="" width="72" height="80" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'bolt')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconBoltWebp}}" type="image/webp"><img src="{{@root.assets.iconBoltPng}}" alt="" width="59" height="74" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'pin')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconPinWebp}}" type="image/webp"><img src="{{@root.assets.iconPinPng}}" alt="" width="63" height="78" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'devices')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconDevicesWebp}}" type="image/webp"><img src="{{@root.assets.iconDevicesPng}}" alt="" width="125" height="90" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'play')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconPlayWebp}}" type="image/webp"><img src="{{@root.assets.iconPlayPng}}" alt="" width="82" height="58" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'wifi')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconWifiWebp}}" type="image/webp"><img src="{{@root.assets.iconWifiPng}}" alt="" width="84" height="63" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'card')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconCardWebp}}" type="image/webp"><img src="{{@root.assets.iconCardPng}}" alt="" width="83" height="64" loading="lazy" decoding="async"></picture>
+{{else if (eq name 'headset')}}
+<picture class="feature-icon-pic" aria-hidden="true"><source srcset="{{@root.assets.iconHeadsetWebp}}" type="image/webp"><img src="{{@root.assets.iconHeadsetPng}}" alt="" width="81" height="77" loading="lazy" decoding="async"></picture>
+{{else}}
+{{> shared/icon name=name}}
+{{/if}}

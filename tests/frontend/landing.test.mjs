@@ -7,17 +7,17 @@ const { publicConfig } = require('../../src/config/public');
 const { createServices } = require('../../src/services');
 const pages = require('../../webpack/pages');
 
-// 1. Landing + Account portal manifest
+// 1. Landing + Account + Legal pages manifest
 assert.deepEqual(
   pages.map((page) => page.id),
-  ['index', 'account']
+  ['index', 'account', 'privacy', 'terms']
 );
 assert.deepEqual(
   pages.map((page) => page.output),
-  ['index.html', 'account.html']
+  ['index.html', 'account.html', 'privacy.html', 'terms.html']
 );
 
-// 2. Plan normalization & pricing (4 plans: trial, basic, plus, complete)
+// 2. Plan normalization & pricing (4 plans: trial, basic, plus, complete in EUR)
 assert.equal(normalizePlanId('trial'), 'trial');
 assert.equal(normalizePlanId('basic'), 'basic');
 assert.equal(normalizePlanId('plus'), 'plus');
@@ -29,13 +29,13 @@ assert.equal(normalizePlanId(''), null);
 assert.equal(normalizePlanId(null), null);
 
 assert.equal(formatPrice(null, null), '—');
-assert.equal(formatPrice(null, 'USD'), '—');
+assert.equal(formatPrice(null, 'EUR'), '—');
 assert.equal(formatPrice(0, null), '0');
 assert.equal(formatPrice(0, 'USD'), '$0.00');
-assert.equal(formatPrice(50, null), '0.50');
-assert.equal(formatPrice(700, null), '7');
-assert.equal(formatPrice(2500, null), '25');
-assert.equal(formatPrice(5500, null), '55');
+assert.equal(formatPrice(50, 'EUR'), '€0.50');
+assert.equal(formatPrice(700, 'EUR'), '€7');
+assert.equal(formatPrice(2500, 'EUR'), '€25');
+assert.equal(formatPrice(5500, 'EUR'), '€55');
 assert.equal(formatPrice(999, 'USD'), '$9.99');
 
 // 3. Public config validation
@@ -68,10 +68,10 @@ assert.deepEqual(
     mode: plan.mode
   })),
   [
-    { planId: 'trial', priceMinor: 50, currency: null, deviceLimit: 10, available: false, mode: 'demo' },
-    { planId: 'basic', priceMinor: 700, currency: null, deviceLimit: 5, available: false, mode: 'demo' },
-    { planId: 'plus', priceMinor: 2500, currency: null, deviceLimit: 5, available: false, mode: 'demo' },
-    { planId: 'complete', priceMinor: 5500, currency: null, deviceLimit: 10, available: false, mode: 'demo' }
+    { planId: 'trial', priceMinor: 50, currency: 'EUR', deviceLimit: 10, available: false, mode: 'demo' },
+    { planId: 'basic', priceMinor: 700, currency: 'EUR', deviceLimit: 5, available: false, mode: 'demo' },
+    { planId: 'plus', priceMinor: 2500, currency: 'EUR', deviceLimit: 5, available: false, mode: 'demo' },
+    { planId: 'complete', priceMinor: 5500, currency: 'EUR', deviceLimit: 10, available: false, mode: 'demo' }
   ]
 );
 const checkoutRes = await services.createCheckout('complete');

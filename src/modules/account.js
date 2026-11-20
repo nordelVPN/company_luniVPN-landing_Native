@@ -1,11 +1,11 @@
 const { normalizePlanId, formatPrice } = require('../utils/plans');
 const { createServices } = require('../services');
 
-const SESSION_KEY = 'lunivpn_demo_signed_in';
+const SESSION_KEY = 'lunivpn_session_signed_in';
 const VALID_TABS = new Set(['account', 'subscription', 'plans', 'checkout', 'help']);
 const initialized = new WeakMap();
 
-function readDemoSession() {
+function readSession() {
   try {
     return window.sessionStorage.getItem(SESSION_KEY) === '1';
   } catch {
@@ -13,7 +13,7 @@ function readDemoSession() {
   }
 }
 
-function writeDemoSession(value) {
+function writeSession(value) {
   try {
     if (value) window.sessionStorage.setItem(SESSION_KEY, '1');
     else window.sessionStorage.removeItem(SESSION_KEY);
@@ -63,15 +63,15 @@ function initAccountPortal(root = document) {
   const totalNode = checkoutHost?.querySelector('[data-plan-total]');
   const promptNode = checkoutHost?.querySelector('[data-plan-prompt]');
   const checkoutBtn = checkoutHost?.querySelector('[data-checkout-button]');
-  const applyDemoPlanBtn = checkoutHost?.querySelector('[data-apply-demo-plan]');
+  const applyPlanBtn = checkoutHost?.querySelector('[data-apply-demo-plan]');
   const checkoutMessage = checkoutHost?.querySelector('[data-checkout-message]');
 
   const state = {
-    signedIn: readDemoSession(),
+    signedIn: readSession(),
     activeTab: 'account',
     activePlanId: 'basic',
     selectedCheckoutPlanId: normalizePlanId(new URLSearchParams(window.location.search).get('plan')),
-    subscriptionStatus: 'Active (Demo)'
+    subscriptionStatus: 'Active'
   };
 
   const findPlan = (planId) => plans.find((item) => item.planId === planId) || null;
@@ -98,25 +98,25 @@ function initAccountPortal(root = document) {
     if (subPlanNode) subPlanNode.textContent = activePlan ? activePlan.displayName : 'None';
     if (subPeriodNode) subPeriodNode.textContent = activePlan ? (activePlan.durationLabel || activePlan.billingPeriod) : '—';
     if (subStatusNode) subStatusNode.textContent = state.subscriptionStatus;
-    if (subRenewalNode) subRenewalNode.textContent = state.subscriptionStatus === 'Active (Demo)' ? 'Demo preview (no billing)' : '—';
+    if (subRenewalNode) subRenewalNode.textContent = '—';
     if (subTogglePauseBtn) {
-      subTogglePauseBtn.textContent = state.subscriptionStatus === 'Paused (Demo)' ? 'Resume (demo)' : 'Pause (demo)';
+      subTogglePauseBtn.textContent = state.subscriptionStatus === 'Paused' ? 'Resume' : 'Pause';
     }
     if (subCancelBtn) {
-      subCancelBtn.textContent = state.subscriptionStatus === 'Canceled (Demo)' ? 'Reactivate (demo)' : 'Cancel (demo)';
+      subCancelBtn.textContent = state.subscriptionStatus === 'Canceled' ? 'Reactivate' : 'Cancel';
     }
   };
 
   const renderCheckout = () => {
     const plan = state.selectedCheckoutPlanId ? findPlan(state.selectedCheckoutPlanId) : null;
     selectedNodes.forEach((node) => {
-      node.textContent = plan ? plan.displayName : 'Choose a plan first';
+      node.textContent = plan ? `${plan.displayName} Plan` : 'Choose a plan first';
     });
     if (periodNode) periodNode.textContent = plan ? (plan.durationLabel || plan.billingPeriod) : '—';
     if (totalNode) totalNode.textContent = plan ? formatPrice(plan.priceMinor, plan.currency) : '—';
     if (promptNode) promptNode.hidden = Boolean(plan);
     if (checkoutBtn) checkoutBtn.disabled = !plan;
-    if (applyDemoPlanBtn) applyDemoPlanBtn.disabled = !plan;
+    if (applyPlanBtn) applyPlanBtn.disabled = !plan;
 
     planCards.forEach((card) => {
       card.classList.toggle('is-selected', card.getAttribute('data-plan-card') === state.selectedCheckoutPlanId);
@@ -145,7 +145,7 @@ function initAccountPortal(root = document) {
   const onSignIn = (event) => {
     event.preventDefault();
     state.signedIn = true;
-    writeDemoSession(true);
+    writeSession(true);
     renderAuth();
     renderTabs();
     const activeTabBtn = tabs.find((tab) => tab.getAttribute('data-account-tab') === state.activeTab);
@@ -154,7 +154,7 @@ function initAccountPortal(root = document) {
 
   const onSignOut = () => {
     state.signedIn = false;
-    writeDemoSession(false);
+    writeSession(false);
     renderAuth();
     authCard?.querySelector('[data-demo-signin]')?.focus();
   };
@@ -177,22 +177,20 @@ function initAccountPortal(root = document) {
     if (!name || !email) return;
     if (profileNameNode) profileNameNode.textContent = name;
     if (profileEmailNode) profileEmailNode.textContent = email;
-    if (sessionUser) sessionUser.textContent = `${name} · Demo session`;
-    if (profileStatus) profileStatus.textContent = 'Demo profile updated for this session only (not saved to a server).';
+    if (sessionUser) sessionUser.textContent = name;
+    if (profileStatus) profileStatus.textContent = 'Profile updated for this session.';
   };
 
   const onTogglePause = () => {
-    state.subscriptionStatus =
-      state.subscriptionStatus === 'Paused (Demo)' ? 'Active (Demo)' : 'Paused (Demo)';
+    state.subscriptionStatus = state.subscriptionStatus === 'Paused' ? 'Active' : 'Paused';
     renderSubscription();
-    if (subMessage) subMessage.textContent = `Demo subscription status changed to: ${state.subscriptionStatus}.`;
+    if (subMessage) subMessage.textContent = `Subscription status: ${state.subscriptionStatus}.`;
   };
 
   const onCancelToggle = () => {
-    state.subscriptionStatus =
-      state.subscriptionStatus === 'Canceled (Demo)' ? 'Active (Demo)' : 'Canceled (Demo)';
+    state.subscriptionStatus = state.subscriptionStatus === 'Canceled' ? 'Active' : 'Canceled';
     renderSubscription();
-    if (subMessage) subMessage.textContent = `Demo subscription status changed to: ${state.subscriptionStatus}.`;
+    if (subMessage) subMessage.textContent = `Subscription status: ${state.subscriptionStatus}.`;
   };
 
   const onPlanSelect = (event) => {
@@ -200,7 +198,7 @@ function initAccountPortal(root = document) {
     if (!planId) return;
     state.selectedCheckoutPlanId = planId;
     renderCheckout();
-    if (checkoutMessage) checkoutMessage.textContent = 'Payment is unavailable in this demo.';
+    if (checkoutMessage) checkoutMessage.textContent = '';
     setTab('checkout');
   };
 
@@ -208,20 +206,20 @@ function initAccountPortal(root = document) {
     if (!state.selectedCheckoutPlanId) return;
     try {
       const result = await services.createCheckout(state.selectedCheckoutPlanId);
-      if (checkoutMessage) checkoutMessage.textContent = result.message || 'Payment is unavailable in this demo.';
+      if (checkoutMessage) checkoutMessage.textContent = result.message || 'Online payments are not open yet.';
     } catch {
       if (checkoutMessage) checkoutMessage.textContent = 'Checkout is unavailable. Please try again later.';
     }
   };
 
-  const onApplyDemoPlan = () => {
+  const onApplyPlan = () => {
     if (!state.selectedCheckoutPlanId) return;
     state.activePlanId = state.selectedCheckoutPlanId;
-    state.subscriptionStatus = 'Active (Demo)';
+    state.subscriptionStatus = 'Active';
     renderSubscription();
     if (subMessage) {
       const plan = findPlan(state.activePlanId);
-      subMessage.textContent = `Demo subscription switched to ${plan?.displayName || state.activePlanId} (preview only, no charge).`;
+      subMessage.textContent = `Active plan updated to ${plan?.displayName || state.activePlanId}.`;
     }
     setTab('subscription');
   };
@@ -240,7 +238,7 @@ function initAccountPortal(root = document) {
   subCancelBtn?.addEventListener('click', onCancelToggle);
   planSelectButtons.forEach((btn) => btn.addEventListener('click', onPlanSelect));
   checkoutBtn?.addEventListener('click', onCheckoutPay);
-  applyDemoPlanBtn?.addEventListener('click', onApplyDemoPlan);
+  applyPlanBtn?.addEventListener('click', onApplyPlan);
   window.addEventListener('hashchange', syncFromHash);
 
   const destroy = () => {
@@ -253,7 +251,7 @@ function initAccountPortal(root = document) {
     subCancelBtn?.removeEventListener('click', onCancelToggle);
     planSelectButtons.forEach((btn) => btn.removeEventListener('click', onPlanSelect));
     checkoutBtn?.removeEventListener('click', onCheckoutPay);
-    applyDemoPlanBtn?.removeEventListener('click', onApplyDemoPlan);
+    applyPlanBtn?.removeEventListener('click', onApplyPlan);
     window.removeEventListener('hashchange', syncFromHash);
     initialized.delete(app);
   };

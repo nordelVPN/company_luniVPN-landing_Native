@@ -1,19 +1,27 @@
-<section id="why-luni" class="landing-section section-why-luni" aria-labelledby="why-luni-title">
+<section id="why-luni" class="landing-section section-why-luni wave-host" aria-labelledby="why-luni-title" data-wave-root data-wave-phase="4.8">
+  <canvas class="wave-canvas section-wave-canvas" aria-hidden="true" data-wave-canvas></canvas>
   <div class="section-intro container">
     <p class="eyebrow">{{whyLuni.eyebrow}}</p>
     <h2 id="why-luni-title" class="section-display-title">{{whyLuni.title}}</h2>
     <p class="section-lead">{{whyLuni.description}}</p>
     <div class="actions">
-      <a class="button" href="{{whyLuni.cta.href}}">{{whyLuni.cta.label}} <span aria-hidden="true">↗</span></a>
+      <a class="button" href="{{whyLuni.primaryCta.href}}">{{whyLuni.primaryCta.label}} <span aria-hidden="true">↗</span></a>
+      <a class="button button-outline" href="{{whyLuni.secondaryCta.href}}">{{whyLuni.secondaryCta.label}}</a>
     </div>
   </div>
-  <div class="features why-grid container" aria-label="Why choose LuniVPN">
-    {{#each whyLuni.pillars}}
-      <article class="feature">
-        <span class="feature-icon" aria-hidden="true">{{icon}}</span>
-        <h3>{{title}}</h3>
-        <p>{{description}}</p>
-      </article>
-    {{/each}}
+  <div class="luni-way container">
+    <div class="luni-way-visual" aria-hidden="true">
+      <picture>
+        <source srcset="{{assets.luniWayLeafWebp}}" type="image/webp">
+        <img src="{{assets.luniWayLeafPng}}" alt="" width="585" height="272" loading="lazy" decoding="async">
+      </picture>
+    </div>
+    <div class="luni-way-copy">
+      <p class="eyebrow">{{whyLuni.luniWay.eyebrow}}</p>
+      <h3>{{whyLuni.luniWay.title}}</h3>
+      {{#each whyLuni.luniWay.paragraphs}}
+        <p>{{this}}</p>
+      {{/each}}
+    </div>
   </div>
 </section>

@@ -13,7 +13,7 @@ Home → The app → Why Luni → Support → Plans → Checkout → Account.
 3. [Спецификация](concept-specification.md) — последовательность макетов, палитра и графика.
 4. [Графика и инфографика правых зон](frontend/visual-assets-spec.md) — ТЗ на замену `.device-art`/волн, кроп из референсов и промпты 2× Retina.
 5. [Архитектура frontend](frontend/architecture.md), [компоненты](frontend/landing-components.md), [разработка](frontend/landing-development.md).
-6. [FRONT-001](frontend/tasks/001-public-site.md) и [матрица приёмки](frontend/tasks/001-validation.md).
+6. [FRONT-001](frontend/tasks/001-public-site.md), [матрица приёмки](frontend/tasks/001-validation.md) и [визуальный аудит vs list-screens](frontend/qa/visual-audit-list-screens.md).
 7. [Wishlist](task-012.md), [backend status](backend/status.md), [WL-01–14](backend/wishlist-requirements.md).
 8. [Реестр задач](tasks.md).
 

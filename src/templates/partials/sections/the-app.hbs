@@ -1,7 +1,7 @@
-<section id="the-app" class="landing-section section-the-app" aria-labelledby="the-app-title">
+<section id="the-app" class="landing-section section-the-app wave-host" aria-labelledby="the-app-title" data-wave-root data-wave-phase="2.4">
+  <canvas class="wave-canvas section-wave-canvas" aria-hidden="true" data-wave-canvas></canvas>
   <div class="hero container app-hero">
     <div class="hero-copy">
-      <p class="eyebrow">{{theApp.eyebrow}}</p>
       <h2 id="the-app-title" class="section-display-title">{{theApp.title}}</h2>
       <p class="hero-kicker">{{theApp.kicker}}</p>
       <p class="hero-description">{{theApp.description}}</p>
@@ -16,8 +16,8 @@
         <img
           src="{{assets.theAppDevicesPng}}"
           alt="LuniVPN app preview across laptop, smartphone and tablet"
-          width="892"
-          height="524"
+          width="891"
+          height="520"
           loading="lazy"
           decoding="async"
         >
@@ -27,7 +27,7 @@
   <div id="the-app-highlights" class="features container" aria-label="App highlights">
     {{#each theApp.highlights}}
       <article class="feature">
-        <span class="feature-icon" aria-hidden="true">{{icon}}</span>
+        <span class="feature-icon" aria-hidden="true">{{> shared/feature-icon name=icon}}</span>
         <h3>{{title}}</h3>
         <p>{{description}}</p>
       </article>

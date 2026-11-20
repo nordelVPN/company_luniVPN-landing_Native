@@ -11,15 +11,42 @@ const { publicConfig } = require('../src/config/public');
 const root = path.resolve(__dirname, '..');
 const config = publicConfig();
 const partialRoot = path.join(root, 'src/templates/partials');
-const watchedDirectories = ['pages', 'src/data', 'src/templates', 'src/assets/illustrations'].map((dir) =>
-  path.join(root, dir)
-);
+const watchedDirectories = [
+  'pages',
+  'src/data',
+  'src/templates',
+  'src/assets/illustrations',
+  'src/assets/brand',
+  'src/assets/icons'
+].map((dir) => path.join(root, dir));
 
 const illustrationMap = {
   theAppDevicesWebp: 'src/assets/illustrations/the-app-devices.webp',
   theAppDevicesPng: 'src/assets/illustrations/the-app-devices.png',
+  luniWayLeafWebp: 'src/assets/illustrations/luni-way-leaf.webp',
+  luniWayLeafPng: 'src/assets/illustrations/luni-way-leaf.png',
   cardWaveWebp: 'src/assets/illustrations/card-wave.webp',
-  cardWavePng: 'src/assets/illustrations/card-wave.png'
+  cardWavePng: 'src/assets/illustrations/card-wave.png',
+  luniMarkWebp: 'src/assets/brand/luni-mark.webp',
+  luniMarkPng: 'src/assets/brand/luni-mark.png',
+  iconLeafWebp: 'src/assets/icons/leaf.webp',
+  iconLeafPng: 'src/assets/icons/leaf.png',
+  iconShieldWebp: 'src/assets/icons/shield.webp',
+  iconShieldPng: 'src/assets/icons/shield.png',
+  iconBoltWebp: 'src/assets/icons/bolt.webp',
+  iconBoltPng: 'src/assets/icons/bolt.png',
+  iconPinWebp: 'src/assets/icons/pin.webp',
+  iconPinPng: 'src/assets/icons/pin.png',
+  iconDevicesWebp: 'src/assets/icons/devices.webp',
+  iconDevicesPng: 'src/assets/icons/devices.png',
+  iconPlayWebp: 'src/assets/icons/play.webp',
+  iconPlayPng: 'src/assets/icons/play.png',
+  iconWifiWebp: 'src/assets/icons/wifi.webp',
+  iconWifiPng: 'src/assets/icons/wifi.png',
+  iconCardWebp: 'src/assets/icons/card.webp',
+  iconCardPng: 'src/assets/icons/card.png',
+  iconHeadsetWebp: 'src/assets/icons/headset.webp',
+  iconHeadsetPng: 'src/assets/icons/headset.png'
 };
 
 function resolveIllustrationAssets() {
@@ -70,7 +97,8 @@ function renderPage(page) {
   }
   if (metadata.pageId !== page.id) throw new Error(page.id + ': pageId mismatch');
   const isDemoOnlyPage = page.id === 'account';
-  const canonical = !isDemoOnlyPage && config.siteUrl ? new URL(config.basePath, config.siteUrl).href : '';
+  const canonicalPath = page.output === 'index.html' ? config.basePath : config.basePath + page.output;
+  const canonical = !isDemoOnlyPage && config.siteUrl ? new URL(canonicalPath, config.siteUrl).href : '';
   const robots = !isDemoOnlyPage && config.appEnv === 'production' && config.siteUrl ? 'index,follow' : 'noindex,nofollow';
   const { urls: assets } = resolveIllustrationAssets();
   const context = {

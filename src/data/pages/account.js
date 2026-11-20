@@ -4,61 +4,58 @@ const { profile, subscription } = require('../fixtures/account');
 module.exports = {
   metadata: {
     lang: 'en',
-    title: 'Your account (Demo) — LuniVPN',
-    description: 'Demo LuniVPN account portal for managing subscription, plans, checkout, profile, and help.',
+    title: 'Your account — LuniVPN',
+    description: 'Manage your profile, subscription, plans, checkout, and help in your LuniVPN account.',
     pageId: 'account'
   },
   intro: {
-    eyebrow: 'DEMO ACCOUNT PORTAL',
     title: 'Your account.',
-    description: 'Manage your demo profile, subscription, plans, checkout preview, and help in one place.'
+    description: 'Manage your profile, subscription, and billing.'
   },
   demoAuth: {
-    title: 'Demo sign-in',
-    description: 'Explore the LuniVPN account portal using a synthetic demo profile. No real authentication or personal data is sent.',
-    emailLabel: 'Demo email',
-    submitLabel: 'Sign in to demo account'
+    title: 'Sign in',
+    description: 'Access your LuniVPN account to manage your subscription, plans, and profile.',
+    emailLabel: 'Email',
+    submitLabel: 'Sign in'
   },
   tabs: [
-    { id: 'account', label: 'Account' },
-    { id: 'subscription', label: 'Subscription' },
-    { id: 'plans', label: 'Plans' },
-    { id: 'checkout', label: 'Checkout' },
-    { id: 'help', label: 'Help' }
+    { id: 'account', label: 'Account', icon: 'user' },
+    { id: 'subscription', label: 'Subscription', icon: 'layers' },
+    { id: 'plans', label: 'Plans', icon: 'leaf' },
+    { id: 'checkout', label: 'Checkout', icon: 'card' },
+    { id: 'help', label: 'Help', icon: 'help' }
   ],
   plans,
   profile,
   subscription,
-  checkout: {
-    cardNotice: 'Synthetic demo preview only. Do not enter real card numbers, expiration dates, or CVC codes.'
-  },
+  checkout: {},
   help: {
     searchLabel: 'Search for help articles',
     searchPlaceholder: 'Search for help articles',
     searchUnavailable: 'Help article search is not available yet.',
     categories: [
       {
-        icon: '▷',
+        icon: 'play',
         title: 'Getting started',
-        description: 'The basics for a smooth beginning.',
+        description: 'Set up LuniVPN and get familiar with the basics.',
         unavailableReason: 'Articles coming soon'
       },
       {
-        icon: '⌁',
+        icon: 'wifi',
         title: 'Connection',
-        description: 'Help with your connection.',
+        description: 'Troubleshoot common issues and improve your experience.',
         unavailableReason: 'Articles coming soon'
       },
       {
-        icon: '▤',
+        icon: 'card',
         title: 'Account and billing',
-        description: 'Questions about plans and account.',
+        description: 'Manage your account, subscription, and payment details.',
         unavailableReason: 'Articles coming soon'
       },
       {
-        icon: '◉',
+        icon: 'headset',
         title: 'Contact support',
-        description: 'Get in touch when you need help.',
+        description: 'Reach our support team for further help.',
         unavailableReason: 'Support contact coming soon'
       }
     ]
