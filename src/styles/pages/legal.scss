@@ -3,6 +3,10 @@
 .legal-page {
   padding-block: 48px 64px;
 }
+.legal-page h1 {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
 .legal-container {
   max-width: 860px;
 }
