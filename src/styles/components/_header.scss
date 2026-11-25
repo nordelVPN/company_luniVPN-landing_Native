@@ -11,14 +11,16 @@
 }
 .header-inner {
   min-height: 84px;
+  padding-block: 8px;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 20px;
 }
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
   font-family: $font-serif;
   font-size: 34px;
   font-weight: 500;
@@ -52,17 +54,19 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 18px;
 }
 .site-nav-links {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 24px;
+  gap: 8px 16px;
 }
 .site-nav-actions {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 .language {
   display: inline-flex;

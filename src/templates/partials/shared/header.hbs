@@ -16,16 +16,31 @@
       <div class="site-nav-links">
         {{#each site.navigation}}
           <a
-            href="{{#if (eq ../metadata.pageId 'index')}}{{hash}}{{else}}{{../basePath}}index.html{{hash}}{{/if}}"
+            href="{{#if (eq ../metadata.pageId 'index')}}{{hash}}{{else}}./index.html{{hash}}{{/if}}"
             data-nav-link="{{id}}"
             data-i18n="nav.{{id}}"
           >{{label}}</a>
         {{/each}}
         <a
-          href="{{basePath}}{{site.accountLink.path}}"
+          href="./{{site.accountLink.path}}"
           {{#if (eq metadata.pageId 'account')}}aria-current="page"{{/if}}
           data-i18n="nav.account"
         >{{site.accountLink.label}}</a>
+        <a
+          href="./login.html"
+          {{#if (eq metadata.pageId 'login')}}aria-current="page"{{/if}}
+          data-i18n="nav.login"
+        >Log in</a>
+        <a
+          href="./create-account.html"
+          {{#if (eq metadata.pageId 'create-account')}}aria-current="page"{{/if}}
+          data-i18n="nav.createAccount"
+        >Create account</a>
+        <a
+          href="./forgot-password.html"
+          {{#if (eq metadata.pageId 'forgot-password')}}aria-current="page"{{/if}}
+          data-i18n="nav.forgotPassword"
+        >Forgot password</a>
       </div>
       <div class="site-nav-actions">
         <label class="language">
@@ -45,7 +60,7 @@
         </button>
         <a
           class="button button-small"
-          href="{{#if (eq metadata.pageId 'index')}}{{site.cta.hash}}{{else}}{{basePath}}index.html{{site.cta.hash}}{{/if}}"
+          href="{{#if (eq metadata.pageId 'index')}}{{site.cta.hash}}{{else}}./index.html{{site.cta.hash}}{{/if}}"
           data-nav-link="plans"
         >
           <span data-i18n="nav.cta">{{site.cta.label}}</span> <span aria-hidden="true">↗</span>

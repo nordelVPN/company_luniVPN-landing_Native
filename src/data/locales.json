@@ -212,7 +212,10 @@
     "terms.sections.2.body": "Finalized acceptable use guidelines, device limits, and service availability terms for Trial, Basic, Plus, and Complete plans will be published in full before subscriptions open.",
     "terms.sections.3.heading": "4. Final terms publication",
     "terms.sections.3.body": "Before general release, this page will be updated with the finalized Terms of Service reviewed and approved by the product owner.",
-    "legal.backHome": "← Back to LuniVPN home"
+    "legal.backHome": "← Back to LuniVPN home",
+    "nav.login": "Log in",
+    "nav.createAccount": "Create account",
+    "nav.forgotPassword": "Forgot password"
   },
   "ru": {
     "language.label": "Язык",
@@ -427,7 +430,10 @@
     "terms.sections.2.body": "Полные правила допустимого использования, лимиты устройств и условия доступности сервиса для тарифов Trial, Basic, Plus и Complete будут опубликованы до старта подписок.",
     "terms.sections.3.heading": "4. Публикация финальных условий",
     "terms.sections.3.body": "Перед общим релизом эта страница будет обновлена финальной версией Условий использования, утверждённой владельцем продукта.",
-    "legal.backHome": "← Вернуться на главную LuniVPN"
+    "legal.backHome": "← Вернуться на главную LuniVPN",
+    "nav.login": "Войти",
+    "nav.createAccount": "Регистрация",
+    "nav.forgotPassword": "Забыли пароль?"
   },
   "pl": {
     "language.label": "Język",
@@ -642,7 +648,10 @@
     "terms.sections.2.body": "Pełne zasady dopuszczalnego użytkowania, limity urządzeń oraz warunki dostępności usługi dla planów Próbny, Podstawowy, Plus i Kompletny zostaną opublikowane przed otwarciem subskrypcji.",
     "terms.sections.3.heading": "4. Publikacja ostatecznych warunków",
     "terms.sections.3.body": "Przed ogólną premierą ta strona zostanie zaktualizowana o ostateczne Warunki korzystania zatwierdzone przez właściciela produktu.",
-    "legal.backHome": "← Powrót na stronę główną LuniVPN"
+    "legal.backHome": "← Powrót na stronę główną LuniVPN",
+    "nav.login": "Zaloguj się",
+    "nav.createAccount": "Utwórz konto",
+    "nav.forgotPassword": "Nie pamiętasz hasła?"
   },
   "uk": {
     "language.label": "Мова",
@@ -857,7 +866,10 @@
     "terms.sections.2.body": "Повні правила допустимого використання, ліміти пристроїв та умови доступності сервісу для тарифів Пробний, Базовий, Плюс і Повний будуть опубліковані до відкриття підписок.",
     "terms.sections.3.heading": "4. Публікація фінальних умов",
     "terms.sections.3.body": "До загального релізу ця сторінка буде оновлена фінальними Умовами використання, перевіреними та затвердженими власником продукту.",
-    "legal.backHome": "← Повернутися на головну LuniVPN"
+    "legal.backHome": "← Повернутися на головну LuniVPN",
+    "nav.login": "Увійти",
+    "nav.createAccount": "Реєстрація",
+    "nav.forgotPassword": "Забули пароль?"
   },
   "lt": {
     "language.label": "Kalba",
@@ -1072,7 +1084,10 @@
     "terms.sections.2.body": "Galutinės priimtino naudojimo gairės, įrenginių limitai ir paslaugos prieinamumo sąlygos Bandomajam, Pagrindiniam, Plius ir Pilnam planams bus paskelbtos prieš atveriant prenumeratas.",
     "terms.sections.3.heading": "4. Galutinių sąlygų paskelbimas",
     "terms.sections.3.body": "Prieš bendrą paleidimą šis puslapis bus atnaujintas galutinėmis Naudojimo sąlygomis, patvirtintomis produkto savininko.",
-    "legal.backHome": "← Grįžti į LuniVPN pradžią"
+    "legal.backHome": "← Grįžti į LuniVPN pradžią",
+    "nav.login": "Prisijungti",
+    "nav.createAccount": "Sukurti paskyrą",
+    "nav.forgotPassword": "Pamiršote slaptažodį?"
   },
   "tr": {
     "language.label": "Dil",
@@ -1287,7 +1302,10 @@
     "terms.sections.2.body": "Deneme, Temel, Plus ve Tam Paket planları için nihai kabul edilebilir kullanım ilkeleri, cihaz sınırları ve hizmet kullanılabilirlik koşulları abonelikler açılmadan önce tam olarak yayımlanacaktır.",
     "terms.sections.3.heading": "4. Nihai koşulların yayımlanması",
     "terms.sections.3.body": "Genel sürüm öncesinde bu sayfa, ürün sahibi tarafından incelenip onaylanan nihai Hizmet Koşulları ile güncellenecektir.",
-    "legal.backHome": "← LuniVPN ana sayfasına dön"
+    "legal.backHome": "← LuniVPN ana sayfasına dön",
+    "nav.login": "Giriş yap",
+    "nav.createAccount": "Hesap oluştur",
+    "nav.forgotPassword": "Şifremi unuttum"
   },
   "ro": {
     "language.label": "Limbă",
@@ -1502,7 +1520,10 @@
     "terms.sections.2.body": "Regulile finale de utilizare acceptabilă, limitele de dispozitive și condițiile de disponibilitate pentru planurile Probă, De bază, Plus și Complet vor fi publicate integral înainte de deschiderea abonamentelor.",
     "terms.sections.3.heading": "4. Publicarea termenilor finali",
     "terms.sections.3.body": "Înainte de lansarea generală, această pagină va fi actualizată cu Termenii de utilizare finali, revizuiți și aprobați de proprietarul produsului.",
-    "legal.backHome": "← Înapoi la pagina principală LuniVPN"
+    "legal.backHome": "← Înapoi la pagina principală LuniVPN",
+    "nav.login": "Autentificare",
+    "nav.createAccount": "Creează cont",
+    "nav.forgotPassword": "Ai uitat parola?"
   },
   "de": {
     "language.label": "Sprache",
@@ -1717,7 +1738,10 @@
     "terms.sections.2.body": "Die endgültigen Richtlinien zur zulässigen Nutzung, Gerätelimits und Verfügbarkeitsbedingungen für Test, Basis, Plus und Komplett werden vor Öffnung der Abonnements vollständig veröffentlicht.",
     "terms.sections.3.heading": "4. Veröffentlichung der finalen Bedingungen",
     "terms.sections.3.body": "Vor dem allgemeinen Release wird diese Seite mit den finalen, vom Produktinhaber geprüften und freigegebenen Nutzungsbedingungen aktualisiert.",
-    "legal.backHome": "← Zurück zur LuniVPN Startseite"
+    "legal.backHome": "← Zurück zur LuniVPN Startseite",
+    "nav.login": "Anmelden",
+    "nav.createAccount": "Konto erstellen",
+    "nav.forgotPassword": "Passwort vergessen?"
   },
   "sk": {
     "language.label": "Jazyk",
@@ -1932,7 +1956,10 @@
     "terms.sections.2.body": "Finálne pravidlá prijateľného používania, limity zariadení a podmienky dostupnosti pre plány Skúšobný, Základný, Plus a Kompletný budú zverejnené pred otvorením predplatného.",
     "terms.sections.3.heading": "4. Zverejnenie finálnych podmienok",
     "terms.sections.3.body": "Pred všeobecným vydaním bude táto stránka aktualizovaná o finálne Podmienky používania skontrolované a schválené vlastníkom produktu.",
-    "legal.backHome": "← Späť na domovskú stránku LuniVPN"
+    "legal.backHome": "← Späť na domovskú stránku LuniVPN",
+    "nav.login": "Prihlásiť sa",
+    "nav.createAccount": "Vytvoriť účet",
+    "nav.forgotPassword": "Zabudnuté heslo?"
   },
   "hr": {
     "language.label": "Jezik",
@@ -2147,7 +2174,10 @@
     "terms.sections.2.body": "Konačne smjernice prihvatljive uporabe, ograničenja uređaja i uvjeti dostupnosti za planove Probni, Osnovni, Plus i Potpuni bit će objavljeni u cijelosti prije otvaranja pretplata.",
     "terms.sections.3.heading": "4. Objava konačnih uvjeta",
     "terms.sections.3.body": "Prije općeg izdanja ova će stranica biti ažurirana konačnim Uvjetima korištenja koje je pregledao i odobrio vlasnik proizvoda.",
-    "legal.backHome": "← Natrag na LuniVPN početnu"
+    "legal.backHome": "← Natrag na LuniVPN početnu",
+    "nav.login": "Prijava",
+    "nav.createAccount": "Izradi račun",
+    "nav.forgotPassword": "Zaboravljena lozinka?"
   },
   "sr": {
     "language.label": "Jezik",
@@ -2362,7 +2392,10 @@
     "terms.sections.2.body": "Konačne smernice prihvatljive upotrebe, ograničenja uređaja i uslovi dostupnosti za planove Probni, Osnovni, Plus i Kompletan biće objavljeni u celosti pre otvaranja pretplata.",
     "terms.sections.3.heading": "4. Objava konačnih uslova",
     "terms.sections.3.body": "Pre opšteg izdanja ova stranica će biti ažurirana konačnim Uslovima korišćenja koje je pregledao i odobrio vlasnik proizvoda.",
-    "legal.backHome": "← Nazad na LuniVPN početnu"
+    "legal.backHome": "← Nazad na LuniVPN početnu",
+    "nav.login": "Пријава",
+    "nav.createAccount": "Направи налог",
+    "nav.forgotPassword": "Заборављена лозинка?"
   },
   "bg": {
     "language.label": "Език",
@@ -2577,7 +2610,10 @@
     "terms.sections.2.body": "Финалните правила за приемлива употреба, лимитите за устройства и условията за достъпност за плановете Пробен, Базов, Плюс и Пълен ще бъдат публикувани изцяло преди отварянето на абонаментите.",
     "terms.sections.3.heading": "4. Публикуване на финалните условия",
     "terms.sections.3.body": "Преди общия релиз тази страница ще бъде обновена с финалните Условия за ползване, прегледани и одобрени от собственика на продукта.",
-    "legal.backHome": "← Обратно към началото на LuniVPN"
+    "legal.backHome": "← Обратно към началото на LuniVPN",
+    "nav.login": "Вход",
+    "nav.createAccount": "Регистрация",
+    "nav.forgotPassword": "Забравена парола?"
   },
   "hu": {
     "language.label": "Nyelv",
@@ -2792,6 +2828,9 @@
     "terms.sections.2.body": "A Próba, Alap, Plusz és Teljes csomagok végleges használati irányelvei, eszközkorlátai és elérhetőségi feltételei az előfizetések megnyitása előtt teljes terjedelmükben megjelennek.",
     "terms.sections.3.heading": "4. Végleges feltételek közzététele",
     "terms.sections.3.body": "A nyilvános megjelenés előtt ez az oldal frissül a terméktulajdonos által jóváhagyott végleges Felhasználási feltételekkel.",
-    "legal.backHome": "← Vissza a LuniVPN kezdőlapra"
+    "legal.backHome": "← Vissza a LuniVPN kezdőlapra",
+    "nav.login": "Bejelentkezés",
+    "nav.createAccount": "Fiók létrehozása",
+    "nav.forgotPassword": "Elfelejtett jelszó?"
   }
 }
