@@ -35,8 +35,13 @@ async function checkCommonHtml(file, html, basePath) {
   if (!html.includes('data-wishlist-open') || !html.includes('data-wishlist-dialog')) {
     throw new Error('Missing wishlist UI markup in ' + file);
   }
-  if (!html.includes(`${basePath}privacy.html`) || !html.includes(`${basePath}terms.html`)) {
-    throw new Error('Missing footer legal links (privacy.html / terms.html) in ' + file);
+  if (!html.includes('./privacy.html') || !html.includes('./terms.html')) {
+    throw new Error('Missing footer legal links (./privacy.html / ./terms.html) in ' + file);
+  }
+  for (const authHref of ['./login.html', './create-account.html', './forgot-password.html']) {
+    if (!html.includes(authHref)) {
+      throw new Error('Missing auth link (' + authHref + ') in ' + file);
+    }
   }
   if (!html.includes('luni-mark.')) {
     throw new Error('Missing updated brand logo asset in ' + file);
@@ -48,8 +53,14 @@ async function checkCommonHtml(file, html, basePath) {
   for (const url of references) {
     if (url === '#' || url.startsWith('javascript:')) throw new Error('Invalid link in ' + file + ': ' + url);
     if (url.startsWith('#') || url.startsWith('?')) continue;
-    if (!url.startsWith(basePath)) continue;
-    const relative = url.slice(basePath.length).split(/[?#]/)[0];
+    let relative = '';
+    if (url.startsWith('./')) {
+      relative = url.slice(2).split(/[?#]/)[0];
+    } else if (url.startsWith(basePath)) {
+      relative = url.slice(basePath.length).split(/[?#]/)[0];
+    } else {
+      continue;
+    }
     if (!relative) continue;
     try {
       await lstat(path.join(root, relative));
@@ -93,8 +104,8 @@ try {
       throw new Error('Missing plan card in index.html: ' + planId);
     }
   }
-  if (!indexHtml.includes(`${basePath}account.html`)) {
-    throw new Error('Missing header link to account.html in index.html');
+  if (!indexHtml.includes('./account.html')) {
+    throw new Error('Missing header link to ./account.html in index.html');
   }
   for (const assetToken of ['the-app-devices.', 'luni-way-leaf.', 'card-wave.']) {
     if (!indexHtml.includes(assetToken)) {
