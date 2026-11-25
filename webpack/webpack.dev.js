@@ -1,5 +1,6 @@
 const { merge } = require('webpack-merge');
 const path = require('node:path');
+const { DefinePlugin } = require('webpack');
 const common = require('./webpack.common');
 
 const port = Number(process.env.SITE_PORT || process.env.PORT || 3002);
@@ -13,6 +14,17 @@ module.exports = merge(common, {
   mode: 'development',
   devtool: 'eval-cheap-module-source-map',
   output: { path: path.resolve(__dirname, '../build/dev') },
+  plugins: [
+    new DefinePlugin({
+      __VPN_BUILD_CONFIG__: JSON.stringify({
+        brandSlug,
+        mode: process.env.DATA_MODE || 'live',
+        dashboardApiUrl: process.env.PORTAL_API_URL || 'http://localhost:8081',
+        adminServersApiUrl: serversApiUrl,
+        serversCatalogUrl: process.env.SERVERS_CATALOG_URL || '/_api/servers'
+      })
+    })
+  ],
   devServer: {
     host: '127.0.0.1',
     port,

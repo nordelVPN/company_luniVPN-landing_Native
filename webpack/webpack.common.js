@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const Handlebars = require('handlebars');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { DefinePlugin, sources } = require('webpack');
+const { sources } = require('webpack');
 const pages = require('./pages');
 const { publicConfig } = require('../src/config/public');
 
@@ -182,15 +182,6 @@ module.exports = {
     ]
   },
   plugins: [
-    new DefinePlugin({
-      __VPN_BUILD_CONFIG__: JSON.stringify({
-        brandSlug: process.env.BRAND_SLUG || 'luni',
-        mode: process.env.DATA_MODE || 'demo',
-        dashboardApiUrl: process.env.PORTAL_API_URL || 'http://localhost:8080',
-        adminServersApiUrl: process.env.SERVERS_API_URL || 'http://localhost:8082',
-        serversCatalogUrl: process.env.SERVERS_CATALOG_URL || '/_api/servers'
-      })
-    }),
     new MiniCssExtractPlugin({ filename: 'assets/[name].[contenthash:8].css' }),
     ...pages.map(
       (page) =>

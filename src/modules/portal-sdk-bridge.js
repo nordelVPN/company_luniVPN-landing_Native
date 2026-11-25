@@ -1,4 +1,4 @@
-/* global navigator, URLSearchParams */
+/* global navigator, URLSearchParams, URL */
 'use strict';
 
 var sdkFactory = require('./vpn-portal-sdk');
@@ -32,17 +32,23 @@ function initPortalSdkBridge() {
       var plansSection = document.querySelector('#plans');
       if (plansSection && servers.length) {
         plansSection.setAttribute('data-live-servers-count', String(servers.length));
+        sdkFactory.renderLiveServersStrip(plansSection.querySelector('.container') || plansSection, servers);
       }
     }).catch(function () { /* optional */ });
   }
 
-  sdkFactory.initCheckoutReturnPolling(sdk);
+  var isAccountPage = Boolean(document.querySelector('[data-sdk-vpn-panel]'));
+  if (!isAccountPage) {
+    sdkFactory.initCheckoutReturnPolling(sdk);
+  }
 
   // Live checkout hook
   if (sdk.mode === 'live') {
+    document.querySelectorAll('.checkout-preview').forEach(function (el) { el.hidden = true; });
+
     var getLProvider = function () { return null; };
-    var luniCheckoutRoot = document.querySelector('[data-checkout]');
-    if (luniCheckoutRoot) {
+    var luniCheckoutRoots = document.querySelectorAll('[data-checkout]');
+    luniCheckoutRoots.forEach(function (luniCheckoutRoot) {
       var lProviderHost = luniCheckoutRoot.querySelector('[data-payment-providers]');
       if (!lProviderHost) {
         lProviderHost = document.createElement('div');
@@ -59,7 +65,7 @@ function initPortalSdkBridge() {
       sdkFactory.mountPaymentProviderSelector(sdk, lProviderHost).then(function (getter) {
         if (typeof getter === 'function') getLProvider = getter;
       });
-    }
+    });
 
     document.addEventListener('click', function (e) {
       var btn = e.target && e.target.closest && e.target.closest('[data-checkout-button], [data-apply-demo-plan]');
@@ -74,17 +80,17 @@ function initPortalSdkBridge() {
         return;
       }
       e.preventDefault();
-      var baseUrl = window.location.origin + window.location.pathname;
+      var returnUrl = new URL('./account.html', window.location.href).href;
+      var cancelUrl = new URL('./index.html?status=cancelled', window.location.href).href;
       sdk.checkout({
         plan_code: planCode,
         provider: getLProvider(),
         promo_code: promoInput ? promoInput.value.trim() : null,
-        return_url: baseUrl,
-        cancel_url: baseUrl + '?status=cancelled'
+        return_url: returnUrl,
+        cancel_url: cancelUrl
       }).then(function (res) {
-        var target = res && res.checkout && res.checkout.checkout_url;
-        setStatus(msgEl, 'Redirecting to payment provider...');
-        window.location.href = target || './account.html';
+        setStatus(msgEl, res && res.checkout && res.checkout.mode === 'mock' ? 'Confirm test payment to activate your VPN key.' : 'Redirecting to payment provider...');
+        sdkFactory.handleCheckoutResponse(sdk, res);
       }).catch(function (err) {
         setStatus(msgEl, (err && err.message) || 'Checkout failed.');
       });
@@ -168,9 +174,17 @@ function initPortalSdkBridge() {
 
   var vpnPanel = document.querySelector('[data-sdk-vpn-panel]');
   if (vpnPanel) {
-    if (sdk.mode === 'live' && !sdk.isAuthenticated()) {
-      window.location.href = './login.html';
-      return;
+    if (sdk.mode === 'live') {
+      if (!sdk.isAuthenticated()) {
+        window.location.href = './login.html';
+        return;
+      }
+      var demoAuthCard = document.querySelector('[data-account-auth]');
+      var portalGrid = document.querySelector('[data-account-portal]');
+      var sessionBar = document.querySelector('[data-account-session-bar]');
+      if (demoAuthCard) demoAuthCard.hidden = true;
+      if (portalGrid) portalGrid.hidden = false;
+      if (sessionBar) sessionBar.hidden = false;
     }
 
     var accessKey = '';
@@ -184,6 +198,7 @@ function initPortalSdkBridge() {
     var serversBody = vpnPanel.querySelector('[data-sdk-servers]');
     var devicesBody = vpnPanel.querySelector('[data-sdk-devices]');
     var devicesCount = vpnPanel.querySelector('[data-sdk-devices-count]');
+    var billingBody = document.querySelector('[data-sdk-billing]');
     var statusNote = vpnPanel.querySelector('[data-sdk-status]');
 
     function renderDevices(res) {
@@ -205,64 +220,121 @@ function initPortalSdkBridge() {
         tr.querySelector('button').addEventListener('click', function () {
           sdk.revokeDevice(accessKey, dev.device_uid).then(function () {
             return sdk.getDevices(accessKey);
-          }).then(renderDevices);
+          }).then(renderDevices).catch(function (err) {
+            setStatus(statusNote, (err && err.message) || 'Could not revoke device.');
+          });
         });
         devicesBody.appendChild(tr);
       });
     }
 
-    var ready = (!sdk.isAuthenticated() && sdk.mode === 'demo')
-      ? sdk.login({ email: 'demo@lunivpn.com', password: 'demo-password' })
-      : Promise.resolve();
+    function renderServers(servers) {
+      if (!serversBody) return;
+      serversBody.innerHTML = '';
+      if (!servers || !servers.length) {
+        serversBody.innerHTML = '<tr><td colspan="4">No servers available for this subscription.</td></tr>';
+        return;
+      }
+      servers.forEach(function (srv) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td></td><td></td><td></td><td></td>';
+        tr.children[0].textContent = sdkFactory.formatServerLocation(srv);
+        tr.children[1].textContent = sdkFactory.formatServerStatusAndLoad(srv);
+        tr.children[2].textContent = srv.ping_ms ? srv.ping_ms + ' ms' : '—';
+        tr.children[3].textContent = sdkFactory.formatServerProtocolsAndTags(srv);
+        serversBody.appendChild(tr);
+      });
+    }
 
-    ready.then(function () {
-      return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory()]);
-    }).then(function (all) {
-      var me = all[0];
-      var subRes = all[1];
-      var billRes = all[2];
-      if (me && me.client) {
-        var nameEl = document.querySelector('[data-profile-name]');
-        var emailEl = document.querySelector('[data-profile-email]');
-        var nameInput = document.querySelector('#profile-name-input');
-        var emailInput = document.querySelector('#profile-email-input');
-        if (nameEl) nameEl.textContent = me.client.display_name || me.client.email;
-        if (emailEl) emailEl.textContent = me.client.email;
-        if (nameInput) nameInput.value = me.client.display_name || '';
-        if (emailInput) emailInput.value = me.client.email || '';
+    function renderBilling(payments) {
+      if (!billingBody) return;
+      billingBody.innerHTML = '';
+      if (!payments || !payments.length) {
+        billingBody.innerHTML = '<tr><td colspan="4">No payments yet.</td></tr>';
+        return;
       }
-      if (billRes && billRes.payments && statusNote && billRes.payments.length && sdk.mode === 'live') {
-        statusNote.setAttribute('data-payments-count', String(billRes.payments.length));
-      }
-      var sub = subRes && subRes.subscription;
-      if (sub) {
-        var subPlan = document.querySelector('[data-sub-plan]');
-        var subStatus = document.querySelector('[data-sub-status]');
-        if (subPlan) subPlan.textContent = sub.plan_name;
-        if (subStatus) subStatus.textContent = sub.status;
-      }
-      accessKey = (sub && sub.access_key) || '';
-      if (keyEl) keyEl.textContent = maskKey(accessKey);
-      if (!accessKey) return [null, null];
-      return Promise.all([sdk.getBootstrap(accessKey), sdk.getDevices(accessKey)]);
-    }).then(function (results) {
-      var boot = results && results[0];
-      var devRes = results && results[1];
-      if (serversBody && boot) {
-        serversBody.innerHTML = '';
-        ((boot && boot.servers) || []).forEach(function (srv) {
-          var tr = document.createElement('tr');
-          tr.innerHTML = '<td></td><td></td><td></td><td></td>';
-          tr.children[0].textContent = srv.country_code + ' — ' + srv.name + (srv.is_recommended ? ' ★' : '');
-          tr.children[1].textContent = srv.status;
-          tr.children[2].textContent = srv.ping_ms ? srv.ping_ms + ' ms' : '—';
-          tr.children[3].textContent = (srv.protocols || []).map(function (p) { return p.type; }).join(', ');
-          serversBody.appendChild(tr);
+      payments.forEach(function (p) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td></td><td></td><td></td><td></td>';
+        tr.children[0].textContent = p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '—';
+        tr.children[1].textContent = p.plan_code;
+        tr.children[2].textContent = formatEur(p.final_amount_minor);
+        tr.children[3].textContent = sdkFactory.formatPaymentProvider(p.provider) + ' · ' + sdkFactory.formatPaymentStatus(p.status);
+        billingBody.appendChild(tr);
+      });
+    }
+
+    function loadAccountData() {
+      var ready = (!sdk.isAuthenticated() && sdk.mode === 'demo')
+        ? sdk.login({ email: 'demo@lunivpn.com', password: 'demo-password' })
+        : Promise.resolve();
+
+      return ready.then(function () {
+        return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory()]);
+      }).then(function (all) {
+        var me = all[0];
+        var subRes = all[1];
+        var billRes = all[2];
+        if (me && me.client) {
+          var nameEl = document.querySelector('[data-profile-name]');
+          var emailEl = document.querySelector('[data-profile-email]');
+          var sessionUser = document.querySelector('[data-session-user]');
+          var nameInput = document.querySelector('#profile-name-input');
+          var emailInput = document.querySelector('#profile-email-input');
+          if (nameEl) nameEl.textContent = me.client.display_name || me.client.email;
+          if (emailEl) emailEl.textContent = me.client.email;
+          if (sessionUser) sessionUser.textContent = me.client.display_name || me.client.email;
+          if (nameInput) nameInput.value = me.client.display_name || '';
+          if (emailInput) emailInput.value = me.client.email || '';
+        }
+        var payments = (billRes && billRes.payments) || [];
+        renderBilling(payments);
+        if (statusNote && payments.length && sdk.mode === 'live') {
+          statusNote.setAttribute('data-payments-count', String(payments.length));
+        }
+        var sub = subRes && subRes.subscription;
+        if (sub) {
+          var subPlan = document.querySelector('[data-sub-plan]');
+          var subStatus = document.querySelector('[data-sub-status]');
+          var subRenewal = document.querySelector('[data-sub-renewal]');
+          if (subPlan) subPlan.textContent = sub.plan_name;
+          if (subStatus) subStatus.textContent = sub.status;
+          if (subRenewal && sub.expires_at) subRenewal.textContent = new Date(sub.expires_at).toLocaleDateString();
+        }
+        accessKey = (sub && sub.access_key) || '';
+        if (keyEl) keyEl.textContent = revealed ? accessKey : maskKey(accessKey);
+        if (!accessKey) {
+          renderServers([]);
+          renderDevices({ limit: 5, devices: [] });
+          return;
+        }
+        sdk.getBootstrap(accessKey).then(function (boot) {
+          renderServers((boot && boot.servers) || []);
+        }).catch(function (err) {
+          if (err.code === 'KEY_EXPIRED') {
+            setStatus(statusNote, 'Your VPN subscription has expired. Please renew your plan.');
+          } else if (err.code === 'KEY_REVOKED') {
+            setStatus(statusNote, 'Your VPN key has been revoked. Please contact support.');
+          } else if (err.code === 'DEVICE_LIMIT_REACHED' || err.status === 409) {
+            setStatus(statusNote, 'Device limit reached (5/5). Please revoke one of your connected devices below.');
+            var errDevices = err.payload && err.payload.error && err.payload.error.devices;
+            if (Array.isArray(errDevices)) renderDevices({ limit: 5, devices: errDevices });
+          } else {
+            setStatus(statusNote, (err && err.message) || 'Unable to load VPN servers.');
+          }
         });
+        sdk.getDevices(accessKey).then(renderDevices).catch(function () { /* ignore */ });
+      }).catch(function (err) {
+        setStatus(statusNote, (err && err.message) || 'Unable to load VPN access data.');
+      });
+    }
+
+    loadAccountData();
+    sdkFactory.initCheckoutReturnPolling(sdk, {
+      statusEl: statusNote,
+      onPaid: function () {
+        loadAccountData();
       }
-      if (devRes) renderDevices(devRes);
-    }).catch(function (err) {
-      setStatus(statusNote, (err && err.message) || 'Unable to load VPN access data.');
     });
 
     // Wire profile update, signout, security, support in live mode

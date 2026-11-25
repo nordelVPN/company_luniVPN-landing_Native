@@ -1,6 +1,6 @@
 function publicConfig(env = process.env) {
-  const mode = env.DATA_MODE || 'demo';
-  if (mode !== 'demo') throw new Error(`Unsupported DATA_MODE: ${mode}`);
+  const mode = (env.DATA_MODE || 'live').toLowerCase();
+  if (mode !== 'live' && mode !== 'demo') throw new Error(`Unsupported DATA_MODE: ${mode}`);
   const raw = env.BASE_PATH || '/';
   if (!raw.startsWith('/') || raw.includes('?') || raw.includes('#') || raw.includes('..') || raw.includes('\\')) {
     throw new Error('BASE_PATH must be an absolute path without query or traversal');

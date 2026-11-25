@@ -103,6 +103,30 @@
               <tbody data-sdk-devices><tr><td colspan="4">Loading devices...</td></tr></tbody>
             </table>
           </div>
+          <h3 style="margin-top:1.5rem;">Billing History</h3>
+          <div style="overflow-x:auto;margin-bottom:1.5rem;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr><th align="left">Date</th><th align="left">Plan</th><th align="left">Amount</th><th align="left">Status</th></tr></thead>
+              <tbody data-sdk-billing><tr><td colspan="4">Loading payments...</td></tr></tbody>
+            </table>
+          </div>
+          <h3>Security &amp; Support</h3>
+          <div class="actions" style="margin-bottom:1rem;">
+            <button class="button button-outline button-small" type="button" data-logout-all>Revoke all sessions</button>
+          </div>
+          <form class="account-form" data-password-form style="margin-bottom:1rem;">
+            <div class="field-grid">
+              <div class="field-group"><label for="luni-cur-pass">Current password</label><input id="luni-cur-pass" class="text-input" type="password" name="current_password" required></div>
+              <div class="field-group"><label for="luni-new-pass">New password</label><input id="luni-new-pass" class="text-input" type="password" name="password" required minlength="8"></div>
+              <div class="field-group"><label for="luni-confirm-pass">Confirm password</label><input id="luni-confirm-pass" class="text-input" type="password" name="password_confirmation" required minlength="8"></div>
+            </div>
+            <div class="actions"><button class="button button-outline button-small" type="submit">Update password</button></div>
+          </form>
+          <form class="account-form" data-support-form>
+            <div class="field-group"><label for="luni-sup-subj">Support subject</label><input id="luni-sup-subj" class="text-input" type="text" name="subject" required minlength="3"></div>
+            <div class="field-group"><label for="luni-sup-msg">Message</label><textarea id="luni-sup-msg" class="text-input" name="message" rows="3" required minlength="5"></textarea></div>
+            <div class="actions"><button class="button button-small" type="submit">Send support request</button></div>
+          </form>
         </div>
       </section>
 
