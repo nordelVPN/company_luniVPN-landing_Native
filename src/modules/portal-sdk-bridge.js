@@ -1,4 +1,4 @@
-/* global navigator */
+/* global navigator, URLSearchParams */
 'use strict';
 
 var sdkFactory = require('./vpn-portal-sdk');
@@ -10,6 +10,57 @@ function initPortalSdkBridge() {
     if (!el) return;
     el.hidden = false;
     el.textContent = msg;
+  }
+
+  function formatEur(minor) {
+    var euros = (minor || 0) / 100;
+    return '€' + (Number.isInteger(euros) ? String(euros) : euros.toFixed(2));
+  }
+
+  // Live showcase plans & servers on index.html
+  if (sdk.mode === 'live' && document.querySelector('#plans')) {
+    sdk.getPublicPlans().then(function (res) {
+      ((res && res.plans) || []).forEach(function (plan) {
+        var card = document.querySelector('[data-plan-card="' + plan.plan_code + '"]');
+        var priceEl = card && card.querySelector('.plan-price');
+        if (priceEl) priceEl.textContent = formatEur(plan.price_minor);
+      });
+    }).catch(function () { /* keep static fallback */ });
+
+    sdk.getPublicServersCatalog().then(function (res) {
+      var servers = (res && (res.servers || res.locations || res.data)) || [];
+      var plansSection = document.querySelector('#plans');
+      if (plansSection && servers.length) {
+        plansSection.setAttribute('data-live-servers-count', String(servers.length));
+      }
+    }).catch(function () { /* optional */ });
+  }
+
+  // Live checkout hook
+  if (sdk.mode === 'live') {
+    document.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest && e.target.closest('[data-checkout-button], [data-apply-demo-plan]');
+      if (!btn || btn.disabled) return;
+      var root = btn.closest('[data-checkout]') || document;
+      var activeCard = document.querySelector('[data-plan-card].is-selected') || document.querySelector('[data-account-select-plan][aria-pressed="true"]');
+      var planCode = (activeCard && (activeCard.getAttribute('data-plan-card') || activeCard.getAttribute('data-account-select-plan'))) || 'plus';
+      var promoInput = root.querySelector('[name="promo_code"]');
+      var msgEl = root.querySelector('[data-checkout-message]');
+      if (!sdk.isAuthenticated()) {
+        window.location.href = './login.html';
+        return;
+      }
+      e.preventDefault();
+      sdk.checkout({
+        plan_code: planCode,
+        promo_code: promoInput ? promoInput.value.trim() : null
+      }).then(function () {
+        setStatus(msgEl, 'Subscription activated! Redirecting...');
+        window.location.href = './account.html';
+      }).catch(function (err) {
+        setStatus(msgEl, (err && err.message) || 'Checkout failed.');
+      });
+    });
   }
 
   var loginForm = document.querySelector('[data-portal-login]');
@@ -50,7 +101,32 @@ function initPortalSdkBridge() {
   }
 
   var forgotForm = document.querySelector('[data-portal-forgot]');
-  if (forgotForm) {
+  var resetForm = document.querySelector('[data-portal-reset]');
+  var params = new URLSearchParams(window.location.search || '');
+  var resetToken = params.get('token');
+  if (resetToken && resetForm) {
+    if (forgotForm) forgotForm.hidden = true;
+    resetForm.hidden = false;
+    resetForm.token.value = resetToken;
+    var rStatus = resetForm.querySelector('[data-portal-status]');
+    resetForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      if (resetForm.password.value !== resetForm.password_confirmation.value) {
+        setStatus(rStatus, 'Passwords do not match.');
+        return;
+      }
+      sdk.resetPassword({
+        token: resetForm.token.value,
+        password: resetForm.password.value,
+        password_confirmation: resetForm.password_confirmation.value
+      }).then(function () {
+        setStatus(rStatus, 'Password updated. Redirecting to sign in...');
+        window.location.href = './login.html';
+      }).catch(function (err) {
+        setStatus(rStatus, (err && err.message) || 'Reset failed.');
+      });
+    });
+  } else if (forgotForm) {
     var fStatus = forgotForm.querySelector('[data-portal-status]');
     forgotForm.addEventListener('submit', function (event) {
       event.preventDefault();
@@ -64,6 +140,11 @@ function initPortalSdkBridge() {
 
   var vpnPanel = document.querySelector('[data-sdk-vpn-panel]');
   if (vpnPanel) {
+    if (sdk.mode === 'live' && !sdk.isAuthenticated()) {
+      window.location.href = './login.html';
+      return;
+    }
+
     var accessKey = '';
     var revealed = false;
 
@@ -107,15 +188,39 @@ function initPortalSdkBridge() {
       : Promise.resolve();
 
     ready.then(function () {
-      return sdk.getSubscription();
-    }).then(function (subRes) {
-      accessKey = (subRes && subRes.subscription && subRes.subscription.access_key) || '';
+      return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory()]);
+    }).then(function (all) {
+      var me = all[0];
+      var subRes = all[1];
+      var billRes = all[2];
+      if (me && me.client) {
+        var nameEl = document.querySelector('[data-profile-name]');
+        var emailEl = document.querySelector('[data-profile-email]');
+        var nameInput = document.querySelector('#profile-name-input');
+        var emailInput = document.querySelector('#profile-email-input');
+        if (nameEl) nameEl.textContent = me.client.display_name || me.client.email;
+        if (emailEl) emailEl.textContent = me.client.email;
+        if (nameInput) nameInput.value = me.client.display_name || '';
+        if (emailInput) emailInput.value = me.client.email || '';
+      }
+      if (billRes && billRes.payments && statusNote && billRes.payments.length && sdk.mode === 'live') {
+        statusNote.setAttribute('data-payments-count', String(billRes.payments.length));
+      }
+      var sub = subRes && subRes.subscription;
+      if (sub) {
+        var subPlan = document.querySelector('[data-sub-plan]');
+        var subStatus = document.querySelector('[data-sub-status]');
+        if (subPlan) subPlan.textContent = sub.plan_name;
+        if (subStatus) subStatus.textContent = sub.status;
+      }
+      accessKey = (sub && sub.access_key) || '';
       if (keyEl) keyEl.textContent = maskKey(accessKey);
+      if (!accessKey) return [null, null];
       return Promise.all([sdk.getBootstrap(accessKey), sdk.getDevices(accessKey)]);
     }).then(function (results) {
-      var boot = results[0];
-      var devRes = results[1];
-      if (serversBody) {
+      var boot = results && results[0];
+      var devRes = results && results[1];
+      if (serversBody && boot) {
         serversBody.innerHTML = '';
         ((boot && boot.servers) || []).forEach(function (srv) {
           var tr = document.createElement('tr');
@@ -127,10 +232,71 @@ function initPortalSdkBridge() {
           serversBody.appendChild(tr);
         });
       }
-      renderDevices(devRes);
+      if (devRes) renderDevices(devRes);
     }).catch(function (err) {
       setStatus(statusNote, (err && err.message) || 'Unable to load VPN access data.');
     });
+
+    // Wire profile update, signout, security, support in live mode
+    var profileForm = document.querySelector('[data-profile-form]');
+    if (profileForm && sdk.mode === 'live') {
+      profileForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var displayName = profileForm.displayName ? profileForm.displayName.value.trim() : '';
+        sdk.updateProfile({ display_name: displayName }).then(function () {
+          setStatus(document.querySelector('[data-profile-status]'), 'Profile saved.');
+        }).catch(function (err) {
+          setStatus(document.querySelector('[data-profile-status]'), (err && err.message) || 'Save failed.');
+        });
+      });
+    }
+
+    var signoutBtn = document.querySelector('[data-demo-signout]');
+    if (signoutBtn && sdk.mode === 'live') {
+      signoutBtn.addEventListener('click', function () {
+        sdk.logout().then(function () { window.location.href = './login.html'; });
+      });
+    }
+
+    var passForm = document.querySelector('[data-password-form]');
+    if (passForm) {
+      passForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        sdk.changePassword({
+          current_password: passForm.current_password.value,
+          password: passForm.password.value,
+          password_confirmation: passForm.password_confirmation.value
+        }).then(function () {
+          passForm.reset();
+          setStatus(statusNote, 'Password updated.');
+        }).catch(function (err) {
+          setStatus(statusNote, (err && err.message) || 'Password update failed.');
+        });
+      });
+    }
+
+    var logoutAllBtn = document.querySelector('[data-logout-all]');
+    if (logoutAllBtn) {
+      logoutAllBtn.addEventListener('click', function () {
+        sdk.logoutAll().then(function () { window.location.href = './login.html'; });
+      });
+    }
+
+    var supportForm = document.querySelector('[data-support-form]');
+    if (supportForm) {
+      supportForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        sdk.createSupportTicket({
+          subject: supportForm.subject.value.trim(),
+          message: supportForm.message.value.trim()
+        }).then(function () {
+          supportForm.reset();
+          setStatus(statusNote, 'Support ticket submitted.');
+        }).catch(function (err) {
+          setStatus(statusNote, (err && err.message) || 'Support request failed.');
+        });
+      });
+    }
 
     var revBtn = vpnPanel.querySelector('[data-sdk-key-reveal]');
     if (revBtn) {

@@ -7,7 +7,8 @@
     "build:dev": "webpack --config webpack/webpack.dev.js",
     "build:prod": "webpack --config webpack/webpack.prod.js",
     "build": "npm run build:prod",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "start:live": "node -e \"const {spawnSync}=require('child_process');process.exit(spawnSync('npm',['start'],{stdio:'inherit',shell:true,env:{...process.env,DATA_MODE:'live',BRAND_SLUG:'luni',PORT:'3002',SITE_PORT:'3002',PORTAL_API_URL:process.env.PORTAL_API_URL||'http://localhost:8080',SERVERS_API_URL:process.env.SERVERS_API_URL||'http://localhost:8082'}}).status||0)\""
   },
   "engines": {
     "node": "24.21.0"
