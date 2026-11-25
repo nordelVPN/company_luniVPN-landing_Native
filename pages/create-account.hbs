@@ -1,0 +1,34 @@
+<section class="landing-section legal-page" aria-labelledby="register-title">
+  <div class="container legal-container">
+    <p class="eyebrow">LuniVPN Account</p>
+    <h1 id="register-title">Create account</h1>
+    <p class="section-lead">Create your LuniVPN account to manage subscriptions and devices.</p>
+    <form class="panel account-form" data-portal-register>
+      <p class="muted" role="status" aria-live="polite" data-portal-status hidden></p>
+      <div class="field-group">
+        <label for="luni-reg-name">Display name</label>
+        <input id="luni-reg-name" class="text-input" type="text" name="display_name" autocomplete="name" placeholder="Alex">
+      </div>
+      <div class="field-group">
+        <label for="luni-reg-email">Email</label>
+        <input id="luni-reg-email" class="text-input" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field-group">
+        <label for="luni-reg-password">Password (min 8 characters)</label>
+        <input id="luni-reg-password" class="text-input" type="password" name="password" required minlength="8" autocomplete="new-password">
+      </div>
+      <div class="field-group">
+        <label for="luni-reg-confirm">Confirm password</label>
+        <input id="luni-reg-confirm" class="text-input" type="password" name="password_confirmation" required minlength="8" autocomplete="new-password">
+      </div>
+      <label>
+        <input type="checkbox" name="accept_terms" required>
+        I agree to the <a href="{{basePath}}terms.html">Terms of Service</a> and <a href="{{basePath}}privacy.html">Privacy Policy</a>.
+      </label>
+      <div class="actions">
+        <button class="button" type="submit">Create account <span aria-hidden="true">↗</span></button>
+        <a class="button button-outline" href="{{basePath}}login.html">Sign in</a>
+      </div>
+    </form>
+  </div>
+</section>

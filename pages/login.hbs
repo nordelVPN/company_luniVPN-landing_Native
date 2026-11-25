@@ -1,0 +1,23 @@
+<section class="landing-section legal-page" aria-labelledby="login-title">
+  <div class="container legal-container">
+    <p class="eyebrow">LuniVPN Account</p>
+    <h1 id="login-title">Sign in</h1>
+    <p class="section-lead">Access your VPN key, servers, and connected devices.</p>
+    <form class="panel account-form" data-portal-login>
+      <p class="muted" role="status" aria-live="polite" data-portal-status hidden></p>
+      <div class="field-group">
+        <label for="luni-login-email">Email</label>
+        <input id="luni-login-email" class="text-input" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+      </div>
+      <div class="field-group">
+        <label for="luni-login-password">Password</label>
+        <input id="luni-login-password" class="text-input" type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <div class="actions">
+        <button class="button" type="submit">Sign in <span aria-hidden="true">↗</span></button>
+        <a class="button button-outline" href="{{basePath}}create-account.html">Create account</a>
+      </div>
+      <p><a class="change-plan-link" href="{{basePath}}forgot-password.html">Forgot password?</a></p>
+    </form>
+  </div>
+</section>

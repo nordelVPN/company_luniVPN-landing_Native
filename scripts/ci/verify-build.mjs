@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = 'build/prod';
 const forbidden = /^(?:\.env(?:\..*)?|\.git|node_modules|docs|fixtures)$/i;
-const expectedHtml = ['account.html', 'index.html', 'privacy.html', 'terms.html'];
+const expectedHtml = ['account.html', 'create-account.html', 'forgot-password.html', 'index.html', 'login.html', 'privacy.html', 'terms.html'];
 const landingSections = ['home', 'the-app', 'why-luni', 'support', 'plans'];
 const accountPanels = ['account', 'subscription', 'plans', 'checkout', 'help'];
 const expectedPlans = ['trial', 'basic', 'plus', 'complete'];
@@ -135,12 +135,12 @@ try {
     }
   }
 
-  for (const legalFile of ['privacy.html', 'terms.html']) {
-    const legalHtml = await readFile(path.join(root, legalFile), 'utf8');
-    await checkCommonHtml(legalFile, legalHtml, basePath);
+  for (const extraFile of ['login.html', 'create-account.html', 'forgot-password.html', 'privacy.html', 'terms.html']) {
+    const html = await readFile(path.join(root, extraFile), 'utf8');
+    await checkCommonHtml(extraFile, html, basePath);
   }
 
-  console.log('Production artifact validated: index.html (multi-section wave canvas + 4 plans + mirrored card-wave + clean assets), account.html, privacy.html, terms.html.');
+  console.log('Production artifact validated: 7 HTML pages (index, login, create-account, forgot-password, account, privacy, terms).');
 } catch (error) {
   console.error('Build validation failed:', error.message);
   process.exitCode = 1;

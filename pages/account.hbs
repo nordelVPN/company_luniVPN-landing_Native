@@ -22,7 +22,8 @@
       </div>
       <div class="actions">
         <button class="button" type="submit" data-demo-signin><span data-i18n="account.authSubmit">{{demoAuth.submitLabel}}</span> <span aria-hidden="true">↗</span></button>
-        <a class="button button-outline" href="{{basePath}}index.html" data-i18n="account.backHome">Back to home</a>
+        <a class="button button-outline" href="{{basePath}}login.html">Full sign in</a>
+        <a class="button button-outline" href="{{basePath}}create-account.html">Create account</a>
       </div>
     </form>
   </section>
@@ -79,6 +80,30 @@
           </div>
           <p class="muted" role="status" aria-live="polite" data-profile-status></p>
         </form>
+
+        <div class="panel" data-sdk-vpn-panel>
+          <p class="eyebrow">VPN ACCESS &amp; DEVICES</p>
+          <h3>VPN Key &amp; Available Servers</h3>
+          <p class="muted" role="status" aria-live="polite" data-sdk-status hidden></p>
+          <div class="actions" style="margin-bottom:1rem;align-items:center;">
+            <code data-sdk-vpn-key>••••••••••••</code>
+            <button class="button button-outline button-small" type="button" data-sdk-key-reveal>Show</button>
+            <button class="button button-outline button-small" type="button" data-sdk-key-copy>Copy</button>
+          </div>
+          <div style="overflow-x:auto;margin-bottom:1.5rem;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr><th align="left">Location</th><th align="left">Status</th><th align="left">Ping</th><th align="left">Protocols</th></tr></thead>
+              <tbody data-sdk-servers><tr><td colspan="4">Loading servers...</td></tr></tbody>
+            </table>
+          </div>
+          <h3>Connected Devices (<span data-sdk-devices-count>0 / 5</span>)</h3>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr><th align="left">Device</th><th align="left">Platform</th><th align="left">Last Active</th><th align="left">Action</th></tr></thead>
+              <tbody data-sdk-devices><tr><td colspan="4">Loading devices...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <section
