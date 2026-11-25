@@ -36,8 +36,31 @@ function initPortalSdkBridge() {
     }).catch(function () { /* optional */ });
   }
 
+  sdkFactory.initCheckoutReturnPolling(sdk);
+
   // Live checkout hook
   if (sdk.mode === 'live') {
+    var getLProvider = function () { return null; };
+    var luniCheckoutRoot = document.querySelector('[data-checkout]');
+    if (luniCheckoutRoot) {
+      var lProviderHost = luniCheckoutRoot.querySelector('[data-payment-providers]');
+      if (!lProviderHost) {
+        lProviderHost = document.createElement('div');
+        lProviderHost.className = 'payment-providers';
+        lProviderHost.setAttribute('data-payment-providers', '');
+        lProviderHost.hidden = true;
+        var lBtn = luniCheckoutRoot.querySelector('[data-checkout-button], [data-apply-demo-plan]');
+        if (lBtn && lBtn.parentNode) {
+          lBtn.parentNode.insertBefore(lProviderHost, lBtn);
+        } else {
+          luniCheckoutRoot.appendChild(lProviderHost);
+        }
+      }
+      sdkFactory.mountPaymentProviderSelector(sdk, lProviderHost).then(function (getter) {
+        if (typeof getter === 'function') getLProvider = getter;
+      });
+    }
+
     document.addEventListener('click', function (e) {
       var btn = e.target && e.target.closest && e.target.closest('[data-checkout-button], [data-apply-demo-plan]');
       if (!btn || btn.disabled) return;
@@ -51,12 +74,17 @@ function initPortalSdkBridge() {
         return;
       }
       e.preventDefault();
+      var baseUrl = window.location.origin + window.location.pathname;
       sdk.checkout({
         plan_code: planCode,
-        promo_code: promoInput ? promoInput.value.trim() : null
-      }).then(function () {
-        setStatus(msgEl, 'Subscription activated! Redirecting...');
-        window.location.href = './account.html';
+        provider: getLProvider(),
+        promo_code: promoInput ? promoInput.value.trim() : null,
+        return_url: baseUrl,
+        cancel_url: baseUrl + '?status=cancelled'
+      }).then(function (res) {
+        var target = res && res.checkout && res.checkout.checkout_url;
+        setStatus(msgEl, 'Redirecting to payment provider...');
+        window.location.href = target || './account.html';
       }).catch(function (err) {
         setStatus(msgEl, (err && err.message) || 'Checkout failed.');
       });
