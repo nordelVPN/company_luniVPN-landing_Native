@@ -8,11 +8,12 @@
   <title data-i18n="{{metadata.pageId}}.title">{{metadata.title}}</title>
   {{#if canonical}}<link rel="canonical" href="{{canonical}}">{{/if}}
   {{#if (eq metadata.pageId 'account')}}<style>[data-auth-gate][hidden]{display:none!important;}</style><script>(function(){try{if(window.__VPN_PORTAL_CONFIG__&&window.__VPN_PORTAL_CONFIG__.mode==='demo')return;if(!window.localStorage.getItem('luni-vpn-portal:token')){window.location.replace('./login.html');}}catch(e){window.location.replace('./login.html');}})();</script>{{/if}}
-  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-W4ZJLKF4"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4N33FKBNLK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
+    gtag('config', 'G-4N33FKBNLK');
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
