@@ -62,13 +62,13 @@
           <div class="actions">
             <button class="button button-small" type="submit" data-i18n="account.profile.save">Save profile</button>
           </div>
-          <p class="muted" role="status" aria-live="polite" data-profile-status></p>
+          <div class="portal-status" role="status" aria-live="polite" data-profile-status data-portal-status hidden></div>
         </form>
 
         <div class="panel" data-sdk-vpn-panel>
           <p class="eyebrow">VPN ACCESS &amp; DEVICES</p>
           <h3>VPN Key &amp; Available Servers</h3>
-          <p class="muted" role="status" aria-live="polite" data-sdk-status hidden></p>
+          <div class="portal-status" role="status" aria-live="polite" data-sdk-status data-portal-status hidden></div>
           <div class="actions" style="margin-bottom:1rem;align-items:center;">
             <code data-sdk-vpn-key>••••••••••••</code>
             <button class="button button-outline button-small" type="button" data-sdk-key-reveal>Show</button>
@@ -98,7 +98,8 @@
           <div class="actions" style="margin-bottom:1rem;">
             <button class="button button-outline button-small" type="button" data-logout-all>Revoke all sessions</button>
           </div>
-          <form class="account-form" data-password-form style="margin-bottom:1rem;">
+          <form class="account-form" data-password-form novalidate style="margin-bottom:1rem;">
+        <div class="portal-status" role="status" aria-live="polite" data-password-status data-portal-status hidden></div>
             <div class="field-grid">
               <div class="field-group"><label for="luni-cur-pass">Current password</label><input id="luni-cur-pass" class="text-input" type="password" name="current_password" required></div>
               <div class="field-group"><label for="luni-new-pass">New password</label><input id="luni-new-pass" class="text-input" type="password" name="password" required minlength="8"></div>
@@ -106,7 +107,8 @@
             </div>
             <div class="actions"><button class="button button-outline button-small" type="submit">Update password</button></div>
           </form>
-          <form class="account-form" data-support-form>
+          <form class="account-form" data-support-form novalidate>
+        <div class="portal-status" role="status" aria-live="polite" data-support-status data-portal-status hidden></div>
             <div class="field-group"><label for="luni-sup-subj">Support subject</label><input id="luni-sup-subj" class="text-input" type="text" name="subject" required minlength="3"></div>
             <div class="field-group"><label for="luni-sup-msg">Message</label><textarea id="luni-sup-msg" class="text-input" name="message" rows="3" required minlength="5"></textarea></div>
             <div class="actions"><button class="button button-small" type="submit">Send support request</button></div>
@@ -205,22 +207,7 @@
             <button class="change-plan-link" type="button" data-goto-tab="plans" data-i18n="checkout.changePlan">Change plan</button>
 
             <div class="checkout-preview" aria-label="Payment details" data-i18n-aria-label="checkout.paymentDetailsLabel">
-              <div class="demo-field-group">
-                <span class="demo-field-label" data-i18n="checkout.emailLabel">Email</span>
-                <div class="demo-field" aria-hidden="true"><span>{{profile.email}}</span></div>
-              </div>
-              <div class="demo-field-group">
-                <span class="demo-field-label" data-i18n="checkout.cardDetailsLabel">Card details</span>
-                <div class="demo-fields" aria-hidden="true">
-                  <div class="demo-field demo-field-card">
-                    <span class="demo-card-icon">{{> shared/icon name='card'}}</span>
-                    <span>•••• •••• •••• 0000</span>
-                  </div>
-                  <div class="demo-field-row">
-                    <div class="demo-field"><span data-i18n="checkout.mmYy">MM / YY</span><span>— / —</span></div>
-                    <div class="demo-field"><span data-i18n="checkout.cvc">CVC</span><span>•••</span></div>
-                  </div>
-                </div>
+              
               </div>
             </div>
           </div>
@@ -241,9 +228,7 @@
             <button class="button" type="button" data-checkout-button disabled>
               <span data-i18n="checkout.continue">Continue to payment</span> <span aria-hidden="true">↗</span>
             </button>
-            <button class="button button-outline summary-secondary-btn" type="button" data-apply-demo-plan disabled data-i18n="account.checkout.switchPlan">
-              Switch active plan
-            </button>
+            
             <p class="muted checkout-status-note" role="status" aria-live="polite" data-checkout-message></p>
           </aside>
         </div>

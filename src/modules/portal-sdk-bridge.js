@@ -12,10 +12,17 @@ function initPortalSdkBridge() {
   var checkoutWishlistCtrls = [];
   siteConfigPromise.then(function (cfg) { currentSiteConfig = cfg; });
 
-  function setStatus(el, msg) {
+  function uiMsg() {
+    return sdkFactory.getPortalUiMessages();
+  }
+
+  function isValidEmail(val) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(val || '').trim());
+  }
+
+  function setStatus(el, msg, type, options) {
     if (!el) return;
-    el.hidden = false;
-    el.textContent = msg;
+    sdkFactory.setPortalStatus(el, msg, type || 'info', options);
   }
 
   function formatEur(minor) {
@@ -180,42 +187,83 @@ function initPortalSdkBridge() {
 
   var loginForm = document.querySelector('[data-portal-login]');
   if (loginForm) {
+    sdkFactory.bindFormValidationClear(loginForm);
     var statusEl = loginForm.querySelector('[data-portal-status]');
+    var loginBtn = loginForm.querySelector('button[type="submit"]');
     loginForm.addEventListener('submit', function (event) {
       event.preventDefault();
-      sdk.login({ email: loginForm.email.value.trim(), password: loginForm.password.value }).then(function () {
-        setStatus(statusEl, 'Signed in. Redirecting to account...');
-        window.location.href = './account.html';
-      }).catch(function (err) {
-        setStatus(statusEl, (err && err.message) || 'Sign in failed.');
+      sdkFactory.clearFieldErrors(loginForm);
+      var email = loginForm.email.value.trim();
+      var password = loginForm.password.value;
+      var fieldErrs = {};
+      if (!isValidEmail(email)) fieldErrs.email = uiMsg().invalidEmail;
+      if (!password) fieldErrs.password = uiMsg().requiredField;
+      if (Object.keys(fieldErrs).length) {
+        sdkFactory.setFieldErrors(loginForm, fieldErrs);
+        setStatus(statusEl, Object.values(fieldErrs)[0], 'error');
+        return;
+      }
+      setStatus(statusEl, uiMsg().loading, 'loading', { scroll: false });
+      sdkFactory.withFormBusy(loginForm, loginBtn, function () {
+        return sdk.login({ email: email, password: password }).then(function () {
+          setStatus(statusEl, 'Signed in. Redirecting to account...', 'success');
+          window.location.href = './account.html';
+        }).catch(function (err) {
+          if (err && err.details) {
+            sdkFactory.setFieldErrors(loginForm, err.details);
+          } else if (err && err.status === 401) {
+            sdkFactory.setFieldErrors(loginForm, {
+              email: sdkFactory.formatPortalApiError(err, uiMsg().unauthorized),
+              password: ' '
+            }, { focus: false });
+          }
+          setStatus(statusEl, sdkFactory.formatPortalApiError(err, 'Sign in failed.'), 'error');
+        });
       });
     });
   }
 
   var registerForm = document.querySelector('[data-portal-register]');
   if (registerForm) {
+    sdkFactory.bindFormValidationClear(registerForm);
     siteConfigPromise.then(function (cfg) {
       if (sdkFactory.isSiteInWishlistMode(cfg)) {
         sdkFactory.mountRegisterWishlistBanner(registerForm, cfg);
       }
     });
     var regStatus = registerForm.querySelector('[data-portal-status]');
+    var regBtn = registerForm.querySelector('button[type="submit"]');
     registerForm.addEventListener('submit', function (event) {
       event.preventDefault();
-      if (registerForm.password.value !== registerForm.password_confirmation.value) {
-        setStatus(regStatus, 'Passwords do not match.');
+      sdkFactory.clearFieldErrors(registerForm);
+      var email = registerForm.email.value.trim();
+      var password = registerForm.password.value;
+      var confirm = registerForm.password_confirmation.value;
+      var terms = registerForm.accept_terms;
+      var fieldErrs = {};
+      if (!isValidEmail(email)) fieldErrs.email = uiMsg().invalidEmail;
+      if (password.length < 8) fieldErrs.password = uiMsg().passwordTooShort;
+      if (password !== confirm) fieldErrs.password_confirmation = uiMsg().passwordsMismatch;
+      if (terms && !terms.checked) fieldErrs.accept_terms = uiMsg().acceptTermsRequired;
+      if (Object.keys(fieldErrs).length) {
+        sdkFactory.setFieldErrors(registerForm, fieldErrs);
+        setStatus(regStatus, Object.values(fieldErrs)[0], 'error');
         return;
       }
-      sdk.register({
-        email: registerForm.email.value.trim(),
-        password: registerForm.password.value,
-        password_confirmation: registerForm.password_confirmation.value,
-        display_name: registerForm.display_name ? registerForm.display_name.value.trim() : ''
-      }).then(function () {
-        setStatus(regStatus, 'Account created. Redirecting...');
-        window.location.href = './account.html';
-      }).catch(function (err) {
-        setStatus(regStatus, (err && err.message) || 'Registration failed.');
+      setStatus(regStatus, uiMsg().loading, 'loading', { scroll: false });
+      sdkFactory.withFormBusy(registerForm, regBtn, function () {
+        return sdk.register({
+          email: email,
+          password: password,
+          password_confirmation: confirm,
+          display_name: registerForm.display_name ? registerForm.display_name.value.trim() : ''
+        }).then(function () {
+          setStatus(regStatus, 'Account created. Redirecting...', 'success');
+          window.location.href = './account.html';
+        }).catch(function (err) {
+          if (err && err.details) sdkFactory.setFieldErrors(registerForm, err.details);
+          setStatus(regStatus, sdkFactory.formatPortalApiError(err, 'Registration failed.'), 'error');
+        });
       });
     });
   }
@@ -228,32 +276,58 @@ function initPortalSdkBridge() {
     if (forgotForm) forgotForm.hidden = true;
     resetForm.hidden = false;
     resetForm.token.value = resetToken;
+    sdkFactory.bindFormValidationClear(resetForm);
     var rStatus = resetForm.querySelector('[data-portal-status]');
+    var rBtn = resetForm.querySelector('button[type="submit"]');
     resetForm.addEventListener('submit', function (event) {
       event.preventDefault();
-      if (resetForm.password.value !== resetForm.password_confirmation.value) {
-        setStatus(rStatus, 'Passwords do not match.');
+      sdkFactory.clearFieldErrors(resetForm);
+      var pw = resetForm.password.value;
+      var confirm = resetForm.password_confirmation.value;
+      var fieldErrs = {};
+      if (pw.length < 8) fieldErrs.password = uiMsg().passwordTooShort;
+      if (pw !== confirm) fieldErrs.password_confirmation = uiMsg().passwordsMismatch;
+      if (Object.keys(fieldErrs).length) {
+        sdkFactory.setFieldErrors(resetForm, fieldErrs);
+        setStatus(rStatus, Object.values(fieldErrs)[0], 'error');
         return;
       }
-      sdk.resetPassword({
-        token: resetForm.token.value,
-        password: resetForm.password.value,
-        password_confirmation: resetForm.password_confirmation.value
-      }).then(function () {
-        setStatus(rStatus, 'Password updated. Redirecting to sign in...');
-        window.location.href = './login.html';
-      }).catch(function (err) {
-        setStatus(rStatus, (err && err.message) || 'Reset failed.');
+      setStatus(rStatus, uiMsg().loading, 'loading', { scroll: false });
+      sdkFactory.withFormBusy(resetForm, rBtn, function () {
+        return sdk.resetPassword({
+          token: resetForm.token.value,
+          password: pw,
+          password_confirmation: confirm
+        }).then(function () {
+          setStatus(rStatus, 'Password updated. Redirecting to sign in...', 'success');
+          window.location.href = './login.html';
+        }).catch(function (err) {
+          if (err && err.details) sdkFactory.setFieldErrors(resetForm, err.details);
+          setStatus(rStatus, sdkFactory.formatPortalApiError(err, 'Reset failed. Request a new reset link.'), 'error');
+        });
       });
     });
   } else if (forgotForm) {
+    sdkFactory.bindFormValidationClear(forgotForm);
     var fStatus = forgotForm.querySelector('[data-portal-status]');
+    var fBtn = forgotForm.querySelector('button[type="submit"]');
     forgotForm.addEventListener('submit', function (event) {
       event.preventDefault();
-      sdk.forgotPassword(forgotForm.email.value.trim()).then(function (res) {
-        setStatus(fStatus, (res && res.message) || 'If an account exists, reset instructions have been sent.');
-      }).catch(function (err) {
-        setStatus(fStatus, (err && err.message) || 'Request failed.');
+      sdkFactory.clearFieldErrors(forgotForm);
+      var email = forgotForm.email.value.trim();
+      if (!isValidEmail(email)) {
+        sdkFactory.setFieldErrors(forgotForm, { email: uiMsg().invalidEmail });
+        setStatus(fStatus, uiMsg().invalidEmail, 'error');
+        return;
+      }
+      setStatus(fStatus, uiMsg().loading, 'loading', { scroll: false });
+      sdkFactory.withFormBusy(forgotForm, fBtn, function () {
+        return sdk.forgotPassword(email).then(function (res) {
+          setStatus(fStatus, (res && res.message) || 'If an account exists, reset instructions have been sent.', 'success');
+        }).catch(function (err) {
+          if (err && err.details) sdkFactory.setFieldErrors(forgotForm, err.details);
+          setStatus(fStatus, sdkFactory.formatPortalApiError(err, 'Request failed.'), 'error');
+        });
       });
     });
   }
@@ -307,7 +381,7 @@ function initPortalSdkBridge() {
           sdk.revokeDevice(accessKey, dev.device_uid).then(function () {
             return sdk.getDevices(accessKey);
           }).then(renderDevices).catch(function (err) {
-            setStatus(statusNote, (err && err.message) || 'Could not revoke device.');
+            setStatus(statusNote, sdkFactory.formatPortalApiError(err, 'Could not revoke device.'), 'error');
           });
         });
         devicesBody.appendChild(tr);
@@ -415,11 +489,11 @@ function initPortalSdkBridge() {
           renderServers((boot && boot.servers) || []);
         }).catch(function (err) {
           if (err.code === 'KEY_EXPIRED') {
-            setStatus(statusNote, 'Your VPN subscription has expired. Please renew your plan.');
+            setStatus(statusNote, uiMsg().keyExpired, 'warning');
           } else if (err.code === 'KEY_REVOKED') {
-            setStatus(statusNote, 'Your VPN key has been revoked. Please contact support.');
+            setStatus(statusNote, uiMsg().keyRevoked, 'error');
           } else if (err.code === 'DEVICE_LIMIT_REACHED' || err.status === 409) {
-            setStatus(statusNote, 'Device limit reached (5/5). Please revoke one of your connected devices below.');
+            setStatus(statusNote, uiMsg().deviceLimitReached, 'warning');
             var errDevices = err.payload && err.payload.error && err.payload.error.devices;
             if (Array.isArray(errDevices)) renderDevices({ limit: 5, devices: errDevices });
           } else {
@@ -452,9 +526,9 @@ function initPortalSdkBridge() {
         e.preventDefault();
         var displayName = profileForm.displayName ? profileForm.displayName.value.trim() : '';
         sdk.updateProfile({ display_name: displayName }).then(function () {
-          setStatus(document.querySelector('[data-profile-status]'), 'Profile saved.');
+          setStatus(document.querySelector('[data-profile-status]'), 'Profile saved.', 'success');
         }).catch(function (err) {
-          setStatus(document.querySelector('[data-profile-status]'), (err && err.message) || 'Save failed.');
+          setStatus(document.querySelector('[data-profile-status]'), sdkFactory.formatPortalApiError(err, 'Save failed.'), 'error');
         });
       });
     }
@@ -468,17 +542,37 @@ function initPortalSdkBridge() {
 
     var passForm = document.querySelector('[data-password-form]');
     if (passForm) {
+      sdkFactory.bindFormValidationClear(passForm);
+      var pwStatus = passForm.querySelector('[data-password-status]') || statusNote;
+      var pwBtn = passForm.querySelector('button[type="submit"]');
       passForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        sdk.changePassword({
-          current_password: passForm.current_password.value,
-          password: passForm.password.value,
-          password_confirmation: passForm.password_confirmation.value
-        }).then(function () {
-          passForm.reset();
-          setStatus(statusNote, 'Password updated.');
-        }).catch(function (err) {
-          setStatus(statusNote, (err && err.message) || 'Password update failed.');
+        sdkFactory.clearFieldErrors(passForm);
+        var cur = passForm.current_password.value;
+        var nextPw = passForm.password.value;
+        var confirmPw = passForm.password_confirmation.value;
+        var fieldErrs = {};
+        if (!cur) fieldErrs.current_password = uiMsg().requiredField;
+        if (nextPw.length < 8) fieldErrs.password = uiMsg().passwordTooShort;
+        if (nextPw !== confirmPw) fieldErrs.password_confirmation = uiMsg().passwordsMismatch;
+        if (Object.keys(fieldErrs).length) {
+          sdkFactory.setFieldErrors(passForm, fieldErrs);
+          setStatus(pwStatus, Object.values(fieldErrs)[0], 'error');
+          return;
+        }
+        setStatus(pwStatus, uiMsg().loading, 'loading', { scroll: false });
+        sdkFactory.withFormBusy(passForm, pwBtn, function () {
+          return sdk.changePassword({
+            current_password: cur,
+            password: nextPw,
+            password_confirmation: confirmPw
+          }).then(function () {
+            passForm.reset();
+            setStatus(pwStatus, 'Password updated.', 'success');
+          }).catch(function (err) {
+            if (err && err.details) sdkFactory.setFieldErrors(passForm, err.details);
+            setStatus(pwStatus, sdkFactory.formatPortalApiError(err, 'Password update failed.'), 'error');
+          });
         });
       });
     }
@@ -492,16 +586,34 @@ function initPortalSdkBridge() {
 
     var supportForm = document.querySelector('[data-support-form]');
     if (supportForm) {
+      sdkFactory.bindFormValidationClear(supportForm);
+      var sStatus = supportForm.querySelector('[data-support-status]') || statusNote;
+      var sBtn = supportForm.querySelector('button[type="submit"]');
       supportForm.addEventListener('submit', function (e) {
         e.preventDefault();
-        sdk.createSupportTicket({
-          subject: supportForm.subject.value.trim(),
-          message: supportForm.message.value.trim()
-        }).then(function () {
-          supportForm.reset();
-          setStatus(statusNote, 'Support ticket submitted.');
-        }).catch(function (err) {
-          setStatus(statusNote, (err && err.message) || 'Support request failed.');
+        sdkFactory.clearFieldErrors(supportForm);
+        var subject = supportForm.subject.value.trim();
+        var message = supportForm.message.value.trim();
+        var fieldErrs = {};
+        if (subject.length < 3) fieldErrs.subject = uiMsg().subjectTooShort;
+        if (message.length < 5) fieldErrs.message = uiMsg().messageTooShort;
+        if (Object.keys(fieldErrs).length) {
+          sdkFactory.setFieldErrors(supportForm, fieldErrs);
+          setStatus(sStatus, Object.values(fieldErrs)[0], 'error');
+          return;
+        }
+        setStatus(sStatus, uiMsg().loading, 'loading', { scroll: false });
+        sdkFactory.withFormBusy(supportForm, sBtn, function () {
+          return sdk.createSupportTicket({
+            subject: subject,
+            message: message
+          }).then(function () {
+            supportForm.reset();
+            setStatus(sStatus, 'Support ticket submitted.', 'success');
+          }).catch(function (err) {
+            if (err && err.details) sdkFactory.setFieldErrors(supportForm, err.details);
+            setStatus(sStatus, sdkFactory.formatPortalApiError(err, 'Support request failed.'), 'error');
+          });
         });
       });
     }
@@ -519,7 +631,7 @@ function initPortalSdkBridge() {
     if (copyBtn) {
       copyBtn.addEventListener('click', function () {
         if (navigator.clipboard && accessKey) {
-          navigator.clipboard.writeText(accessKey).then(function () { setStatus(statusNote, 'VPN key copied.'); });
+          navigator.clipboard.writeText(accessKey).then(function () { setStatus(statusNote, 'VPN key copied.', 'success', { scroll: false }); }).catch(function () { setStatus(statusNote, 'Could not copy VPN key.', 'error', { scroll: false }); });
         }
       });
     }

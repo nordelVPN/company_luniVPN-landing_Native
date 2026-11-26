@@ -4,6 +4,7 @@
 @use 'components/footer';
 @use 'components/buttons';
 @use 'components/wishlist-dialog';
+@use 'components/portal-status';
 
 * { box-sizing: border-box; }
 html {
@@ -120,4 +121,21 @@ dd { margin: 0; text-align: right; }
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+:root {
+  --ps-radius: 14px;
+  --ps-font: #{$font-sans};
+  --ps-error-bg: #fbeae8;
+  --ps-error-border: #b42318;
+  --ps-error-text: #7a1c14;
+  --ps-success-bg: #eaf5ec;
+  --ps-success-border: #267339;
+  --ps-success-text: #143622;
+  --ps-warning-bg: #fcf3de;
+  --ps-warning-border: #b56a00;
+  --ps-warning-text: #693c00;
+  --ps-info-bg: #f1ebda;
+  --ps-info-border: #6a7849;
+  --ps-info-text: #143622;
 }

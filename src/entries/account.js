@@ -6,6 +6,7 @@ import { initWishlist } from '../modules/wishlist';
 import { initAccountPortal } from '../modules/account';
 import { initPortalSdkBridge } from '../modules/portal-sdk-bridge';
 import { initHomeWave } from '../modules/home-wave';
+import supportWidget from '../modules/support-widget';
 
 document.documentElement.classList.add('js');
 initI18n();
@@ -14,3 +15,4 @@ initWishlist();
 initAccountPortal();
 initPortalSdkBridge();
 initHomeWave();
+supportWidget.initSupportWidget({ brandSlug: 'luni' });

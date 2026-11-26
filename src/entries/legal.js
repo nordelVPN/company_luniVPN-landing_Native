@@ -3,8 +3,10 @@ import '../styles/pages/legal.scss';
 import { initI18n } from '../modules/i18n';
 import { initNavigation } from '../modules/navigation';
 import { initWishlist } from '../modules/wishlist';
+import supportWidget from '../modules/support-widget';
 
 document.documentElement.classList.add('js');
 initI18n();
 initNavigation();
 initWishlist();
+supportWidget.initSupportWidget({ brandSlug: 'luni' });

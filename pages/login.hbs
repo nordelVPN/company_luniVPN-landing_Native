@@ -3,8 +3,8 @@
     <p class="eyebrow">LuniVPN Account</p>
     <h1 id="login-title">Sign in</h1>
     <p class="section-lead">Access your VPN key, servers, and connected devices.</p>
-    <form class="panel account-form" data-portal-login>
-      <p class="muted" role="status" aria-live="polite" data-portal-status hidden></p>
+    <form class="panel account-form" data-portal-login novalidate>
+      <div class="portal-status" role="status" aria-live="polite" data-portal-status hidden></div>
       <div class="field-group">
         <label for="luni-login-email">Email</label>
         <input id="luni-login-email" class="text-input" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
@@ -17,6 +17,7 @@
         <button class="button" type="submit">Sign in <span aria-hidden="true">↗</span></button>
         <a class="button button-outline" href="./create-account.html">Create account</a>
       </div>
+      <p class="portal-consent-note">By continuing, you agree to our <a href="./terms.html">Terms of Service</a> and <a href="./privacy.html">Privacy Policy</a>.</p>
       <p><a class="change-plan-link" href="./forgot-password.html">Forgot password?</a></p>
     </form>
   </div>

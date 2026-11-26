@@ -15,8 +15,7 @@ const plans = [
       { icon: 'leaf', text: 'All features included' },
       { icon: 'devices', text: 'Up to 10 devices' }
     ],
-    available: false,
-    mode: 'demo'
+    available: false
   },
   {
     planId: 'basic',
@@ -34,8 +33,7 @@ const plans = [
       { icon: 'globe', text: '3 servers' },
       { icon: 'devices', text: 'Up to 5 devices' }
     ],
-    available: false,
-    mode: 'demo'
+    available: false
   },
   {
     planId: 'plus',
@@ -54,8 +52,7 @@ const plans = [
       { icon: 'layers', text: 'Browser extension' },
       { icon: 'devices', text: 'Up to 5 devices' }
     ],
-    available: false,
-    mode: 'demo'
+    available: false
   },
   {
     planId: 'complete',
@@ -84,8 +81,7 @@ const plans = [
       { icon: 'gift', text: 'Cloud storage' },
       { icon: 'devices', text: 'Up to 10 devices' }
     ],
-    available: false,
-    mode: 'demo'
+    available: false
   }
 ];
 

@@ -3,8 +3,8 @@
     <p class="eyebrow">LuniVPN Account</p>
     <h1 id="register-title">Create account</h1>
     <p class="section-lead">Create your LuniVPN account to manage subscriptions and devices.</p>
-    <form class="panel account-form" data-portal-register>
-      <p class="muted" role="status" aria-live="polite" data-portal-status hidden></p>
+    <form class="panel account-form" data-portal-register novalidate>
+      <div class="portal-status" role="status" aria-live="polite" data-portal-status hidden></div>
       <div class="field-group">
         <label for="luni-reg-name">Display name</label>
         <input id="luni-reg-name" class="text-input" type="text" name="display_name" autocomplete="name" placeholder="Alex">
@@ -21,9 +21,9 @@
         <label for="luni-reg-confirm">Confirm password</label>
         <input id="luni-reg-confirm" class="text-input" type="password" name="password_confirmation" required minlength="8" autocomplete="new-password">
       </div>
-      <label>
+      <label class="checkbox-label">
         <input type="checkbox" name="accept_terms" required>
-        I agree to the <a href="./terms.html">Terms of Service</a> and <a href="./privacy.html">Privacy Policy</a>.
+        <span>I agree to the <a href="./terms.html">Terms of Service</a> and <a href="./privacy.html">Privacy Policy</a>.</span>
       </label>
       <div class="actions">
         <button class="button" type="submit">Create account <span aria-hidden="true">↗</span></button>
