@@ -104,8 +104,8 @@ try {
       throw new Error('Missing plan card in index.html: ' + planId);
     }
   }
-  if (!indexHtml.includes('./account.html')) {
-    throw new Error('Missing header link to ./account.html in index.html');
+  if (!indexHtml.includes('data-account-link')) {
+    throw new Error('Missing header account link in index.html');
   }
   for (const assetToken of ['the-app-devices.', 'luni-way-leaf.', 'card-wave.']) {
     if (!indexHtml.includes(assetToken)) {
@@ -129,8 +129,11 @@ try {
   if (!/content=["']?noindex,nofollow["']?/i.test(accountHtml)) {
     throw new Error('account.html must use noindex,nofollow');
   }
-  if (!accountHtml.includes('data-account-auth') || !accountHtml.includes('data-demo-signin')) {
-    throw new Error('Missing demo sign-in in account.html');
+  if (!accountHtml.includes('data-auth-gate')) {
+    throw new Error('Missing auth-gate in account.html');
+  }
+  if (/Alex Morgan|alex\.morgan@example\.com/i.test(accountHtml)) {
+    throw new Error('Static mock profile data found in account.html');
   }
   if (!accountHtml.includes('data-wave-canvas')) {
     throw new Error('Missing wave canvas in account.html');

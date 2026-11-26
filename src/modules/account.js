@@ -8,7 +8,7 @@ const initialized = new WeakMap();
 
 function readSession() {
   try {
-    return window.sessionStorage.getItem(SESSION_KEY) === '1';
+    return Boolean(window.localStorage.getItem('luni-vpn-portal:token')) || window.sessionStorage.getItem(SESSION_KEY) === '1';
   } catch {
     return false;
   }

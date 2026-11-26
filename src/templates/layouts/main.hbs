@@ -7,6 +7,7 @@
   <meta name="robots" content="{{robots}}">
   <title data-i18n="{{metadata.pageId}}.title">{{metadata.title}}</title>
   {{#if canonical}}<link rel="canonical" href="{{canonical}}">{{/if}}
+  {{#if (eq metadata.pageId 'account')}}<style>[data-auth-gate][hidden]{display:none!important;}</style><script>(function(){try{if(window.__VPN_PORTAL_CONFIG__&&window.__VPN_PORTAL_CONFIG__.mode==='demo')return;if(!window.localStorage.getItem('luni-vpn-portal:token')){window.location.replace('./login.html');}}catch(e){window.location.replace('./login.html');}})();</script>{{/if}}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -15,7 +16,7 @@
   <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
   <div class="page-shell" data-page-shell>
     {{> shared/header}}
-    <main id="main-content">{{{body}}}</main>
+    <main id="main-content"{{#if (eq metadata.pageId 'account')}} hidden data-auth-gate{{/if}}>{{{body}}}</main>
     {{> shared/footer}}
   </div>
   {{> shared/wishlist-dialog}}

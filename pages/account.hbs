@@ -12,23 +12,7 @@
     </div>
   </div>
 
-  <section class="panel demo-auth-card" aria-labelledby="demo-auth-title" data-account-auth>
-    <h2 id="demo-auth-title" data-i18n="account.authTitle">{{demoAuth.title}}</h2>
-    <p class="muted" data-i18n="account.authDescription">{{demoAuth.description}}</p>
-    <form class="demo-auth-form" data-demo-signin-form>
-      <div class="field-group">
-        <label for="demo-auth-email" data-i18n="account.authEmailLabel">{{demoAuth.emailLabel}}</label>
-        <input id="demo-auth-email" class="text-input" type="email" value="{{profile.email}}" readonly>
-      </div>
-      <div class="actions">
-        <button class="button" type="submit" data-demo-signin><span data-i18n="account.authSubmit">{{demoAuth.submitLabel}}</span> <span aria-hidden="true">↗</span></button>
-        <a class="button button-outline" href="./login.html">Full sign in</a>
-        <a class="button button-outline" href="./create-account.html">Create account</a>
-      </div>
-    </form>
-  </section>
-
-  <div class="account-grid" data-account-portal>
+    <div class="account-grid" data-account-portal>
     <nav class="account-nav" aria-label="Account sections" data-i18n-aria-label="account.sectionsLabel" role="tablist">
       {{#each tabs}}
         <button
@@ -141,8 +125,8 @@
           <p class="eyebrow" data-i18n="account.sub.eyebrow">SUBSCRIPTION</p>
           <h2 data-i18n="account.sub.heading">Manage subscription</h2>
           <dl>
-            <div><dt data-i18n="account.sub.currentPlan">Current plan</dt><dd data-sub-plan>Basic</dd></div>
-            <div><dt data-i18n="account.sub.billingPeriod">Billing period</dt><dd data-sub-period>1 month</dd></div>
+            <div><dt data-i18n="account.sub.currentPlan">Current plan</dt><dd data-sub-plan>—</dd></div>
+            <div><dt data-i18n="account.sub.billingPeriod">Billing period</dt><dd data-sub-period>—</dd></div>
             <div><dt data-i18n="account.sub.status">Status</dt><dd data-sub-status>{{subscription.status}}</dd></div>
             <div><dt data-i18n="account.sub.renewal">Renewal</dt><dd data-sub-renewal>{{subscription.renewalDate}}</dd></div>
             <div><dt data-i18n="account.sub.paymentMethod">Payment method</dt><dd data-i18n="account.sub.notConnected">{{subscription.paymentMethod}}</dd></div>

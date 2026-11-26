@@ -5,6 +5,7 @@ var sdkFactory = require('./vpn-portal-sdk');
 
 function initPortalSdkBridge() {
   var sdk = sdkFactory.createVpnPortalSdk({ brandSlug: 'luni' });
+  sdkFactory.syncAccountNavLinks(sdk);
 
   function setStatus(el, msg) {
     if (!el) return;
@@ -76,7 +77,7 @@ function initPortalSdkBridge() {
       var promoInput = root.querySelector('[name="promo_code"]');
       var msgEl = root.querySelector('[data-checkout-message]');
       if (!sdk.isAuthenticated()) {
-        window.location.href = './login.html';
+        window.location.replace('./login.html');
         return;
       }
       e.preventDefault();
@@ -275,6 +276,7 @@ function initPortalSdkBridge() {
         var me = all[0];
         var subRes = all[1];
         var billRes = all[2];
+        sdkFactory.revealAuthGate();
         if (me && me.client) {
           var nameEl = document.querySelector('[data-profile-name]');
           var emailEl = document.querySelector('[data-profile-email]');
@@ -325,6 +327,11 @@ function initPortalSdkBridge() {
         });
         sdk.getDevices(accessKey).then(renderDevices).catch(function () { /* ignore */ });
       }).catch(function (err) {
+        if (sdk.mode === 'live' && (!sdk.isAuthenticated() || (err && (err.status === 401 || err.code === 'UNAUTHORIZED')))) {
+          window.location.replace('./login.html');
+          return;
+        }
+        sdkFactory.revealAuthGate();
         setStatus(statusNote, (err && err.message) || 'Unable to load VPN access data.');
       });
     }

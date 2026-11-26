@@ -1,9 +1,9 @@
 module.exports = {
-  profile: { displayName: 'Alex Morgan', email: 'alex.morgan@example.com' },
+  profile: { displayName: '—', email: '—' },
   subscription: {
-    status: 'Active',
-    planId: 'basic',
+    status: '—',
+    planId: '',
     renewalDate: '—',
-    paymentMethod: 'Not connected'
+    paymentMethod: '—'
   }
 };

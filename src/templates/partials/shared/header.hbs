@@ -22,7 +22,8 @@
           >{{label}}</a>
         {{/each}}
         <a
-          href="./{{site.accountLink.path}}"
+          href="./login.html"
+          data-account-link
           {{#if (eq metadata.pageId 'account')}}aria-current="page"{{/if}}
           data-i18n="nav.account"
         >{{site.accountLink.label}}</a>
