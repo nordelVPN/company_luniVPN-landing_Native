@@ -11,6 +11,7 @@ function initPortalSdkBridge() {
   var sdk = sdkFactory.createVpnPortalSdk({ brandSlug: 'luni' });
   sdkFactory.syncAccountNavLinks(sdk);
   var siteConfigPromise = sdk.getSiteConfig();
+  sdkFactory.bindPageBoot(siteConfigPromise);
   var LUNI_DEFAULT_PLANS = [
     { plan_code: 'trial', name: 'Trial', price_minor: 50 },
     { plan_code: 'basic', name: 'Basic', price_minor: 700 },
@@ -26,7 +27,9 @@ function initPortalSdkBridge() {
     var lang = sdkFactory.getCurrentSiteLanguage();
     document.querySelectorAll('[data-select-plan], [data-wishlist-open], [data-account-select-plan]').forEach(function (el) {
       var planCode = el.getAttribute('data-select-plan') || el.getAttribute('data-account-select-plan') || '';
-      el.setAttribute('data-wishlist-bot-url', sdkFactory.buildWishlistBotUrl(cfg, { planCode: planCode, language: lang }));
+      var botUrl = sdkFactory.buildWishlistBotUrl(cfg, { planCode: planCode, language: lang });
+      el.setAttribute('data-wishlist-bot-url', botUrl);
+      if (el.tagName === 'A') el.setAttribute('href', botUrl);
     });
     document.querySelectorAll('[data-wishlist-link]').forEach(function (a) {
       a.setAttribute('href', sdkFactory.buildWishlistBotUrl(cfg, { language: lang }));
@@ -59,6 +62,7 @@ function initPortalSdkBridge() {
   }
   siteConfigPromise.then(function (cfg) {
     currentSiteConfig = cfg;
+  sdkFactory.syncAccountNavLinks(sdk);
     var isWishlist = sdkFactory.isSiteInWishlistMode(cfg);
     document.documentElement.dataset.launchMode = isWishlist ? 'wishlist_only' : 'live';
     if (isWishlist) {
