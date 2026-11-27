@@ -1,33 +1,38 @@
 <section class="landing-section legal-page" aria-labelledby="register-title">
   <div class="container legal-container">
-    <p class="eyebrow">LuniVPN Account</p>
-    <h1 id="register-title">Create account</h1>
-    <p class="section-lead">Create your LuniVPN account to manage subscriptions and devices.</p>
+    <p class="eyebrow" data-i18n="auth.eyebrow">LuniVPN Account</p>
+    <h1 id="register-title" data-i18n="auth.registerTitle">Create account</h1>
+    <p class="section-lead" data-i18n="auth.registerLead">Create your LuniVPN account to manage subscriptions and devices.</p>
     <form class="panel account-form" data-portal-register novalidate>
       <div class="portal-status" role="status" aria-live="polite" data-portal-status hidden></div>
       <div class="field-group">
-        <label for="luni-reg-name">Display name</label>
-        <input id="luni-reg-name" class="text-input" type="text" name="display_name" autocomplete="name" placeholder="Alex">
+        <label for="luni-reg-name" data-i18n="auth.nameLabel">Display name</label>
+        <input id="luni-reg-name" class="text-input" type="text" name="display_name" autocomplete="name" placeholder="Alex" data-i18n-placeholder="auth.namePlaceholder">
       </div>
       <div class="field-group">
-        <label for="luni-reg-email">Email</label>
-        <input id="luni-reg-email" class="text-input" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        <label for="luni-reg-email" data-i18n="auth.emailLabel">Email</label>
+        <input id="luni-reg-email" class="text-input" type="email" name="email" required autocomplete="email" placeholder="you@example.com" data-i18n-placeholder="auth.emailPlaceholder">
       </div>
       <div class="field-group">
-        <label for="luni-reg-password">Password (min 8 characters)</label>
+        <label for="luni-reg-password" data-i18n="auth.newPasswordLabel">Password (min 8 characters)</label>
         <input id="luni-reg-password" class="text-input" type="password" name="password" required minlength="8" autocomplete="new-password">
       </div>
       <div class="field-group">
-        <label for="luni-reg-confirm">Confirm password</label>
+        <label for="luni-reg-confirm" data-i18n="auth.confirmPasswordLabel">Confirm password</label>
         <input id="luni-reg-confirm" class="text-input" type="password" name="password_confirmation" required minlength="8" autocomplete="new-password">
       </div>
       <label class="checkbox-label">
         <input type="checkbox" name="accept_terms" required>
-        <span>I agree to the <a href="./terms.html">Terms of Service</a> and <a href="./privacy.html">Privacy Policy</a>.</span>
+        <span>
+          <span data-i18n="auth.termsPrefix">I agree to the</span>
+          <a href="./terms.html" data-i18n="footer.terms">Terms of Service</a>
+          <span data-i18n="auth.consentAnd">and</span>
+          <a href="./privacy.html" data-i18n="footer.privacy">Privacy Policy</a>.
+        </span>
       </label>
       <div class="actions">
-        <button class="button" type="submit">Create account <span aria-hidden="true">↗</span></button>
-        <a class="button button-outline" href="./login.html">Sign in</a>
+        <button class="button" type="submit"><span data-i18n="auth.registerSubmit">Create account</span> <span aria-hidden="true">↗</span></button>
+        <a class="button button-outline" href="./login.html" data-i18n="auth.signInLink">Sign in</a>
       </div>
     </form>
   </div>

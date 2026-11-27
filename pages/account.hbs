@@ -12,7 +12,7 @@
     </div>
   </div>
 
-    <div class="account-grid" data-account-portal>
+  <div class="account-grid" data-account-portal>
     <nav class="account-nav" aria-label="Account sections" data-i18n-aria-label="account.sectionsLabel" role="tablist">
       {{#each tabs}}
         <button
@@ -21,22 +21,28 @@
           type="button"
           role="tab"
           aria-selected="{{#if (eq id 'account')}}true{{else}}false{{/if}}"
+          tabindex="{{#if (eq id 'account')}}0{{else}}-1{{/if}}"
           aria-controls="panel-{{id}}"
           data-account-tab="{{id}}"
+          data-tab="{{id}}"
+          {{#if billingUi}}data-billing-ui hidden{{/if}}
         >
           <span class="account-tab-icon" aria-hidden="true">{{> shared/icon name=icon}}</span>
-          <span data-i18n="account.tabs.{{id}}">{{label}}</span>
+          <span {{#if i18nKey}}data-i18n="{{i18nKey}}"{{/if}}>{{label}}</span>
         </button>
       {{/each}}
     </nav>
 
     <div class="account-content">
+      <div class="portal-status" role="status" aria-live="polite" data-portal-status hidden></div>
+
       <section
         id="panel-account"
         class="account-tab-panel"
         role="tabpanel"
         aria-labelledby="tab-account"
         data-account-panel="account"
+        data-panel="account"
       >
         <div class="panel profile-card">
           <div class="avatar" aria-hidden="true">{{> shared/icon name='user'}}</div>
@@ -61,59 +67,10 @@
           </div>
           <div class="actions">
             <button class="button button-small" type="submit" data-i18n="account.profile.save">Save profile</button>
+            <button class="button button-outline button-small" type="button" data-goto-tab="subscription" data-open-tab="subscription">Manage subscription</button>
           </div>
           <div class="portal-status" role="status" aria-live="polite" data-profile-status data-portal-status hidden></div>
         </form>
-
-        <div class="panel" data-sdk-vpn-panel>
-          <p class="eyebrow">VPN ACCESS &amp; DEVICES</p>
-          <h3>VPN Key &amp; Available Servers</h3>
-          <div class="portal-status" role="status" aria-live="polite" data-sdk-status data-portal-status hidden></div>
-          <div class="actions" style="margin-bottom:1rem;align-items:center;">
-            <code data-sdk-vpn-key>••••••••••••</code>
-            <button class="button button-outline button-small" type="button" data-sdk-key-reveal>Show</button>
-            <button class="button button-outline button-small" type="button" data-sdk-key-copy>Copy</button>
-          </div>
-          <div style="overflow-x:auto;margin-bottom:1.5rem;">
-            <table style="width:100%;border-collapse:collapse;">
-              <thead><tr><th align="left">Location</th><th align="left">Status</th><th align="left">Ping</th><th align="left">Protocols</th></tr></thead>
-              <tbody data-sdk-servers><tr><td colspan="4">Loading servers...</td></tr></tbody>
-            </table>
-          </div>
-          <h3>Connected Devices (<span data-sdk-devices-count>0 / 5</span>)</h3>
-          <div style="overflow-x:auto;">
-            <table style="width:100%;border-collapse:collapse;">
-              <thead><tr><th align="left">Device</th><th align="left">Platform</th><th align="left">Last Active</th><th align="left">Action</th></tr></thead>
-              <tbody data-sdk-devices><tr><td colspan="4">Loading devices...</td></tr></tbody>
-            </table>
-          </div>
-          <h3 style="margin-top:1.5rem;">Billing History</h3>
-          <div style="overflow-x:auto;margin-bottom:1.5rem;">
-            <table style="width:100%;border-collapse:collapse;">
-              <thead><tr><th align="left">Date</th><th align="left">Plan</th><th align="left">Amount</th><th align="left">Status</th></tr></thead>
-              <tbody data-sdk-billing><tr><td colspan="4">Loading payments...</td></tr></tbody>
-            </table>
-          </div>
-          <h3>Security &amp; Support</h3>
-          <div class="actions" style="margin-bottom:1rem;">
-            <button class="button button-outline button-small" type="button" data-logout-all>Revoke all sessions</button>
-          </div>
-          <form class="account-form" data-password-form novalidate style="margin-bottom:1rem;">
-        <div class="portal-status" role="status" aria-live="polite" data-password-status data-portal-status hidden></div>
-            <div class="field-grid">
-              <div class="field-group"><label for="luni-cur-pass">Current password</label><input id="luni-cur-pass" class="text-input" type="password" name="current_password" required></div>
-              <div class="field-group"><label for="luni-new-pass">New password</label><input id="luni-new-pass" class="text-input" type="password" name="password" required minlength="8"></div>
-              <div class="field-group"><label for="luni-confirm-pass">Confirm password</label><input id="luni-confirm-pass" class="text-input" type="password" name="password_confirmation" required minlength="8"></div>
-            </div>
-            <div class="actions"><button class="button button-outline button-small" type="submit">Update password</button></div>
-          </form>
-          <form class="account-form" data-support-form novalidate>
-        <div class="portal-status" role="status" aria-live="polite" data-support-status data-portal-status hidden></div>
-            <div class="field-group"><label for="luni-sup-subj">Support subject</label><input id="luni-sup-subj" class="text-input" type="text" name="subject" required minlength="3"></div>
-            <div class="field-group"><label for="luni-sup-msg">Message</label><textarea id="luni-sup-msg" class="text-input" name="message" rows="3" required minlength="5"></textarea></div>
-            <div class="actions"><button class="button button-small" type="submit">Send support request</button></div>
-          </form>
-        </div>
       </section>
 
       <section
@@ -122,6 +79,8 @@
         role="tabpanel"
         aria-labelledby="tab-subscription"
         data-account-panel="subscription"
+        data-panel="subscription"
+        hidden
       >
         <div class="panel">
           <p class="eyebrow" data-i18n="account.sub.eyebrow">SUBSCRIPTION</p>
@@ -131,13 +90,27 @@
             <div><dt data-i18n="account.sub.billingPeriod">Billing period</dt><dd data-sub-period>—</dd></div>
             <div><dt data-i18n="account.sub.status">Status</dt><dd data-sub-status>{{subscription.status}}</dd></div>
             <div><dt data-i18n="account.sub.renewal">Renewal</dt><dd data-sub-renewal>{{subscription.renewalDate}}</dd></div>
-            <div><dt data-i18n="account.sub.paymentMethod">Payment method</dt><dd data-i18n="account.sub.notConnected">{{subscription.paymentMethod}}</dd></div>
+            <div data-billing-ui hidden><dt data-i18n="account.sub.paymentMethod">Payment method</dt><dd data-i18n="account.sub.notConnected">{{subscription.paymentMethod}}</dd></div>
           </dl>
+          <form data-account-checkout-form hidden novalidate style="display:grid;gap:0.75rem;margin:0.75rem 0;">
+            <div class="portal-status" data-account-checkout-status data-portal-status hidden role="status" aria-live="polite"></div>
+            <label class="field-group">
+              <span>Selected plan</span>
+              <select name="plan_code" class="text-input" data-account-plan-select>
+                <option value="trial">Trial — €0.50</option>
+                <option value="basic">Basic — €7</option>
+                <option value="plus" selected>Plus — €25</option>
+                <option value="complete">Complete — €55</option>
+              </select>
+            </label>
+            <div class="payment-providers" data-payment-providers></div>
+            <button class="button" type="submit">Continue to payment</button>
+          </form>
           <div class="actions subscription-actions">
-            <button class="button button-small" type="button" data-goto-tab="plans" data-i18n="account.sub.changePlan">Change plan</button>
-            <button class="button button-outline button-small" type="button" data-sub-toggle-pause data-i18n="account.sub.pause">Pause</button>
-            <button class="button button-outline button-small" type="button" data-sub-cancel data-i18n="account.sub.cancel">Cancel</button>
-            <button class="button button-outline button-small" type="button" data-goto-tab="checkout" data-i18n="account.sub.openCheckout">Open checkout</button>
+            <button class="button button-small" type="button" data-goto-tab="plans" data-open-tab="plans" data-i18n="account.sub.changePlan">Change plan</button>
+            <button class="button button-outline button-small" type="button" data-sub-toggle-pause data-billing-ui hidden data-i18n="account.sub.pause">Pause</button>
+            <button class="button button-outline button-small" type="button" data-sub-cancel data-billing-ui hidden data-i18n="account.sub.cancel">Cancel</button>
+            <button class="button button-outline button-small" type="button" data-goto-tab="checkout" data-billing-ui hidden data-i18n="account.sub.openCheckout">Open checkout</button>
           </div>
           <p class="muted" role="status" aria-live="polite" data-sub-message></p>
         </div>
@@ -149,10 +122,12 @@
         role="tabpanel"
         aria-labelledby="tab-plans"
         data-account-panel="plans"
+        data-panel="plans"
+        hidden
       >
         <div class="panel-intro">
           <h2 data-i18n="account.plans.heading">Choose a plan</h2>
-          <p class="muted" data-i18n="account.plans.description">Select Trial, Basic, Plus, or Complete to continue to checkout.</p>
+          <p class="muted" data-i18n="account.plans.description">Select Trial, Basic, Plus, or Complete to continue.</p>
         </div>
         <div class="plans-grid account-plans-grid" data-plans-root>
           {{#each plans}}
@@ -187,12 +162,65 @@
       </section>
 
       <section
+        id="panel-vpn-access"
+        class="account-tab-panel"
+        role="tabpanel"
+        aria-labelledby="tab-vpn-access"
+        data-account-panel="vpn-access"
+        data-panel="vpn-access"
+        data-sdk-vpn-panel
+        hidden
+      >
+        <div class="panel">
+          <p class="eyebrow">VPN ACCESS</p>
+          <h2>VPN Key &amp; Available Servers</h2>
+          <div class="portal-status" role="status" aria-live="polite" data-sdk-status data-portal-status hidden></div>
+          <div class="actions" style="margin-bottom:1rem;align-items:center;">
+            <code data-sdk-vpn-key>••••••••••••</code>
+            <button class="button button-outline button-small" type="button" data-sdk-key-reveal>Show</button>
+            <button class="button button-outline button-small" type="button" data-sdk-key-copy>Copy</button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr><th align="left">Location</th><th align="left">Status</th><th align="left">Ping</th><th align="left">Protocols</th></tr></thead>
+              <tbody data-sdk-servers><tr><td colspan="4">Loading servers...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="panel-devices"
+        class="account-tab-panel"
+        role="tabpanel"
+        aria-labelledby="tab-devices"
+        data-account-panel="devices"
+        data-panel="devices"
+        hidden
+      >
+        <div class="panel">
+          <p class="eyebrow">DEVICES</p>
+          <h2>Connected Devices (<span data-sdk-devices-count>0 / 5</span>)</h2>
+          <div class="portal-status" role="status" aria-live="polite" data-devices-status data-portal-status hidden></div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+              <thead><tr><th align="left">Device</th><th align="left">Platform</th><th align="left">Last Active</th><th align="left">Action</th></tr></thead>
+              <tbody data-sdk-devices><tr><td colspan="4">Loading devices...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section
         id="panel-checkout"
         class="account-tab-panel"
         role="tabpanel"
         aria-labelledby="tab-checkout"
         data-account-panel="checkout"
+        data-panel="checkout"
         data-checkout
+        data-billing-ui
+        hidden
       >
         <div class="checkout-grid">
           <div class="panel checkout-form">
@@ -205,10 +233,11 @@
               </div>
             </div>
             <button class="change-plan-link" type="button" data-goto-tab="plans" data-i18n="checkout.changePlan">Change plan</button>
-
             <div class="checkout-preview" aria-label="Payment details" data-i18n-aria-label="checkout.paymentDetailsLabel">
-              
-              </div>
+              <table style="width:100%;border-collapse:collapse;">
+                <thead><tr><th align="left">Date</th><th align="left">Plan</th><th align="left">Amount</th><th align="left">Status</th></tr></thead>
+                <tbody data-sdk-billing><tr><td colspan="4">—</td></tr></tbody>
+              </table>
             </div>
           </div>
 
@@ -228,9 +257,35 @@
             <button class="button" type="button" data-checkout-button disabled>
               <span data-i18n="checkout.continue">Continue to payment</span> <span aria-hidden="true">↗</span>
             </button>
-            
             <p class="muted checkout-status-note" role="status" aria-live="polite" data-checkout-message></p>
           </aside>
+        </div>
+      </section>
+
+      <section
+        id="panel-security"
+        class="account-tab-panel"
+        role="tabpanel"
+        aria-labelledby="tab-security"
+        data-account-panel="security"
+        data-panel="security"
+        hidden
+      >
+        <div class="panel">
+          <p class="eyebrow">SECURITY</p>
+          <h2>Password &amp; Sessions</h2>
+          <div class="actions" style="margin-bottom:1.25rem;">
+            <button class="button button-outline button-small" type="button" data-logout-all>Revoke all sessions</button>
+          </div>
+          <form class="account-form" data-password-form novalidate>
+            <div class="portal-status" role="status" aria-live="polite" data-password-status data-portal-status hidden></div>
+            <div class="field-grid">
+              <div class="field-group"><label for="luni-cur-pass">Current password</label><input id="luni-cur-pass" class="text-input" type="password" name="current_password" required></div>
+              <div class="field-group"><label for="luni-new-pass">New password</label><input id="luni-new-pass" class="text-input" type="password" name="password" required minlength="8"></div>
+              <div class="field-group"><label for="luni-confirm-pass">Confirm password</label><input id="luni-confirm-pass" class="text-input" type="password" name="password_confirmation" required minlength="8"></div>
+            </div>
+            <div class="actions"><button class="button button-outline button-small" type="submit">Update password</button></div>
+          </form>
         </div>
       </section>
 
@@ -240,8 +295,10 @@
         role="tabpanel"
         aria-labelledby="tab-help"
         data-account-panel="help"
+        data-panel="help"
+        hidden
       >
-        <div class="panel">
+        <div class="panel" style="margin-bottom:1.5rem;">
           <p class="eyebrow" data-i18n="account.help.eyebrow">HELP</p>
           <h2 data-i18n="account.help.heading">How can we help?</h2>
           <p class="muted" data-i18n="account.help.description">Find answers about your LuniVPN account, plans, and connection.</p>
@@ -260,7 +317,7 @@
           </div>
           <div class="help-cards">
             {{#each help.categories}}
-              <article class="help-card">
+              <article class="help-card" {{#if (eq icon 'card')}}data-billing-ui hidden{{/if}}>
                 <span class="feature-icon" aria-hidden="true">{{> shared/feature-icon name=icon}}</span>
                 <h3 data-i18n="support.categories.{{@index}}.title">{{title}}</h3>
                 <p data-i18n="support.categories.{{@index}}.description">{{description}}</p>
@@ -273,6 +330,16 @@
               {{site.wishlist.label}}
             </button>
           </div>
+        </div>
+
+        <div class="panel">
+          <h3>Contact Support</h3>
+          <form class="account-form" data-support-form novalidate>
+            <div class="portal-status" role="status" aria-live="polite" data-support-status data-portal-status hidden></div>
+            <div class="field-group"><label for="luni-sup-subj">Support subject</label><input id="luni-sup-subj" class="text-input" type="text" name="subject" required minlength="3"></div>
+            <div class="field-group"><label for="luni-sup-msg">Message</label><textarea id="luni-sup-msg" class="text-input" name="message" rows="3" required minlength="5"></textarea></div>
+            <div class="actions"><button class="button button-small" type="submit">Send support request</button></div>
+          </form>
         </div>
       </section>
     </div>

@@ -11,8 +11,16 @@
     <div><dt data-i18n="checkout.planLabel">Plan</dt><dd data-plan-period>—</dd></div>
     <div class="total"><dt data-i18n="checkout.totalLabel">Total</dt><dd data-plan-total>—</dd></div>
   </dl>
-  <button class="button" type="button" data-checkout-button disabled>
-    <span data-i18n="checkout.continue">Continue to payment</span> <span aria-hidden="true">↗</span>
-  </button>
-  <p class="muted checkout-status-note" role="status" aria-live="polite" data-checkout-message></p>
+  <div class="checkout-summary-actions">
+    <button class="button" type="button" data-plan-action="register">Create account</button>
+    <button class="button button-outline" type="button" data-plan-action="wishlist">Add to wishlist</button>
+    <a class="button button-outline" href="https://t.me/Your_Wishlist_VPN_Official_Bot?start=site_luni" target="_blank" rel="noopener noreferrer" data-plan-dialog-tg hidden>Open Telegram Bot</a>
+  </div>
+  <p class="portal-consent-note">
+    <span data-i18n="auth.consentPrefix">By continuing, you agree to our</span>
+    <a href="./terms.html" data-i18n="footer.terms">Terms of Service</a>
+    <span data-i18n="auth.consentAnd">and</span>
+    <a href="./privacy.html" data-i18n="footer.privacy">Privacy Policy</a>.
+  </p>
+  <p class="checkout-status-note" role="status" aria-live="polite" data-checkout-message data-portal-status hidden></p>
 </aside>

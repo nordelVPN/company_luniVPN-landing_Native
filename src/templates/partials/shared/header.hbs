@@ -24,21 +24,26 @@
         <a
           href="./login.html"
           data-account-link
+          data-auth-only
+          hidden
           {{#if (eq metadata.pageId 'account')}}aria-current="page"{{/if}}
           data-i18n="nav.account"
         >{{site.accountLink.label}}</a>
         <a
           href="./login.html"
+          data-guest-only
           {{#if (eq metadata.pageId 'login')}}aria-current="page"{{/if}}
           data-i18n="nav.login"
         >Log in</a>
         <a
           href="./create-account.html"
+          data-guest-only
           {{#if (eq metadata.pageId 'create-account')}}aria-current="page"{{/if}}
           data-i18n="nav.createAccount"
         >Create account</a>
         <a
           href="./forgot-password.html"
+          data-guest-only
           {{#if (eq metadata.pageId 'forgot-password')}}aria-current="page"{{/if}}
           data-i18n="nav.forgotPassword"
         >Forgot password</a>

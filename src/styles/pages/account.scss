@@ -60,6 +60,9 @@
 }
 
 .account-grid[hidden] { display: none; }
+.account-content > [data-account-waitlist-card] {
+  margin-bottom: 0 !important;
+}
 .account-tab {
   display: flex;
   align-items: center;

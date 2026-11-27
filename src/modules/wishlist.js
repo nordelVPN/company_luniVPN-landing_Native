@@ -6,6 +6,7 @@ function isVisible(element) {
 }
 
 function initWishlist(root = document) {
+  if (root.querySelector('[data-checkout-dialog]')) return () => {};
   const backdrop = root.querySelector('[data-wishlist-dialog]');
   if (!backdrop) return () => {};
   if (initialized.has(backdrop)) return initialized.get(backdrop);

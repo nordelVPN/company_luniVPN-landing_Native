@@ -1,9 +1,10 @@
 const { normalizePlanId, formatPrice } = require('../utils/plans');
 const { createServices } = require('../services');
 const { t } = require('./i18n');
+const { initAccountTabs } = require('./vpn-portal-sdk');
 
 const SESSION_KEY = 'lunivpn_session_signed_in';
-const VALID_TABS = new Set(['account', 'subscription', 'plans', 'checkout', 'help']);
+const VALID_TABS = new Set(['account', 'subscription', 'plans', 'vpn-access', 'devices', 'security', 'help']);
 const initialized = new WeakMap();
 
 function readSession() {
@@ -39,8 +40,6 @@ function initAccountPortal(root = document) {
   const portal = app.querySelector('[data-account-portal]');
 
   const tabs = [...app.querySelectorAll('[data-account-tab]')];
-  const panels = [...app.querySelectorAll('[data-account-panel]')];
-  const gotoButtons = [...app.querySelectorAll('[data-goto-tab]')];
 
   const profileForm = app.querySelector('[data-profile-form]');
   const profileNameNode = app.querySelector('[data-profile-name]');
@@ -93,15 +92,10 @@ function initAccountPortal(root = document) {
     if (sessionBar) sessionBar.hidden = !state.signedIn;
   };
 
+  const tabsCtrl = initAccountTabs(app, { defaultTab: 'account' });
+  window.__luniAccountTabs = tabsCtrl;
   const renderTabs = () => {
-    tabs.forEach((tab) => {
-      const active = tab.getAttribute('data-account-tab') === state.activeTab;
-      tab.setAttribute('aria-selected', String(active));
-      tab.classList.toggle('is-active', active);
-    });
-    panels.forEach((panel) => {
-      panel.hidden = panel.getAttribute('data-account-panel') !== state.activeTab;
-    });
+    if (tabsCtrl) tabsCtrl.activate(state.activeTab, { updateHash: false });
   };
 
   const renderSubscription = () => {
@@ -158,12 +152,7 @@ function initAccountPortal(root = document) {
   const setTab = (tabId, updateHash = true) => {
     if (!VALID_TABS.has(tabId)) return;
     state.activeTab = tabId;
-    renderTabs();
-    if (updateHash) {
-      const nextUrl = new URL(window.location.href);
-      nextUrl.hash = tabId;
-      window.history.replaceState({ tab: tabId }, '', nextUrl.pathname + nextUrl.search + nextUrl.hash);
-    }
+    if (tabsCtrl) tabsCtrl.activate(tabId, { updateHash });
   };
 
   const syncFromHash = () => {
@@ -189,16 +178,6 @@ function initAccountPortal(root = document) {
     writeSession(false);
     renderAuth();
     authCard?.querySelector('[data-demo-signin]')?.focus();
-  };
-
-  const onTabClick = (event) => {
-    const tabId = event.currentTarget.getAttribute('data-account-tab');
-    setTab(tabId);
-  };
-
-  const onGotoClick = (event) => {
-    const tabId = event.currentTarget.getAttribute('data-goto-tab');
-    setTab(tabId);
   };
 
   const onProfileSubmit = (event) => {
@@ -232,7 +211,7 @@ function initAccountPortal(root = document) {
     state.selectedCheckoutPlanId = planId;
     state.checkoutNoticeKey = null;
     renderCheckout();
-    setTab('checkout');
+    setTab('subscription');
   };
 
   const onCheckoutPay = async () => {
@@ -271,8 +250,6 @@ function initAccountPortal(root = document) {
 
   signInForm?.addEventListener('submit', onSignIn);
   signOutBtn?.addEventListener('click', onSignOut);
-  tabs.forEach((tab) => tab.addEventListener('click', onTabClick));
-  gotoButtons.forEach((btn) => btn.addEventListener('click', onGotoClick));
   profileForm?.addEventListener('submit', onProfileSubmit);
   subTogglePauseBtn?.addEventListener('click', onTogglePause);
   subCancelBtn?.addEventListener('click', onCancelToggle);
@@ -285,8 +262,6 @@ function initAccountPortal(root = document) {
   const destroy = () => {
     signInForm?.removeEventListener('submit', onSignIn);
     signOutBtn?.removeEventListener('click', onSignOut);
-    tabs.forEach((tab) => tab.removeEventListener('click', onTabClick));
-    gotoButtons.forEach((btn) => btn.removeEventListener('click', onGotoClick));
     profileForm?.removeEventListener('submit', onProfileSubmit);
     subTogglePauseBtn?.removeEventListener('click', onTogglePause);
     subCancelBtn?.removeEventListener('click', onCancelToggle);

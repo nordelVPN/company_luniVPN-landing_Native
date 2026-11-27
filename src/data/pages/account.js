@@ -5,12 +5,12 @@ module.exports = {
   metadata: {
     lang: 'en',
     title: 'Your account — LuniVPN',
-    description: 'Manage your profile, subscription, plans, checkout, and help in your LuniVPN account.',
+    description: 'Manage your profile, subscription, plans, security, and help in your LuniVPN account.',
     pageId: 'account'
   },
   intro: {
     title: 'Your account.',
-    description: 'Manage your profile, subscription, and billing.'
+    description: 'Manage your profile, subscription, and security.'
   },
   demoAuth: {
     title: 'Sign in',
@@ -19,11 +19,14 @@ module.exports = {
     submitLabel: 'Sign in'
   },
   tabs: [
-    { id: 'account', label: 'Account', icon: 'user' },
-    { id: 'subscription', label: 'Subscription', icon: 'layers' },
-    { id: 'plans', label: 'Plans', icon: 'leaf' },
-    { id: 'checkout', label: 'Checkout', icon: 'card' },
-    { id: 'help', label: 'Help', icon: 'help' }
+    { id: 'account', label: 'Account', icon: 'user', i18nKey: 'account.tabs.account' },
+    { id: 'subscription', label: 'Subscription', icon: 'layers', i18nKey: 'account.tabs.subscription' },
+    { id: 'plans', label: 'Plans', icon: 'leaf', i18nKey: 'account.tabs.plans' },
+    { id: 'vpn-access', label: 'VPN & Servers', icon: 'globe' },
+    { id: 'devices', label: 'Devices', icon: 'devices' },
+    { id: 'checkout', label: 'Checkout', icon: 'card', i18nKey: 'account.tabs.checkout', billingUi: true },
+    { id: 'security', label: 'Security', icon: 'shield' },
+    { id: 'help', label: 'Help', icon: 'help', i18nKey: 'account.tabs.help' }
   ],
   plans,
   profile,

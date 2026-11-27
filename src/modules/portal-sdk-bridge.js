@@ -2,15 +2,101 @@
 'use strict';
 
 var sdkFactory = require('./vpn-portal-sdk');
+var QRCore = require('qrcode/lib/core/qrcode');
+function createQrMatrix(text) {
+  return QRCore.create(text, { errorCorrectionLevel: 'M' }).modules;
+}
 
 function initPortalSdkBridge() {
   var sdk = sdkFactory.createVpnPortalSdk({ brandSlug: 'luni' });
   sdkFactory.syncAccountNavLinks(sdk);
   var siteConfigPromise = sdk.getSiteConfig();
-  var cachedPlans = [];
+  var LUNI_DEFAULT_PLANS = [
+    { plan_code: 'trial', name: 'Trial', price_minor: 50 },
+    { plan_code: 'basic', name: 'Basic', price_minor: 700 },
+    { plan_code: 'plus', name: 'Plus', price_minor: 2500 },
+    { plan_code: 'complete', name: 'Complete', price_minor: 5500 }
+  ];
+  var cachedPlans = LUNI_DEFAULT_PLANS.slice();
+  var cachedClientEmail = '';
   var currentSiteConfig = null;
   var checkoutWishlistCtrls = [];
-  siteConfigPromise.then(function (cfg) { currentSiteConfig = cfg; });
+  function syncLuniWishlistBotUrls(cfg) {
+    if (!cfg || !sdkFactory.isSiteInWishlistMode(cfg)) return;
+    var lang = sdkFactory.getCurrentSiteLanguage();
+    document.querySelectorAll('[data-select-plan], [data-wishlist-open], [data-account-select-plan]').forEach(function (el) {
+      var planCode = el.getAttribute('data-select-plan') || el.getAttribute('data-account-select-plan') || '';
+      el.setAttribute('data-wishlist-bot-url', sdkFactory.buildWishlistBotUrl(cfg, { planCode: planCode, language: lang }));
+    });
+    document.querySelectorAll('[data-wishlist-link]').forEach(function (a) {
+      a.setAttribute('href', sdkFactory.buildWishlistBotUrl(cfg, { language: lang }));
+    });
+  }
+  function closeLuniDialogsInWishlistMode() {
+    var shell = document.querySelector('[data-page-shell]');
+    var chkBackdrop = document.querySelector('[data-checkout-dialog]');
+    if (chkBackdrop && !chkBackdrop.hidden) {
+      chkBackdrop.classList.remove('is-open');
+      chkBackdrop.hidden = true;
+    }
+    var wishBackdrop = document.querySelector('[data-wishlist-dialog]');
+    if (wishBackdrop && !wishBackdrop.hidden) {
+      wishBackdrop.hidden = true;
+    }
+    document.body.classList.remove('has-modal-open');
+    if (shell) {
+      shell.removeAttribute('aria-hidden');
+      shell.inert = false;
+    }
+    try {
+      var u = new URL(window.location.href);
+      if (u.hash === '#checkout' || u.searchParams.has('plan')) {
+        u.searchParams.delete('plan');
+        u.hash = '';
+        window.history.replaceState({}, '', u.pathname + u.search + u.hash);
+      }
+    } catch { /* ignore */ }
+  }
+  siteConfigPromise.then(function (cfg) {
+    currentSiteConfig = cfg;
+    var isWishlist = sdkFactory.isSiteInWishlistMode(cfg);
+    document.documentElement.dataset.launchMode = isWishlist ? 'wishlist_only' : 'live';
+    if (isWishlist) {
+      closeLuniDialogsInWishlistMode();
+      syncLuniWishlistBotUrls(cfg);
+    }
+  });
+  document.addEventListener('languagechange', function () {
+    if (currentSiteConfig) syncLuniWishlistBotUrls(currentSiteConfig);
+  });
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target && e.target.closest && e.target.closest('[data-select-plan], [data-wishlist-open], [data-account-select-plan]');
+    if (!btn) return;
+    var explicitPlan = btn.getAttribute('data-select-plan') || btn.getAttribute('data-account-select-plan') || '';
+    if (currentSiteConfig) {
+      if (!sdkFactory.isSiteInWishlistMode(currentSiteConfig)) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      sdkFactory.openWishlistBot(currentSiteConfig, {
+        planCode: explicitPlan,
+        language: sdkFactory.getCurrentSiteLanguage()
+      });
+      return;
+    }
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    siteConfigPromise.then(function (cfg) {
+      if (sdkFactory.isSiteInWishlistMode(cfg)) {
+        sdkFactory.openWishlistBot(cfg, {
+          planCode: explicitPlan,
+          language: sdkFactory.getCurrentSiteLanguage()
+        });
+      } else {
+        btn.click();
+      }
+    });
+  }, true);
 
   function uiMsg() {
     return sdkFactory.getPortalUiMessages();
@@ -76,114 +162,144 @@ function initPortalSdkBridge() {
     sdkFactory.initCheckoutReturnPolling(sdk);
   }
 
-  function mountWishlistInCheckout(cfg, planCode) {
-    document.querySelectorAll('[data-checkout]').forEach(function (root) {
-      var grid = root.querySelector('.checkout-grid');
-      if (grid) grid.hidden = true;
-      root.querySelectorAll('[data-payment-providers], [data-checkout-button], [data-apply-demo-plan]').forEach(function (el) {
-        el.hidden = true;
-      });
-      var host = root.querySelector('[data-wishlist-checkout-host]');
-      if (!host) {
-        host = document.createElement('div');
-        host.setAttribute('data-wishlist-checkout-host', '');
-        host.style.marginTop = '1rem';
-        var inner = root.querySelector('.checkout-dialog-inner') || root;
-        inner.appendChild(host);
-      }
-      var ctrl = sdkFactory.renderWishlistCard(sdk, host, {
-        siteConfig: cfg,
-        planCode: planCode || '',
-        plans: cachedPlans,
-        sourcePage: 'checkout',
-        variant: 'checkout'
-      });
-      if (ctrl) checkoutWishlistCtrls.push(ctrl);
-    });
+  function findLuniPlan(code) {
+    var clean = String(code || '').trim();
+    return cachedPlans.find(function (p) { return p.plan_code === clean; }) ||
+      LUNI_DEFAULT_PLANS.find(function (p) { return p.plan_code === clean; }) ||
+      LUNI_DEFAULT_PLANS[2];
   }
 
-  // Live checkout & wishlist_only hook
-  var getLProvider = function () { return null; };
   siteConfigPromise.then(function (cfg) {
-    if (cfg && cfg.wishlist_bot_url) {
+    if (cfg && (cfg.wishlist_bot_url || cfg.wishlist_bot_username)) {
+      var botUrl = sdkFactory.buildWishlistBotUrl(cfg, { language: sdkFactory.getCurrentSiteLanguage() });
       document.querySelectorAll('[data-wishlist-link]').forEach(function (a) {
-        a.setAttribute('href', cfg.wishlist_bot_url);
+        a.setAttribute('href', botUrl);
       });
     }
-    if (!sdkFactory.isSiteCheckoutEnabled(cfg)) {
-      mountWishlistInCheckout(cfg, '');
-      return;
-    }
-    if (sdk.mode !== 'live') return;
-    document.querySelectorAll('.checkout-preview').forEach(function (el) { el.hidden = true; });
-    var luniCheckoutRoots = document.querySelectorAll('[data-checkout]');
-    luniCheckoutRoots.forEach(function (luniCheckoutRoot) {
-      var lProviderHost = luniCheckoutRoot.querySelector('[data-payment-providers]');
-      if (!lProviderHost) {
-        lProviderHost = document.createElement('div');
-        lProviderHost.className = 'payment-providers';
-        lProviderHost.setAttribute('data-payment-providers', '');
-        lProviderHost.hidden = true;
-        var lBtn = luniCheckoutRoot.querySelector('[data-checkout-button], [data-apply-demo-plan]');
-        if (lBtn && lBtn.parentNode) {
-          lBtn.parentNode.insertBefore(lProviderHost, lBtn);
-        } else {
-          luniCheckoutRoot.appendChild(lProviderHost);
-        }
-      }
-      sdkFactory.mountPaymentProviderSelector(sdk, lProviderHost).then(function (getter) {
-        if (typeof getter === 'function') getLProvider = getter;
-      });
-    });
   });
 
-  document.addEventListener('click', function (e) {
-    var planTrigger = e.target && e.target.closest && e.target.closest('[data-select-plan], [data-account-select-plan]');
-    if (planTrigger && currentSiteConfig && !sdkFactory.isSiteCheckoutEnabled(currentSiteConfig)) {
-      var picked = planTrigger.getAttribute('data-select-plan') || planTrigger.getAttribute('data-account-select-plan') || '';
-      checkoutWishlistCtrls.forEach(function (c) { c.setPlanCode(picked); });
+  var checkoutRoot = document.querySelector('[data-checkout]');
+  if (checkoutRoot) {
+    var syncLuniDialogLabels = function () {
+      var ui = sdkFactory.getWishlistUiText();
+      var regBtn = checkoutRoot.querySelector('[data-plan-action="register"]');
+      var wishBtn = checkoutRoot.querySelector('[data-plan-action="wishlist"]');
+      var tgBtn = checkoutRoot.querySelector('[data-plan-dialog-tg]');
+      if (regBtn) regBtn.textContent = ui.registerBtn;
+      if (wishBtn) wishBtn.textContent = ui.wishlistBtn;
+      if (tgBtn) tgBtn.textContent = ui.telegramBtn;
+    };
+    syncLuniDialogLabels();
+    document.addEventListener('languagechange', syncLuniDialogLabels);
+
+    var emailInput = checkoutRoot.querySelector('input[name="email"]');
+    if (emailInput) {
+      emailInput.addEventListener('input', function () {
+        emailInput.removeAttribute('aria-invalid');
+        var errP = checkoutRoot.querySelector('[data-field-error="email"]');
+        if (errP) errP.textContent = '';
+      });
     }
-    var btn = e.target && e.target.closest && e.target.closest('[data-checkout-button], [data-apply-demo-plan]');
-    if (!btn || btn.disabled) return;
-    if (currentSiteConfig && !sdkFactory.isSiteCheckoutEnabled(currentSiteConfig)) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      mountWishlistInCheckout(currentSiteConfig, '');
-      return;
-    }
-    if (sdk.mode !== 'live') return;
-    var root = btn.closest('[data-checkout]') || document;
-    var activeCard = document.querySelector('[data-plan-card].is-selected') || document.querySelector('[data-account-select-plan][aria-pressed="true"]');
-    var planCode = (activeCard && (activeCard.getAttribute('data-plan-card') || activeCard.getAttribute('data-account-select-plan'))) || 'plus';
-    var promoInput = root.querySelector('[name="promo_code"]');
-    var msgEl = root.querySelector('[data-checkout-message]');
-    if (!sdk.isAuthenticated()) {
-      window.location.replace('./login.html');
-      return;
-    }
-    e.preventDefault();
-    var returnUrl = new URL('./account.html', window.location.href).href;
-    var cancelUrl = new URL('./index.html?status=cancelled', window.location.href).href;
-    sdk.checkout({
-      plan_code: planCode,
-      provider: getLProvider(),
-      promo_code: promoInput ? promoInput.value.trim() : null,
-      return_url: returnUrl,
-      cancel_url: cancelUrl
-    }).then(function (res) {
-      setStatus(msgEl, res && res.checkout && res.checkout.mode === 'mock' ? 'Confirm test payment to activate your VPN key.' : 'Redirecting to payment provider...');
-      sdkFactory.handleCheckoutResponse(sdk, res);
-    }).catch(function (err) {
-      if (err && (err.code === 'SITE_IN_WISHLIST_MODE' || err.status === 403)) {
-        sdk.getSiteConfig({ force: true }).then(function (cfg) {
-          currentSiteConfig = cfg;
-          mountWishlistInCheckout(cfg, planCode);
-        });
+
+    var prefillLuniEmail = function () {
+      if (!emailInput || emailInput.value || !sdk.isAuthenticated()) return;
+      if (cachedClientEmail) {
+        emailInput.value = cachedClientEmail;
+      } else {
+        sdk.getMe().then(function (me) {
+          if (me && me.client && me.client.email && !emailInput.value) {
+            cachedClientEmail = me.client.email;
+            emailInput.value = cachedClientEmail;
+          }
+        }).catch(function () {});
+      }
+    };
+
+    document.addEventListener('click', function (e) {
+      if (e.target && e.target.closest && e.target.closest('[data-select-plan], [data-wishlist-open]')) {
+        prefillLuniEmail();
+        var tgLink = checkoutRoot.querySelector('[data-plan-dialog-tg]');
+        if (tgLink) tgLink.hidden = true;
+        var msgEl = checkoutRoot.querySelector('[data-checkout-message]');
+        if (msgEl) sdkFactory.clearPortalStatus(msgEl);
+      }
+    });
+
+    var submitLuniPlanDialog = function (intent, triggerBtn) {
+      var ui = sdkFactory.getWishlistUiText();
+      var msgEl = checkoutRoot.querySelector('[data-checkout-message]');
+      var errP = checkoutRoot.querySelector('[data-field-error="email"]');
+      var tgLink = checkoutRoot.querySelector('[data-plan-dialog-tg]');
+      var emailVal = emailInput ? emailInput.value.trim() : '';
+
+      if (errP) errP.textContent = '';
+      if (emailInput) emailInput.removeAttribute('aria-invalid');
+
+      if (!isValidEmail(emailVal)) {
+        var errMsg = ui.emailInvalid || uiMsg().invalidEmail;
+        if (emailInput) {
+          emailInput.setAttribute('aria-invalid', 'true');
+          emailInput.focus();
+        }
+        if (errP) errP.textContent = errMsg;
+        setStatus(msgEl, errMsg, 'error', { scroll: false });
         return;
       }
-      setStatus(msgEl, (err && err.message) || 'Checkout failed.');
-    });
-  });
+
+      var checkedRadio = checkoutRoot.querySelector('input[name="checkout-plan"]:checked');
+      var plan = findLuniPlan(checkedRadio ? checkedRadio.value : 'plus');
+      var source = intent === 'register' ? 'plan_dialog_register' : 'plan_dialog_wishlist';
+      var meta = {
+        intent: intent,
+        source_page: 'index',
+        plan_name: plan.name,
+        price_minor: plan.price_minor,
+        currency: 'EUR'
+      };
+
+      if (intent === 'register') {
+        sdkFactory.withFormBusy(checkoutRoot, triggerBtn, function () {
+          var timeout = new Promise(function (resolve) { window.setTimeout(resolve, 1500); });
+          return Promise.race([
+            sdk.joinWishlist({ email: emailVal, planCode: plan.plan_code, source: source, meta: meta }).catch(function () { return null; }),
+            timeout
+          ]).then(function () {
+            if (sdk.isAuthenticated()) {
+              window.location.href = './account.html?plan=' + encodeURIComponent(plan.plan_code);
+              return;
+            }
+            sdk.savePlanSelectionHandoff({ email: emailVal, planCode: plan.plan_code });
+            window.location.href = './create-account.html?plan=' + encodeURIComponent(plan.plan_code);
+          });
+        }, { loadingText: ui.submitting });
+        return;
+      }
+
+      setStatus(msgEl, ui.submitting, 'loading', { scroll: false });
+      sdkFactory.withFormBusy(checkoutRoot, triggerBtn, function () {
+        return sdk.joinWishlist({
+          email: emailVal,
+          planCode: plan.plan_code,
+          source: source,
+          meta: meta
+        }).then(function (res) {
+          var msg = (res && res.already_registered) ? (ui.planUpdated || ui.successExisting) : ui.successNew;
+          setStatus(msgEl, msg, (res && res.already_registered) ? 'info' : 'success', { scroll: false });
+          if (tgLink && currentSiteConfig && currentSiteConfig.wishlist_bot_url) {
+            tgLink.href = currentSiteConfig.wishlist_bot_url;
+            tgLink.hidden = false;
+          }
+        }).catch(function (err) {
+          setStatus(msgEl, sdkFactory.formatPortalApiError(err, ui.errorGeneric), 'error', { scroll: false });
+        });
+      }, { loadingText: ui.submitting });
+    };
+
+    var regBtnDlg = checkoutRoot.querySelector('[data-plan-action="register"]');
+    var wishBtnDlg = checkoutRoot.querySelector('[data-plan-action="wishlist"]');
+    if (regBtnDlg) regBtnDlg.addEventListener('click', function () { submitLuniPlanDialog('register', regBtnDlg); });
+    if (wishBtnDlg) wishBtnDlg.addEventListener('click', function () { submitLuniPlanDialog('wishlist', wishBtnDlg); });
+  }
 
   var loginForm = document.querySelector('[data-portal-login]');
   if (loginForm) {
@@ -226,11 +342,16 @@ function initPortalSdkBridge() {
   var registerForm = document.querySelector('[data-portal-register]');
   if (registerForm) {
     sdkFactory.bindFormValidationClear(registerForm);
-    siteConfigPromise.then(function (cfg) {
-      if (sdkFactory.isSiteInWishlistMode(cfg)) {
-        sdkFactory.mountRegisterWishlistBanner(registerForm, cfg);
-      }
-    });
+    var regParams = new URLSearchParams(window.location.search || '');
+    var handoff = sdk.consumePlanSelectionHandoff() || {};
+    var selectedPlanCode = String(regParams.get('plan') || handoff.planCode || '').trim();
+    if (handoff.email && registerForm.email && !registerForm.email.value) {
+      registerForm.email.value = handoff.email;
+    }
+    if (selectedPlanCode) {
+      sdkFactory.mountSelectedPlanBanner(registerForm, findLuniPlan(selectedPlanCode));
+    }
+    // TASK-027: Pre-launch / Join Wishlist banner intentionally omitted on create-account.html.
     var regStatus = registerForm.querySelector('[data-portal-status]');
     var regBtn = registerForm.querySelector('button[type="submit"]');
     registerForm.addEventListener('submit', function (event) {
@@ -256,10 +377,13 @@ function initPortalSdkBridge() {
           email: email,
           password: password,
           password_confirmation: confirm,
-          display_name: registerForm.display_name ? registerForm.display_name.value.trim() : ''
+          display_name: registerForm.display_name ? registerForm.display_name.value.trim() : '',
+          plan_code: selectedPlanCode || undefined
         }).then(function () {
           setStatus(regStatus, 'Account created. Redirecting...', 'success');
-          window.location.href = './account.html';
+          window.location.href = selectedPlanCode
+            ? ('./account.html?plan=' + encodeURIComponent(selectedPlanCode))
+            : './account.html';
         }).catch(function (err) {
           if (err && err.details) sdkFactory.setFieldErrors(registerForm, err.details);
           setStatus(regStatus, sdkFactory.formatPortalApiError(err, 'Registration failed.'), 'error');
@@ -356,10 +480,12 @@ function initPortalSdkBridge() {
 
     var keyEl = vpnPanel.querySelector('[data-sdk-vpn-key]');
     var serversBody = vpnPanel.querySelector('[data-sdk-servers]');
-    var devicesBody = vpnPanel.querySelector('[data-sdk-devices]');
-    var devicesCount = vpnPanel.querySelector('[data-sdk-devices-count]');
+    var devicesBody = document.querySelector('[data-sdk-devices]');
+    var devicesCount = document.querySelector('[data-sdk-devices-count]');
     var billingBody = document.querySelector('[data-sdk-billing]');
-    var statusNote = vpnPanel.querySelector('[data-sdk-status]');
+    var topStatusNote = document.querySelector('.account-content > [data-portal-status]');
+    var statusNote = vpnPanel.querySelector('[data-sdk-status]') || topStatusNote;
+    var devicesStatusNote = document.querySelector('[data-devices-status]') || statusNote;
 
     function renderDevices(res) {
       var devices = (res && res.devices) || [];
@@ -381,12 +507,14 @@ function initPortalSdkBridge() {
           sdk.revokeDevice(accessKey, dev.device_uid).then(function () {
             return sdk.getDevices(accessKey);
           }).then(renderDevices).catch(function (err) {
-            setStatus(statusNote, sdkFactory.formatPortalApiError(err, 'Could not revoke device.'), 'error');
+            setStatus(devicesStatusNote, sdkFactory.formatPortalApiError(err, 'Could not revoke device.'), 'error');
           });
         });
         devicesBody.appendChild(tr);
       });
     }
+
+    var vpnConnectCtrl = null;
 
     function renderServers(servers) {
       if (!serversBody) return;
@@ -402,6 +530,14 @@ function initPortalSdkBridge() {
         tr.children[1].textContent = sdkFactory.formatServerStatusAndLoad(srv);
         tr.children[2].textContent = srv.ping_ms ? srv.ping_ms + ' ms' : '—';
         tr.children[3].textContent = sdkFactory.formatServerProtocolsAndTags(srv);
+        sdkFactory.appendServerVlessActions(tr.children[3], srv, {
+          statusEl: statusNote,
+          onSelectQr: function (selectedSrv) {
+            if (vpnConnectCtrl && typeof vpnConnectCtrl.selectServerVless === 'function') {
+              vpnConnectCtrl.selectServerVless(selectedSrv);
+            }
+          }
+        });
         serversBody.appendChild(tr);
       });
     }
@@ -430,7 +566,7 @@ function initPortalSdkBridge() {
         : Promise.resolve();
 
       return ready.then(function () {
-        return Promise.all([sdk.getMe(), sdk.getSubscription(), sdk.getBillingHistory(), siteConfigPromise]);
+        return Promise.all([sdk.getMe(), sdk.getSubscription(), Promise.resolve({ payments: [] }), siteConfigPromise]);
       }).then(function (all) {
         var me = all[0];
         var subRes = all[1];
@@ -464,30 +600,85 @@ function initPortalSdkBridge() {
           if (subStatus) subStatus.textContent = sub.status;
           if (subRenewal && sub.expires_at) subRenewal.textContent = new Date(sub.expires_at).toLocaleDateString();
         }
+        var accCheckoutForm = document.querySelector('[data-account-checkout-form]');
+        if (accCheckoutForm && sdkFactory.isSiteCheckoutEnabled(siteCfg)) {
+          accCheckoutForm.hidden = false;
+          var urlPlan = new URLSearchParams(window.location.search || '').get('plan');
+          var planSelect = accCheckoutForm.querySelector('[data-account-plan-select]');
+          if (planSelect && urlPlan && planSelect.querySelector('option[value="' + urlPlan + '"]')) {
+            planSelect.value = urlPlan;
+          }
+          var providerHost = accCheckoutForm.querySelector('[data-payment-providers]');
+          if (providerHost && !accCheckoutForm.__providersMounted) {
+            accCheckoutForm.__providersMounted = true;
+            var getAccProvider = function () { return null; };
+            sdkFactory.mountPaymentProviderSelector(sdk, providerHost).then(function (getter) {
+              if (typeof getter === 'function') getAccProvider = getter;
+            });
+            var chkStatus = accCheckoutForm.querySelector('[data-account-checkout-status]') || statusNote;
+            var chkBtn = accCheckoutForm.querySelector('button[type="submit"]');
+            accCheckoutForm.addEventListener('submit', function (ev) {
+              ev.preventDefault();
+              var chosenPlan = (planSelect && planSelect.value) || 'plus';
+              var returnUrl = new URL('./account.html', window.location.href).href;
+              var cancelUrl = new URL('./account.html?status=cancelled', window.location.href).href;
+              setStatus(chkStatus, uiMsg().loading, 'loading', { scroll: false });
+              sdkFactory.withFormBusy(accCheckoutForm, chkBtn, function () {
+                return sdk.checkout({
+                  plan_code: chosenPlan,
+                  provider: getAccProvider(),
+                  return_url: returnUrl,
+                  cancel_url: cancelUrl
+                }).then(function (res) {
+                  sdkFactory.handleCheckoutResponse(sdk, res);
+                }).catch(function (err) {
+                  setStatus(chkStatus, sdkFactory.formatPortalApiError(err, 'Checkout failed.'), 'error');
+                });
+              });
+            });
+          }
+        }
+        var tabVpn = document.querySelector('#tab-vpn-access');
+        var tabDev = document.querySelector('#tab-devices');
+        var panelDev = document.querySelector('#panel-devices');
+        var chkTab = document.querySelector('#tab-checkout');
+        var chkPanel = document.querySelector('#panel-checkout');
+        if (chkTab) chkTab.hidden = true;
+        if (chkPanel) chkPanel.hidden = true;
         if (!serversAllowed) {
-          [
-            keyEl && keyEl.parentElement,
-            serversBody && serversBody.closest('div'),
-            devicesCount && devicesCount.closest('h3, h2'),
-            devicesBody && devicesBody.closest('div')
-          ].forEach(function (el) {
-            if (el && el !== vpnPanel) el.hidden = true;
-          });
-          var vpnHeading = vpnPanel.querySelector('h3, h2');
-          if (vpnHeading && /VPN Key|Available Servers/i.test(vpnHeading.textContent || '')) vpnHeading.hidden = true;
-          sdkFactory.mountAccountWaitlistCard(vpnPanel, siteCfg, { prepend: true, className: 'panel' });
+          if (tabVpn) tabVpn.hidden = true;
+          if (vpnPanel) vpnPanel.hidden = true;
+          if (tabDev) tabDev.hidden = true;
+          if (panelDev) panelDev.hidden = true;
+          if (window.__luniAccountTabs && typeof window.__luniAccountTabs.refresh === 'function') {
+            window.__luniAccountTabs.refresh();
+          }
+          var waitlistHost = document.querySelector('.account-content') || vpnPanel;
+          sdkFactory.mountAccountWaitlistCard(waitlistHost, siteCfg, { prepend: true, className: 'panel' });
           return;
+        }
+        if (tabVpn) tabVpn.hidden = false;
+        if (tabDev) tabDev.hidden = false;
+        if (window.__luniAccountTabs && typeof window.__luniAccountTabs.refresh === 'function') {
+          window.__luniAccountTabs.refresh();
         }
         accessKey = (sub && sub.access_key) || '';
         if (keyEl) keyEl.textContent = revealed ? accessKey : maskKey(accessKey);
         if (!accessKey) {
+          if (vpnConnectCtrl) { vpnConnectCtrl.hide(); vpnConnectCtrl = null; }
           renderServers([]);
           renderDevices({ limit: 5, devices: [] });
           return;
         }
         sdk.getBootstrap(accessKey).then(function (boot) {
+          var connectAnchor = (keyEl && keyEl.parentElement) || vpnPanel;
+          vpnConnectCtrl = sdkFactory.mountVpnConnectPanel(connectAnchor, boot, {
+            createQrMatrix: createQrMatrix,
+            placement: 'after'
+          });
           renderServers((boot && boot.servers) || []);
         }).catch(function (err) {
+          if (vpnConnectCtrl) { vpnConnectCtrl.hide(); vpnConnectCtrl = null; }
           if (err.code === 'KEY_EXPIRED') {
             setStatus(statusNote, uiMsg().keyExpired, 'warning');
           } else if (err.code === 'KEY_REVOKED') {
@@ -503,6 +694,7 @@ function initPortalSdkBridge() {
         sdk.getDevices(accessKey).then(renderDevices).catch(function () { /* ignore */ });
       }).catch(function (err) {
         if (sdk.mode === 'live' && (!sdk.isAuthenticated() || (err && (err.status === 401 || err.code === 'UNAUTHORIZED')))) {
+          sdk.clearSession();
           window.location.replace('./login.html');
           return;
         }

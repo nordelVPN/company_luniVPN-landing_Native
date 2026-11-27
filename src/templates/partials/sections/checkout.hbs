@@ -46,26 +46,46 @@
             <p class="checkout-plan-sub" data-selected-plan-subtitle data-i18n="checkout.chooseHint">Select Trial, Basic, Plus, or Complete in Plans.</p>
           </div>
         </div>
-        <button class="change-plan-link" type="button" data-checkout-change-plan data-i18n="checkout.changePlan">Change plan</button>
 
-        <div class="checkout-preview" aria-label="Payment details" data-i18n-aria-label="checkout.paymentDetailsLabel">
-          <div class="demo-field-group">
-            <span class="demo-field-label" data-i18n="checkout.emailLabel">Email</span>
-            <div class="demo-field" aria-hidden="true"><span data-i18n="checkout.emailPlaceholder">Enter your email</span></div>
+        <fieldset class="checkout-plan-switcher" aria-label="Choose plan">
+          <legend class="checkout-field-label" data-i18n="checkout.changePlan">Change plan</legend>
+          <div class="checkout-plan-options">
+            <label class="checkout-plan-option">
+              <input type="radio" name="checkout-plan" value="trial">
+              <span data-i18n="plans.trial.name">Trial</span>
+              <strong>€0.50</strong>
+            </label>
+            <label class="checkout-plan-option">
+              <input type="radio" name="checkout-plan" value="basic">
+              <span data-i18n="plans.basic.name">Basic</span>
+              <strong>€7</strong>
+            </label>
+            <label class="checkout-plan-option">
+              <input type="radio" name="checkout-plan" value="plus" checked>
+              <span data-i18n="plans.plus.name">Plus</span>
+              <strong>€25</strong>
+            </label>
+            <label class="checkout-plan-option">
+              <input type="radio" name="checkout-plan" value="complete">
+              <span data-i18n="plans.complete.name">Complete</span>
+              <strong>€55</strong>
+            </label>
           </div>
-          <div class="demo-field-group">
-            <span class="demo-field-label" data-i18n="checkout.cardDetailsLabel">Card details</span>
-            <div class="demo-fields" aria-hidden="true">
-              <div class="demo-field demo-field-card">
-                <span class="demo-card-icon">{{> shared/icon name='card'}}</span>
-                <span>•••• •••• •••• 0000</span>
-              </div>
-              <div class="demo-field-row">
-                <div class="demo-field"><span data-i18n="checkout.mmYy">MM / YY</span><span>— / —</span></div>
-                <div class="demo-field"><span data-i18n="checkout.cvc">CVC</span><span>•••</span></div>
-              </div>
-            </div>
-          </div>
+        </fieldset>
+
+        <div class="checkout-email-field">
+          <label class="checkout-field-label" for="luni-checkout-email" data-i18n="checkout.emailLabel">Email</label>
+          <input
+            id="luni-checkout-email"
+            class="text-input"
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+            placeholder="you@example.com"
+            data-i18n-placeholder="auth.emailPlaceholder"
+          >
+          <p class="portal-field-error" data-field-error="email"></p>
         </div>
       </div>
       {{> checkout/summary}}

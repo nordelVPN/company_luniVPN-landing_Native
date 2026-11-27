@@ -1,5 +1,6 @@
 import '../styles/base.scss';
 import '../styles/pages/legal.scss';
+import '../styles/pages/auth.scss';
 import { initI18n } from '../modules/i18n';
 import { initNavigation } from '../modules/navigation';
 import { initWishlist } from '../modules/wishlist';

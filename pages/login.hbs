@@ -1,24 +1,29 @@
 <section class="landing-section legal-page" aria-labelledby="login-title">
   <div class="container legal-container">
-    <p class="eyebrow">LuniVPN Account</p>
-    <h1 id="login-title">Sign in</h1>
-    <p class="section-lead">Access your VPN key, servers, and connected devices.</p>
+    <p class="eyebrow" data-i18n="auth.eyebrow">LuniVPN Account</p>
+    <h1 id="login-title" data-i18n="auth.loginTitle">Sign in</h1>
+    <p class="section-lead" data-i18n="auth.loginLead">Access your VPN key, servers, and connected devices.</p>
     <form class="panel account-form" data-portal-login novalidate>
       <div class="portal-status" role="status" aria-live="polite" data-portal-status hidden></div>
       <div class="field-group">
-        <label for="luni-login-email">Email</label>
-        <input id="luni-login-email" class="text-input" type="email" name="email" required autocomplete="email" placeholder="you@example.com">
+        <label for="luni-login-email" data-i18n="auth.emailLabel">Email</label>
+        <input id="luni-login-email" class="text-input" type="email" name="email" required autocomplete="email" placeholder="you@example.com" data-i18n-placeholder="auth.emailPlaceholder">
       </div>
       <div class="field-group">
-        <label for="luni-login-password">Password</label>
+        <label for="luni-login-password" data-i18n="auth.passwordLabel">Password</label>
         <input id="luni-login-password" class="text-input" type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
       </div>
       <div class="actions">
-        <button class="button" type="submit">Sign in <span aria-hidden="true">↗</span></button>
-        <a class="button button-outline" href="./create-account.html">Create account</a>
+        <button class="button" type="submit"><span data-i18n="auth.loginSubmit">Sign in</span> <span aria-hidden="true">↗</span></button>
+        <a class="button button-outline" href="./create-account.html" data-i18n="auth.createAccountLink">Create account</a>
       </div>
-      <p class="portal-consent-note">By continuing, you agree to our <a href="./terms.html">Terms of Service</a> and <a href="./privacy.html">Privacy Policy</a>.</p>
-      <p><a class="change-plan-link" href="./forgot-password.html">Forgot password?</a></p>
+      <p class="portal-consent-note">
+        <span data-i18n="auth.consentPrefix">By continuing, you agree to our</span>
+        <a href="./terms.html" data-i18n="footer.terms">Terms of Service</a>
+        <span data-i18n="auth.consentAnd">and</span>
+        <a href="./privacy.html" data-i18n="footer.privacy">Privacy Policy</a>.
+      </p>
+      <p><a class="change-plan-link" href="./forgot-password.html" data-i18n="auth.forgotLink">Forgot password?</a></p>
     </form>
   </div>
 </section>

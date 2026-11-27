@@ -15,7 +15,8 @@ function initCheckout(root = document) {
   const shell = root.querySelector('[data-page-shell]');
   const services = createServices();
   const plans = services.getPlans();
-  const planTriggers = [...root.querySelectorAll('[data-select-plan]')];
+  const planTriggers = [...root.querySelectorAll('[data-select-plan], [data-wishlist-open]')];
+  const planRadios = [...backdrop.querySelectorAll('input[name="checkout-plan"]')];
   const planCards = [...root.querySelectorAll('[data-plan-card]')];
   const selectedNodes = [...backdrop.querySelectorAll('[data-selected-plan]')];
   const subtitleNode = backdrop.querySelector('[data-selected-plan-subtitle]');
@@ -24,7 +25,6 @@ function initCheckout(root = document) {
   const button = backdrop.querySelector('[data-checkout-button]');
   const message = backdrop.querySelector('[data-checkout-message]');
   const closeTriggers = [...backdrop.querySelectorAll('[data-checkout-close]')];
-  const changePlanBtn = backdrop.querySelector('[data-checkout-change-plan]');
 
   let currentPlanId = null;
   let lastTrigger = null;
@@ -126,6 +126,9 @@ function initCheckout(root = document) {
     planCards.forEach((card) => {
       card.classList.toggle('is-selected', card.getAttribute('data-plan-card') === currentPlanId);
     });
+    planRadios.forEach((radio) => {
+      radio.checked = radio.value === currentPlanId;
+    });
     planTriggers.forEach((trigger) => {
       const selected = trigger.getAttribute('data-select-plan') === currentPlanId;
       trigger.setAttribute('aria-current', selected ? 'true' : 'false');
@@ -171,8 +174,8 @@ function initCheckout(root = document) {
 
   const onPlanSelect = (event) => {
     const trigger = event.currentTarget;
-    const planId = normalizePlanId(trigger.getAttribute('data-select-plan'));
-    if (!planId) return;
+    const rawId = trigger.getAttribute('data-select-plan') || 'plus';
+    const planId = normalizePlanId(rawId) || 'plus';
     event.preventDefault();
     applyPlan(planId);
 
@@ -183,16 +186,9 @@ function initCheckout(root = document) {
     openModal(trigger);
   };
 
-  const onCheckoutClick = async () => {
-    if (!currentPlanId) return;
-    try {
-      const result = await services.createCheckout(currentPlanId);
-      lastMessageKey = 'checkout.unavailable';
-      if (message) message.textContent = t('checkout.unavailable') || result.message || 'Online payments are not open yet.';
-    } catch {
-      lastMessageKey = 'checkout.error';
-      if (message) message.textContent = t('checkout.error') || 'Checkout is unavailable. Please try again later.';
-    }
+  const onRadioChange = (event) => {
+    const radio = event.currentTarget;
+    if (radio.checked) applyPlan(radio.value);
   };
 
   const onBackdropClick = (event) => {
@@ -220,15 +216,13 @@ function initCheckout(root = document) {
     }
   };
 
-  const onChangePlan = () => closeModal({ scrollToPlans: true });
   const onLanguageChange = () => applyPlan(currentPlanId, { preserveMessage: true });
 
   syncFromUrl();
 
   planTriggers.forEach((trigger) => trigger.addEventListener('click', onPlanSelect));
   closeTriggers.forEach((trigger) => trigger.addEventListener('click', closeModal));
-  changePlanBtn?.addEventListener('click', onChangePlan);
-  button?.addEventListener('click', onCheckoutClick);
+  planRadios.forEach((radio) => radio.addEventListener('change', onRadioChange));
   backdrop.addEventListener('click', onBackdropClick);
   document.addEventListener('keydown', onKeydown);
   document.addEventListener('languagechange', onLanguageChange);
@@ -237,8 +231,7 @@ function initCheckout(root = document) {
   const destroy = () => {
     planTriggers.forEach((trigger) => trigger.removeEventListener('click', onPlanSelect));
     closeTriggers.forEach((trigger) => trigger.removeEventListener('click', closeModal));
-    changePlanBtn?.removeEventListener('click', onChangePlan);
-    button?.removeEventListener('click', onCheckoutClick);
+    planRadios.forEach((radio) => radio.removeEventListener('change', onRadioChange));
     backdrop.removeEventListener('click', onBackdropClick);
     document.removeEventListener('keydown', onKeydown);
     document.removeEventListener('languagechange', onLanguageChange);
